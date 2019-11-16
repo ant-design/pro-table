@@ -1,0 +1,23 @@
+@import '~antd/es/style/themes/default.less';
+
+@table-prefix-cls: ~'@{ant-prefix}-pro-table';
+
+.@{table-prefix-cls} {
+  &-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 8px;
+    &-item {
+      margin-right: 8px;
+    }
+  }
+
+  &-option-cell {
+    display: flex;
+    align-items: center;
+    &-item {
+      margin-right: 8px;
+    }
+  }
+}

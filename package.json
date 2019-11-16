@@ -1,0 +1,29 @@
+{
+  "name": "@ant-design/pro-table",
+  "version": "0.0.1",
+  "description": "🏆 Use Ant Design Table like a Pro!",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "authors": {
+    "name": "chenshuai2144",
+    "email": "qixian.cs@outlook.com"
+  },
+  "repository": "https://github.com/ant-design/pro-table/@ant-design/pro-table",
+  "scripts": {
+    "start": "father doc dev --storybook",
+    "build": "father build"
+  },
+  "peerDependencies": {
+    "react": "16.x"
+  },
+  "devDependencies": {
+    "@types/react": "^16.9.11",
+    "father": "^2.16.0",
+    "typescript": "^3.3.3"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "antd": "^3.25.1",
+    "babel-plugin-import": "^1.12.2"
+  }
+}
