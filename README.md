@@ -20,7 +20,7 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 | filterDate | 对通过 url 获取的数据进行一些处理 | `(data: T[]) => T[]` | - |
 | defaultData | 默认的数据 | `T[]` | - |
 | manual | 是否手动模式 | boolean | - |
-| effects | 依赖的参数改变时，会自动去 load 数据 | `(number | string | boolean)[]` | [] |
+| effects | 依赖的参数改变时，会自动去 load 数据 | `(number \| string \| boolean)[]` | [] |
 | onInit | 表格的数据初始化成功之后触发，会多此触发。 | `(action: UseFetchDataAction<RequestData<T>>) => void` | [] |
 | renderToolBar | 渲染工具栏，支持返回一个 dom 数组，会自动增加 margin-right | `(action: UseFetchDataAction<RequestData<T>>) => React.ReactNode[]` | - |
 | onLoad | 数据加载完成后触发,会多次触发 | `(dataSource: T[]) => void` | - |
@@ -31,10 +31,10 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 
 | 属性 | 描述 | 类型 | 默认值 |
 | --- | --- | --- | --- |
-| render | 类似 table 的 render，第一个参数变成了 dom,增加了第四个参数 action | `(text: React.ReactNode,record: T,index: number,action: UseFetchDataAction<RequestData<T>>) => React.ReactNode | React.ReactNode[]` | - |
+| render | 类似 table 的 render，第一个参数变成了 dom,增加了第四个参数 action | `(text: React.ReactNode,record: T,index: number,action: UseFetchDataAction<RequestData<T>>) => React.ReactNode \| React.ReactNode[]` | - |
 | ellipsis | 是否自动缩略 | boolean | - |
 | copyable | 是否支持复制 | boolean | - |
-| valueType | 值的类型 | `'money' | 'option' | 'date' | 'dateTime' | 'time' | 'text'` | 'text' |
+| valueType | 值的类型 | `'money' \| 'option' \| 'date' \| 'dateTime' \| 'time' \| 'text'` | 'text' |
 
 ### valueType
 

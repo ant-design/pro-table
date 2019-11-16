@@ -20,7 +20,7 @@ pro-table is encapsulated in an antd table, supports some presets, and encapsula
 | filterDate | Do some processing on the data obtained through the url. | `(data: T[]) => T[]` | - |
 | defaultData | Default data array. | `T[]` | - |
 | manual | Whether manual mode, you need to manually call fetch. | boolean | - |
-| effects | When the dependent parameter changes, the load data is automatically removed. | `(number | string | boolean)[]` | [] |
+| effects | When the dependent parameter changes, the load data is automatically removed. | `(number \| string \| boolean)[]` | [] |
 | onInit | Triggered after the table data is successfully initialized, it will be triggered multiple times. | `(action: UseFetchDataAction<RequestData<T>>) => void` | [] |
 | renderToolBar | Render toolbar, support for returning a dom array, will automatically increase margin-right. | `(action: UseFetchDataAction<RequestData<T>>) => React.ReactNode[]` | - |
 | onLoad | Triggered after the data is loaded, it will be triggered multiple times. | `(dataSource: T[]) => void` | - |
@@ -31,10 +31,10 @@ pro-table is encapsulated in an antd table, supports some presets, and encapsula
 
 | Property | Description | Type | Default Value |
 | --- | --- | --- | --- |
-| render | Like table's render, the first argument becomes dom, and the fourth argument is added. | `(text: React.ReactNode,record: T,index: number,action: UseFetchDataAction<RequestData<T>>) => React.ReactNode | React.ReactNode[]` | - |
+| render | Like table's render, the first argument becomes dom, and the fourth argument is added. | `(text: React.ReactNode,record: T,index: number,action: UseFetchDataAction<RequestData<T>>) => React.ReactNode \| React.ReactNode[]` | - |
 | ellipsis | Whether to automatically abbreviate | boolean | - |
 | copyable | Whether to support replication | boolean | - |
-| valueType | Type of value | `'money' | 'option' | 'date' | 'dateTime' | 'time' | 'text'` | 'text' |
+| valueType | Type of value | `'money' \| 'option' \| 'date' \| 'dateTime' \| 'time' \| 'text'` | 'text' |
 
 ### valueType
 
