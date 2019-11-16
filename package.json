@@ -19,6 +19,8 @@
   "devDependencies": {
     "@types/classnames": "^2.2.9",
     "@types/react": "^16.9.11",
+    "@umijs/fabric": "^1.2.0",
+    "eslint": "5.16.0",
     "father": "^2.16.0",
     "typescript": "^3.3.3"
   },
@@ -26,6 +28,7 @@
   "dependencies": {
     "antd": "^3.25.1",
     "babel-plugin-import": "^1.12.2",
-    "classnames": "^2.2.6"
+    "classnames": "^2.2.6",
+    "moment": "^2.24.0"
   }
 }

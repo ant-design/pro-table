@@ -3,10 +3,11 @@ import { Table, Typography } from 'antd';
 import 'antd/es/table/style/index';
 import 'antd/es/typography/style/index';
 import classNames from 'classnames';
-import useFetchData, { UseFetchDataAction, RequestData } from './useFetchData';
-import './index.less';
 import moment from 'moment';
 import { ColumnProps, PaginationConfig, TableProps } from 'antd/es/table';
+
+import useFetchData, { UseFetchDataAction, RequestData } from './useFetchData';
+import './index.less';
 
 /**
  * money 金额
@@ -79,6 +80,9 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns'> {
    */
   onInit?: (action: UseFetchDataAction<RequestData<T>>) => void;
 
+  /**
+   * 渲染操作栏
+   */
   renderToolBar?: (action: UseFetchDataAction<RequestData<T>>) => React.ReactNode[];
 
   /**
@@ -178,44 +182,47 @@ const renderText = (text: string | number, valueType: ProColumnsValueType) => {
 const genColumnList = <T, U = {}>(
   columns: ProColumns<T>[],
   action: UseFetchDataAction<RequestData<T>>,
-): ColumnProps<T>[] => {
-  return columns.map(item => {
-    return {
-      ...item,
-      ellipsis: false,
-      render: (text: string, row: T, index: number) => {
-        const dom = (
-          <Typography.Text
-            style={{
-              width: item.width,
-            }}
-            copyable={item.copyable}
-            ellipsis={item.ellipsis}
-          >
-            {renderText(text, item.valueType || 'text')}
-          </Typography.Text>
-        );
-        if (item.render) {
-          const renderDom = item.render(dom, row, index, action);
-          if (renderDom && item.valueType === 'option' && Array.isArray(renderDom)) {
-            return (
-              <div className="ant-pro-table-option-cell">
-                {renderDom.map((optionDom, index) => (
-                  <div className="ant-pro-table-option-cell-item" key={index}>
-                    {optionDom}
-                  </div>
-                ))}
-              </div>
-            );
-          }
-          return renderDom;
+): ColumnProps<T>[] =>
+  columns.map(item => ({
+    ...item,
+    ellipsis: false,
+    render: (text: string, row: T, index: number) => {
+      const dom = (
+        <Typography.Text
+          style={{
+            width: item.width,
+          }}
+          copyable={item.copyable}
+          ellipsis={item.ellipsis}
+        >
+          {renderText(text, item.valueType || 'text')}
+        </Typography.Text>
+      );
+      if (item.render) {
+        const renderDom = item.render(dom, row, index, action);
+        if (renderDom && item.valueType === 'option' && Array.isArray(renderDom)) {
+          return (
+            <div className="ant-pro-table-option-cell">
+              {renderDom.map((optionDom, domIndex) => (
+                // eslint-disable-next-line react/no-array-index-key
+                <div className="ant-pro-table-option-cell-item" key={`${index}-${domIndex}`}>
+                  {optionDom}
+                </div>
+              ))}
+            </div>
+          );
         }
-        return dom;
-      },
-    };
-  });
-};
+        return renderDom;
+      }
+      return dom;
+    },
+  }));
 
+/**
+ * 🏆 Use Ant Design Table like a Pro!
+ * 更快 更好 更方便
+ * @param props
+ */
 const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
   const {
     url,
@@ -286,9 +293,9 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
   return (
     <div className={className}>
       <div className="ant-pro-table-toolbar">
-        {renderToolBar(action).map(node => {
-          <div className="ant-pro-table-toolbar-item">{node}</div>;
-        })}
+        {renderToolBar(action).map(node => (
+          <div className="ant-pro-table-toolbar-item">{node}</div>
+        ))}
       </div>
       <Table
         {...reset}
