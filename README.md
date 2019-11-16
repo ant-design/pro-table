@@ -1,14 +1,18 @@
 [English](./README.en_US.md)
 
-# @ant-design/pro-table
+<h1 align="center">@ant-design/pro-table</h1>
+
+<div align="center">
 
 🏆 Use Ant Design Table like a Pro!
 
+</div>
+
 ## API
 
-### Table
+pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，并且封装了一些行为。这里只列出与 antd table 不同的 api。
 
-> pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，并且封装了一些行为。这里只列出与 antd table 不同的 api。
+### Table
 
 | 属性 | 描述 | 类型 | 默认值 |
 | --- | --- | --- | --- |

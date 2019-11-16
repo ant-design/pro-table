@@ -1,14 +1,18 @@
 [中文](./README.md)
 
-# @ant-design/pro-table
+<h1 align="center">@ant-design/pro-table</h1>
+
+<div align="center">
 
 🏆 Use Ant Design Table like a Pro!
 
+</div>
+
 ## API
 
-### Table
+pro-table is encapsulated in an antd table, supports some presets, and encapsulates some behavior. Only apis different from antd table are listed here.
 
-> pro-table is encapsulated in an antd table, supports some presets, and encapsulates some behavior. Only apis different from antd table are listed here.
+### Table
 
 | Property | Description | Type | Default Value |
 | --- | --- | --- | --- |
