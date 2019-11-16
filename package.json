@@ -17,6 +17,7 @@
     "react": "16.x"
   },
   "devDependencies": {
+    "@types/classnames": "^2.2.9",
     "@types/react": "^16.9.11",
     "father": "^2.16.0",
     "typescript": "^3.3.3"
@@ -24,6 +25,7 @@
   "license": "MIT",
   "dependencies": {
     "antd": "^3.25.1",
-    "babel-plugin-import": "^1.12.2"
+    "babel-plugin-import": "^1.12.2",
+    "classnames": "^2.2.6"
   }
 }

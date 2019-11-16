@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, CSSProperties } from 'react';
 import { Table, Typography } from 'antd';
 import 'antd/es/table/style/index';
 import 'antd/es/typography/style/index';
+import classNames from 'classnames';
 import useFetchData, { UseFetchDataAction, RequestData } from './useFetchData';
 import './index.less';
 import moment from 'moment';
@@ -84,6 +85,16 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns'> {
    * 数据加载完成后触发
    */
   onLoad?: (dataSource: T[]) => void;
+
+  /**
+   * 给封装的 table 的 className
+   */
+  tableClassName?: string;
+
+  /**
+   * 给封装的 table 的 style
+   */
+  tableStyle?: CSSProperties;
 }
 
 const mergePagination = <T extends any[], U>(
@@ -208,6 +219,7 @@ const genColumnList = <T, U = {}>(
 const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
   const {
     url,
+    className: propsClassName,
     params = {},
     defaultData = [],
     effects = [],
@@ -218,6 +230,9 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     columns: propsColumns = [],
     renderToolBar = () => [],
     onLoad,
+    tableStyle,
+    tableClassName,
+    ...reset
   } = props;
 
   /**
@@ -267,15 +282,18 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
 
   const pagination = mergePagination<T[], {}>(propsPagination, action);
   const columns = genColumnList<T>(propsColumns, action);
+  const className = classNames('ant-pro-table', propsClassName);
   return (
-    <div className="ant-pro-table">
+    <div className={className}>
       <div className="ant-pro-table-toolbar">
         {renderToolBar(action).map(node => {
           <div className="ant-pro-table-toolbar-item">{node}</div>;
         })}
       </div>
       <Table
-        {...props}
+        {...reset}
+        className={tableClassName}
+        style={tableStyle}
         columns={columns}
         loading={action.loading}
         dataSource={action.dataSource}
