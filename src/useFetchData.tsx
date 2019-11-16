@@ -30,7 +30,7 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
     onLoad?: (dataSource: T['data']) => void;
   },
 ): UseFetchDataAction<T> => {
-  const { defaultPageSize = 10, defaultCurrent = 1, onLoad = () => null } = options ? options : {};
+  const { defaultPageSize = 10, defaultCurrent = 1, onLoad = () => null } = options || {};
 
   const [list, setList] = useState<T['data']>(defaultData as any);
   const [loading, setLoading] = useState<boolean>(false);
@@ -56,8 +56,7 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
     });
     if (success) {
       if (isAppend && list) {
-        let newList = [...list, ...data];
-        setList(newList);
+        setList([...list, ...data]);
       } else {
         setList(data);
       }

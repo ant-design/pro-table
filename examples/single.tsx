@@ -12,7 +12,7 @@ const data: {
   money: number;
   date: number;
 }[] = [];
-for (let i = 0; i < 46; i++) {
+for (let i = 0; i < 46; i += 1) {
   data.push({
     key: i,
     name: `Edward King ${i}`,
@@ -66,34 +66,28 @@ const columns: ProColumns[] = [
     title: 'option',
     valueType: 'option',
     dataIndex: 'id',
-    render: (text, row, index, action) => {
-      return [
-        <a
-          onClick={() => {
-            window.alert('确认删除？');
-            action.reload();
-          }}
-        >
-          delete
-        </a>,
-        <a
-          onClick={() => {
-            window.alert('确认刷新？');
-            action.reload();
-          }}
-        >
-          reload
-        </a>,
-      ];
-    },
+    render: (text, row, index, action) => [
+      <a
+        onClick={() => {
+          window.alert('确认删除？');
+          action.reload();
+        }}
+      >
+        delete
+      </a>,
+      <a
+        onClick={() => {
+          window.alert('确认刷新？');
+          action.reload();
+        }}
+      >
+        reload
+      </a>,
+    ],
   },
 ];
 
-const request = (params?: {
-  keyword?: string;
-  pageSize?: number;
-  current?: number;
-}): Promise<{
+const request = (): Promise<{
   data: {
     key: string | number;
     name: string;
@@ -101,8 +95,8 @@ const request = (params?: {
     address: string;
   }[];
   success: true;
-}> => {
-  return new Promise(resolve => {
+}> =>
+  new Promise(resolve => {
     setTimeout(() => {
       resolve({
         data,
@@ -110,7 +104,6 @@ const request = (params?: {
       });
     }, 2000);
   });
-};
 
 export default () => {
   const [keyword, setKeyword] = useState<string>('');
