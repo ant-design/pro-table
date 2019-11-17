@@ -51,10 +51,11 @@
     "@types/node": "^12.12.8",
     "@types/react": "^16.9.11",
     "@umijs/fabric": "^1.2.0",
+    "babel-plugin-import": "^1.12.2",
     "enzyme": "^3.10.0",
     "enzyme-to-json": "^3.4.3",
     "eslint": "5.16.0",
-    "father": "^2.16.0",
+    "father": "^2.25.0-alpha.1",
     "jsdom-global": "^3.0.2",
     "np": "^5.1.3",
     "stylelint": "^11.0.0",
@@ -63,7 +64,6 @@
   "license": "MIT",
   "dependencies": {
     "antd": "^3.25.1",
-    "babel-plugin-import": "^1.12.2",
     "classnames": "^2.2.6",
     "moment": "^2.24.0"
   }
