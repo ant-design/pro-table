@@ -42,7 +42,7 @@ pro-table is encapsulated in an antd table, supports some presets, and encapsula
 - date date eg. 2019-11-16
 - dateTime date and time eg. 2019-11-16 12:50:00
 - time time eg. 12:50:00
-- option operation item, it will automatically increase marginRight, only one data is supported.
+- option operation item, it will automatically increase marginRight, only one array is supported.
 - text default value, no processing
 
 ## Usage

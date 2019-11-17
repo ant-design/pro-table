@@ -42,7 +42,7 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 - date 日期 eg. 2019-11-16
 - dateTime 日期和时间 eg. 2019-11-16 12:50:00
 - time 时间 eg. 12:50:00
-- option 操作项，会自动增加 marginRight，只支持一个数据
+- option 操作项，会自动增加 marginRight，只支持一个数组
 - text 默认值，不做任何处理
 
 ## Usage
