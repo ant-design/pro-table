@@ -27,6 +27,13 @@
       "pre-commit": "npm run lint-staged"
     }
   },
+   "files": [
+    "/lib",
+    "/es"
+  ],
+  "main": "lib/index.js",
+  "module": "es/index.js",
+  "types": "lib/index.d.ts",
   "lint-staged": {
     "**/*.less": "stylelint --syntax less",
     "**/*.{js,jsx,tsx,ts,less,md,json}": [
