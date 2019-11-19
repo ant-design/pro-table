@@ -27,6 +27,13 @@ export interface ProColumns<T = unknown> extends Omit<ColumnProps<T>, 'render'> 
     index: number,
     action: UseFetchDataAction<RequestData<T>>,
   ) => React.ReactNode | React.ReactNode[];
+
+  renderText?: (
+    text: any,
+    record: T,
+    index: number,
+    action: UseFetchDataAction<RequestData<T>>,
+  ) => string;
   /**
    * 是否缩略
    */
@@ -141,7 +148,7 @@ const moneyIntl = new Intl.NumberFormat('zh-Hans-CN', {
  * @param text
  * @param valueType
  */
-const renderText = (text: string | number, valueType: ProColumnsValueType) => {
+const defaultRenderText = (text: string | number, valueType: ProColumnsValueType) => {
   /**
    * 如果是金额的值
    */
@@ -185,8 +192,12 @@ const genColumnList = <T, U = {}>(
   columns.map(item => ({
     ...item,
     ellipsis: false,
-    render: (text: string, row: T, index: number) => {
-      const textDom = renderText(text, item.valueType || 'text');
+
+    render: (text: any, row: T, index: number) => {
+      const { renderText = (val: any) => val } = item;
+      const renderTextStr = renderText(text, row, index, action);
+      const textDom = defaultRenderText(renderTextStr, item.valueType || 'text');
+
       let dom: React.ReactNode = textDom;
       if (item.copyable || item.ellipsis) {
         dom = (

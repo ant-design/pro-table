@@ -11,10 +11,12 @@ const data: {
   address: string;
   money: number;
   date: number;
+  sex: string;
 }[] = [];
 for (let i = 0; i < 46; i += 1) {
   data.push({
     key: i,
+    sex: i % 2 === 0 ? 'man' : 'woman',
     name: `Edward King ${i}`,
     age: 10 + i,
     money: parseFloat((10000.26 * (i + 1)).toFixed(2)),
@@ -28,6 +30,12 @@ const columns: ProColumns[] = [
     title: 'Name',
     dataIndex: 'name',
     copyable: true,
+  },
+  {
+    title: 'sex',
+    dataIndex: 'sex',
+    copyable: true,
+    renderText: text => (text === 'man' ? '男' : '女'),
   },
   {
     title: 'Age',

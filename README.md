@@ -35,6 +35,7 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 
 | 属性 | 描述 | 类型 | 默认值 |
 | --- | --- | --- | --- |
+| renderText | 类似 table 的 render，但是必须返回 string，如果只是希望转化枚举，可以使用这个方案 | `(text: any,record: T,index: number,action: UseFetchDataAction<RequestData<T>>) => string` | - |
 | render | 类似 table 的 render，第一个参数变成了 dom,增加了第四个参数 action | `(text: React.ReactNode,record: T,index: number,action: UseFetchDataAction<RequestData<T>>) => React.ReactNode \| React.ReactNode[]` | - |
 | ellipsis | 是否自动缩略 | boolean | - |
 | copyable | 是否支持复制 | boolean | - |
