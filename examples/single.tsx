@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import ProTable, { ProColumns } from '../src';
-import 'antd/es/input/style/index';
-import { Button, Input, ConfigProvider } from 'antd';
+import { Button, Input } from 'antd';
 import moment from 'moment';
+import ProTable, { ProColumns } from '../src';
 
 const data: {
   key: string | number;
@@ -116,66 +115,66 @@ const request = (): Promise<{
 export default () => {
   const [keyword, setKeyword] = useState<string>('');
   return (
-    <ConfigProvider>
-      <div
-        style={{
-          padding: 48,
+    <div
+      style={{
+        padding: 48,
+        backgroundColor: '#fff',
+      }}
+    >
+      <ProTable
+        size="small"
+        columns={columns}
+        url={request}
+        rowKey="key"
+        params={{ keyword }}
+        renderToolBar={action => [
+          <Input.Search
+            style={{
+              width: 200,
+            }}
+            onSearch={value => setKeyword(value)}
+          />,
+          <Button
+            onClick={() => {
+              action.reload();
+            }}
+            key="1"
+            type="primary"
+            style={{
+              marginRight: 8,
+            }}
+          >
+            刷新
+          </Button>,
+          <Button
+            key="2"
+            style={{
+              marginRight: 8,
+            }}
+            onClick={() => {
+              action.setCurrent(3);
+            }}
+            type="dashed"
+          >
+            跳转到第三页
+          </Button>,
+          <Button
+            key="3"
+            onClick={() => {
+              action.resetPageIndex();
+            }}
+            type="default"
+            style={{
+              marginRight: 8,
+            }}
+          >
+            重置
+          </Button>,
+        ]}
+        pagination={{
+          defaultCurrent: 10,
         }}
-      >
-        <br />
-        <ProTable
-          size="small"
-          columns={columns}
-          url={request}
-          rowKey="key"
-          params={{ keyword }}
-          renderToolBar={action => [
-            <Input.Search
-              style={{
-                width: 200,
-              }}
-              onSearch={value => setKeyword(value)}
-            />,
-            <Button
-              onClick={() => {
-                action.reload();
-              }}
-              type="primary"
-              style={{
-                marginRight: 8,
-              }}
-            >
-              刷新
-            </Button>,
-            <Button
-              style={{
-                marginRight: 8,
-              }}
-              onClick={() => {
-                action.setCurrent(3);
-              }}
-              type="dashed"
-            >
-              跳转到第三页
-            </Button>,
-
-            <Button
-              onClick={() => {
-                action.resetPageIndex();
-              }}
-              type="default"
-              style={{
-                marginRight: 8,
-              }}
-            >
-              重置
-            </Button>,
-          ]}
-          pagination={{
-            defaultCurrent: 10,
-          }}
-        />
-      </div>
-    </ConfigProvider>
+      />
+    </div>
   );
 };

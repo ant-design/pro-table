@@ -1,5 +1,4 @@
 import React from 'react';
-import 'antd/es/input/style/index';
 import moment from 'moment';
 import { ProColumns } from '../../lib';
 
