@@ -186,17 +186,21 @@ const genColumnList = <T, U = {}>(
     ...item,
     ellipsis: false,
     render: (text: string, row: T, index: number) => {
-      const dom = (
-        <Typography.Text
-          style={{
-            width: item.width,
-          }}
-          copyable={item.copyable}
-          ellipsis={item.ellipsis}
-        >
-          {renderText(text, item.valueType || 'text')}
-        </Typography.Text>
-      );
+      const textDom = renderText(text, item.valueType || 'text');
+      let dom: React.ReactNode = textDom;
+      if (item.copyable || item.ellipsis) {
+        dom = (
+          <Typography.Text
+            style={{
+              width: item.width,
+            }}
+            copyable={item.copyable}
+            ellipsis={item.ellipsis}
+          >
+            {textDom}
+          </Typography.Text>
+        );
+      }
       if (item.render) {
         const renderDom = item.render(dom, row, index, action);
         if (renderDom && item.valueType === 'option' && Array.isArray(renderDom)) {
@@ -292,8 +296,11 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
   return (
     <div className={className}>
       <div className="ant-pro-table-toolbar">
-        {renderToolBar(action).map(node => (
-          <div className="ant-pro-table-toolbar-item">{node}</div>
+        {renderToolBar(action).map((node, index) => (
+          // eslint-disable-next-line react/no-array-index-key
+          <div key={index} className="ant-pro-table-toolbar-item">
+            {node}
+          </div>
         ))}
       </div>
       <Table
