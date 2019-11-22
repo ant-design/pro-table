@@ -124,7 +124,7 @@ export default () => {
       <ProTable
         size="small"
         columns={columns}
-        url={request}
+        request={request}
         rowKey="key"
         params={{ keyword }}
         renderToolBar={action => [
