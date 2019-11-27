@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Input } from 'antd';
 import moment from 'moment';
-import ProTable, { ProColumns } from '../src';
+import ProTable, { ProColumns, TableDropdown, TableStatus } from '../src';
 
 const data: {
   key: string | number;
@@ -25,6 +25,16 @@ for (let i = 0; i < 46; i += 1) {
 }
 
 const columns: ProColumns[] = [
+  {
+    title: '序号',
+    dataIndex: 'index',
+    valueType: 'index',
+  },
+  {
+    title: '边框序号',
+    dataIndex: 'indexBorder',
+    valueType: 'indexBorder',
+  },
   {
     title: 'Name',
     dataIndex: 'name',
@@ -70,6 +80,21 @@ const columns: ProColumns[] = [
     valueType: 'time',
   },
   {
+    title: '状态',
+    dataIndex: 'status',
+    render: () => (
+      <div>
+        <TableStatus.Success>上线成功</TableStatus.Success>
+        <br />
+        <TableStatus.Error>上线失败</TableStatus.Error>
+        <br />
+        <TableStatus.Processing>正在部署</TableStatus.Processing>
+        <br />
+        <TableStatus.Init>正在初始化</TableStatus.Init>
+      </div>
+    ),
+  },
+  {
     title: 'option',
     valueType: 'option',
     dataIndex: 'id',
@@ -90,6 +115,13 @@ const columns: ProColumns[] = [
       >
         reload
       </a>,
+      <TableDropdown
+        onSelect={key => window.alert(key)}
+        menus={[
+          { key: 'copy', name: '复制' },
+          { key: 'delete', name: '删除' },
+        ]}
+      />,
     ],
   },
 ];
@@ -170,6 +202,15 @@ export default () => {
           >
             重置
           </Button>,
+          <TableDropdown.Button
+            onSelect={key => window.alert(key)}
+            menus={[
+              { key: 'copy', name: '复制' },
+              { key: 'clear', name: '清空' },
+            ]}
+          >
+            更多操作
+          </TableDropdown.Button>,
         ]}
         pagination={{
           defaultCurrent: 10,

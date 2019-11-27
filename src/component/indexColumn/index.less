@@ -1,0 +1,24 @@
+@import '~antd/es/style/themes/default.less';
+
+@ProTable-prefix-cls: ~'@{ant-prefix}-pro-table-index-column';
+
+.@{ProTable-prefix-cls} {
+  &-border {
+    background-color: #314659;
+    height: 18px;
+    width: 18px;
+    border-radius: 9px;
+    color: #fff;
+    font-size: 12px;
+    line-height: 12px;
+    text-align: center;
+    margin: auto;
+    &.top-three {
+      background-color: #979797;
+    }
+  }
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

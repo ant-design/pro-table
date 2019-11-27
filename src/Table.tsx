@@ -5,8 +5,8 @@ import { Table, Typography } from 'antd';
 import classNames from 'classnames';
 import moment from 'moment';
 import { ColumnProps, PaginationConfig, TableProps } from 'antd/es/table';
-
 import useFetchData, { UseFetchDataAction, RequestData } from './useFetchData';
+import IndexColumn from './component/indexColumn';
 
 /**
  * money 金额
@@ -15,7 +15,15 @@ import useFetchData, { UseFetchDataAction, RequestData } from './useFetchData';
  * dateTime 日期和时间 YYYY-MM-DD HH:mm:SS
  * time: 时间 HH:mm:SS
  */
-export type ProColumnsValueType = 'money' | 'option' | 'date' | 'dateTime' | 'time' | 'text';
+export type ProColumnsValueType =
+  | 'money'
+  | 'option'
+  | 'date'
+  | 'dateTime'
+  | 'time'
+  | 'text'
+  | 'index'
+  | 'indexBorder';
 
 export interface ProColumns<T = unknown> extends Omit<ColumnProps<T>, 'render'> {
   /**
@@ -148,7 +156,11 @@ const moneyIntl = new Intl.NumberFormat('zh-Hans-CN', {
  * @param text
  * @param valueType
  */
-const defaultRenderText = (text: string | number, valueType: ProColumnsValueType) => {
+const defaultRenderText = (
+  text: string | number,
+  valueType: ProColumnsValueType,
+  index: number,
+) => {
   /**
    * 如果是金额的值
    */
@@ -182,6 +194,15 @@ const defaultRenderText = (text: string | number, valueType: ProColumnsValueType
   if (valueType === 'time' && text) {
     return moment(text).format('HH:mm:SS');
   }
+
+  if (valueType === 'index') {
+    return <IndexColumn>{index}</IndexColumn>;
+  }
+
+  if (valueType === 'indexBorder') {
+    return <IndexColumn border>{index}</IndexColumn>;
+  }
+
   return text;
 };
 
@@ -196,7 +217,7 @@ const genColumnList = <T, U = {}>(
     render: (text: any, row: T, index: number) => {
       const { renderText = (val: any) => val } = item;
       const renderTextStr = renderText(text, row, index, action);
-      const textDom = defaultRenderText(renderTextStr, item.valueType || 'text');
+      const textDom = defaultRenderText(renderTextStr, item.valueType || 'text', index);
 
       let dom: React.ReactNode = textDom;
       if (item.copyable || item.ellipsis) {
@@ -320,7 +341,7 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
         style={tableStyle}
         columns={columns}
         loading={action.loading}
-        dataSource={action.dataSource}
+        dataSource={action.dataSource as T[]}
         pagination={pagination}
       />
     </div>

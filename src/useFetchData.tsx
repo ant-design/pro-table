@@ -6,7 +6,7 @@ export interface RequestData<T> {
   total?: number;
 }
 export interface UseFetchDataAction<T extends RequestData<any>> {
-  dataSource: T['data'];
+  dataSource: T['data'] | T;
   loading: boolean;
   hasMore: boolean;
   current: number;

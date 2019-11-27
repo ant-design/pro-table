@@ -1,6 +1,6 @@
 import React from 'react';
 import moment from 'moment';
-import { ProColumns } from '../../lib';
+import { ProColumns, TableStatus, TableDropdown } from '../../src';
 
 const data: {
   key: string | number;
@@ -23,9 +23,25 @@ for (let i = 0; i < 46; i += 1) {
 
 export const columns: ProColumns[] = [
   {
+    title: '序号',
+    dataIndex: 'index',
+    valueType: 'index',
+  },
+  {
+    title: '边框序号',
+    dataIndex: 'indexBorder',
+    valueType: 'indexBorder',
+  },
+  {
     title: 'Name',
     dataIndex: 'name',
     copyable: true,
+  },
+  {
+    title: 'sex',
+    dataIndex: 'sex',
+    copyable: true,
+    renderText: text => (text === 'man' ? '男' : '女'),
   },
   {
     title: 'Age',
@@ -61,12 +77,28 @@ export const columns: ProColumns[] = [
     valueType: 'time',
   },
   {
+    title: '状态',
+    dataIndex: 'status',
+    render: () => (
+      <div>
+        <TableStatus.Success>上线成功</TableStatus.Success>
+        <br />
+        <TableStatus.Error>上线失败</TableStatus.Error>
+        <br />
+        <TableStatus.Processing>正在部署</TableStatus.Processing>
+        <br />
+        <TableStatus.Init>正在初始化</TableStatus.Init>
+      </div>
+    ),
+  },
+  {
     title: 'option',
     valueType: 'option',
     dataIndex: 'id',
     render: (text, row, index, action) => [
       <a
         onClick={() => {
+          window.alert('确认删除？');
           action.reload();
         }}
       >
@@ -74,11 +106,19 @@ export const columns: ProColumns[] = [
       </a>,
       <a
         onClick={() => {
+          window.alert('确认刷新？');
           action.reload();
         }}
       >
         reload
       </a>,
+      <TableDropdown
+        onSelect={key => window.alert(key)}
+        menus={[
+          { key: 'copy', name: '复制' },
+          { key: 'delete', name: '删除' },
+        ]}
+      />,
     ],
   },
 ];
