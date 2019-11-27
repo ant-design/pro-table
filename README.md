@@ -39,7 +39,7 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 | render | 类似 table 的 render，第一个参数变成了 dom,增加了第四个参数 action | `(text: React.ReactNode,record: T,index: number,action: UseFetchDataAction<RequestData<T>>) => React.ReactNode \| React.ReactNode[]` | - |
 | ellipsis | 是否自动缩略 | boolean | - |
 | copyable | 是否支持复制 | boolean | - |
-| valueType | 值的类型 | `'money' \| 'option' \| 'date' \| 'dateTime' \| 'time' \| 'text'` | 'text' |
+| valueType | 值的类型 | `'money' \| 'option' \| 'date' \| 'dateTime' \| 'time' \| 'text'\| 'index' \| 'indexBorder'` | 'text' |
 
 ### valueType
 
@@ -49,6 +49,8 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 - time 时间 eg. 12:50:00
 - option 操作项，会自动增加 marginRight，只支持一个数组
 - text 默认值，不做任何处理
+- index 序号列
+- indexBorder 带 border 的序号列
 
 ## Usage
 
