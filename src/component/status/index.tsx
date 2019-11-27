@@ -15,11 +15,13 @@ const Status: {
   Error: React.FC<StatusProps>;
   Processing: React.FC<StatusProps>;
   Init: React.FC<StatusProps>;
+  Warning: React.FC<StatusProps>;
 } = {
   Success: ({ children }) => <Badge status="success" text={children} />,
   Error: ({ children }) => <Badge status="error" text={children} />,
   Init: ({ children }) => <Badge status="default" text={children} />,
   Processing: ({ children }) => <Badge status="processing" text={children} />,
+  Warning: ({ children }) => <Badge status="warning" text={children} />,
 };
 
 export default Status;
