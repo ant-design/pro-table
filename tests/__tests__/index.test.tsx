@@ -10,7 +10,7 @@ describe('BasicTable', () => {
       <ProTable
         size="small"
         columns={columns}
-        url={request}
+        request={request}
         rowKey="key"
         params={{ keyword: 'test' }}
         pagination={{

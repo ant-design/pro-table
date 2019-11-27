@@ -64,6 +64,14 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns'> {
   /**
    * 一个获得 dataSource 的方法
    */
+  request?: (params?: {
+    pageSize: number;
+    current: number;
+    [key: string]: any;
+  }) => Promise<RequestData<T>>;
+  /**
+   * 一个获得 dataSource 的方法
+   */
   url?: (params?: {
     pageSize: number;
     current: number;
@@ -260,7 +268,7 @@ const genColumnList = <T, U = {}>(
  */
 const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
   const {
-    url,
+    request,
     className: propsClassName,
     params = {},
     defaultData = [],
@@ -274,6 +282,7 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     onLoad,
     tableStyle,
     tableClassName,
+    url,
     ...reset
   } = props;
 
@@ -287,13 +296,15 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
 
   const action = useFetchData(
     async ({ pageSize, current }) => {
-      if (!url) {
+      const tempRequest = request || url;
+
+      if (!tempRequest) {
         return {
           data: props.dataSource || [],
           success: true,
         } as RequestData<T>;
       }
-      const msg = await url({ current, pageSize, ...params });
+      const msg = await tempRequest({ current, pageSize, ...params });
       if (filterDate) {
         return { ...msg, data: filterDate(msg.data) };
       }
