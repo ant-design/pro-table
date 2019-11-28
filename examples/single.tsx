@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Input } from 'antd';
 import moment from 'moment';
-import ProTable, { ProColumns, TableDropdown, TableStatus } from '../src';
+import ProTable, { ProColumns, TableDropdown } from '../src';
 
 const data: {
   key: string | number;
@@ -29,11 +29,6 @@ const columns: ProColumns[] = [
     title: '序号',
     dataIndex: 'index',
     valueType: 'index',
-  },
-  {
-    title: '边框序号',
-    dataIndex: 'indexBorder',
-    valueType: 'indexBorder',
   },
   {
     title: 'Name',
@@ -78,21 +73,6 @@ const columns: ProColumns[] = [
     key: 'time',
     dataIndex: 'date',
     valueType: 'time',
-  },
-  {
-    title: '状态',
-    dataIndex: 'status',
-    render: () => (
-      <div>
-        <TableStatus.Success>上线成功</TableStatus.Success>
-        <br />
-        <TableStatus.Error>上线失败</TableStatus.Error>
-        <br />
-        <TableStatus.Processing>正在部署</TableStatus.Processing>
-        <br />
-        <TableStatus.Init>正在初始化</TableStatus.Init>
-      </div>
-    ),
   },
   {
     title: 'option',
@@ -167,15 +147,6 @@ export default () => {
             onSearch={value => setKeyword(value)}
           />,
           <Button
-            onClick={() => {
-              action.reload();
-            }}
-            key="1"
-            type="primary"
-          >
-            刷新
-          </Button>,
-          <Button
             key="2"
             onClick={() => {
               action.setCurrent(3);
@@ -202,6 +173,15 @@ export default () => {
           >
             更多操作
           </TableDropdown.Button>,
+          <Button
+            key="3"
+            onClick={() => {
+              action.resetPageIndex();
+            }}
+            type="primary"
+          >
+            新建
+          </Button>,
         ]}
         pagination={{
           defaultCurrent: 10,

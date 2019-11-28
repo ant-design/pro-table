@@ -14,6 +14,7 @@ export interface UseFetchDataAction<T extends RequestData<any>> {
   fetch: () => Promise<void>;
   reload: () => Promise<void>;
   fetchMore: () => void;
+  fullscreen?: () => void;
   resetPageIndex: () => void;
   setCurrent: (current: number) => void;
   setPageSize: (pageSize: number) => void;

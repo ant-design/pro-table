@@ -1,12 +1,13 @@
 import './index.less';
 
-import React, { useEffect, CSSProperties } from 'react';
+import React, { useEffect, CSSProperties, useRef } from 'react';
 import { Table, Card, Typography } from 'antd';
 import classNames from 'classnames';
 import moment from 'moment';
 import { ColumnProps, PaginationConfig, TableProps } from 'antd/es/table';
 import useFetchData, { UseFetchDataAction, RequestData } from './useFetchData';
 import IndexColumn from './component/indexColumn';
+import Toolbar from './component/toolBar';
 
 /**
  * money 金额
@@ -331,6 +332,14 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     },
   );
 
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  action.fullscreen = () => {
+    if (rootRef.current) {
+      rootRef.current.requestFullscreen();
+    }
+  };
+
   useEffect(() => {
     // 页码更改的时候触发一下
     // 不然会造成 action 中数据老旧
@@ -343,22 +352,17 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
   const columns = genColumnList<T>(propsColumns, action);
   const className = classNames('ant-pro-table', propsClassName);
   return (
-    <div className={className}>
+    <div className={className} ref={rootRef}>
       <Card
         bordered={false}
+        style={{
+          height: '100%',
+        }}
         bodyStyle={{
           padding: 0,
         }}
       >
-        <div className="ant-pro-table-toolbar">
-          {headerTitle && <div className="ant-pro-table-toolbar-title">{headerTitle}</div>}
-          {renderToolBar(action).map((node, index) => (
-            // eslint-disable-next-line react/no-array-index-key
-            <div key={index} className="ant-pro-table-toolbar-item">
-              {node}
-            </div>
-          ))}
-        </div>
+        <Toolbar<T> headerTitle={headerTitle} action={action} renderToolBar={renderToolBar} />
         <Table
           {...reset}
           className={tableClassName}

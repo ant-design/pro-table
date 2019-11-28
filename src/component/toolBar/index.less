@@ -1,0 +1,40 @@
+@import '~antd/es/style/themes/default.less';
+
+@table-prefix-cls: ~'@{ant-prefix}-pro-table';
+
+.@{table-prefix-cls} {
+  &-toolbar {
+    height: 64px;
+    line-height: 64px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24px;
+    &-option {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    &-item {
+      margin-right: 8px;
+    }
+
+    &-item-icon {
+      font-size: 16px;
+      margin-left: 24px;
+      cursor: pointer;
+    }
+    &-item-icon:first-child {
+      margin-left: 16px;
+    }
+
+    &-title {
+      opacity: 0.85;
+      font-size: 16px;
+      color: #000000;
+      line-height: 24px;
+      flex: 1;
+    }
+  }
+}
