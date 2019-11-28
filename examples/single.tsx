@@ -150,14 +150,14 @@ export default () => {
     <div
       style={{
         padding: 48,
-        backgroundColor: '#fff',
+        backgroundColor: '#ddd',
       }}
     >
       <ProTable
-        size="small"
         columns={columns}
         request={request}
         rowKey="key"
+        headerTitle="基础表单"
         params={{ keyword }}
         renderToolBar={action => [
           <Input.Search
@@ -172,17 +172,11 @@ export default () => {
             }}
             key="1"
             type="primary"
-            style={{
-              marginRight: 8,
-            }}
           >
             刷新
           </Button>,
           <Button
             key="2"
-            style={{
-              marginRight: 8,
-            }}
             onClick={() => {
               action.setCurrent(3);
             }}
@@ -196,9 +190,6 @@ export default () => {
               action.resetPageIndex();
             }}
             type="default"
-            style={{
-              marginRight: 8,
-            }}
           >
             重置
           </Button>,

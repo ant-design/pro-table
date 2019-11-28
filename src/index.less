@@ -4,12 +4,24 @@
 
 .@{table-prefix-cls} {
   &-toolbar {
+    height: 64px;
+    line-height: 64px;
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    margin-bottom: 8px;
+    padding: 0 24px;
     &-item {
       margin-right: 8px;
+      &:last-child {
+        margin-right: 0px;
+      }
+    }
+    &-title {
+      opacity: 0.85;
+      font-size: 16px;
+      color: #000000;
+      line-height: 24px;
+      flex: 1;
     }
   }
 
@@ -19,5 +31,8 @@
     &-item {
       margin-right: 8px;
     }
+  }
+  .@{ant-prefix}-pagination {
+    padding: 0 24px;
   }
 }

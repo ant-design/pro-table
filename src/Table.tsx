@@ -1,7 +1,7 @@
 import './index.less';
 
 import React, { useEffect, CSSProperties } from 'react';
-import { Table, Typography } from 'antd';
+import { Table, Card, Typography } from 'antd';
 import classNames from 'classnames';
 import moment from 'moment';
 import { ColumnProps, PaginationConfig, TableProps } from 'antd/es/table';
@@ -121,6 +121,11 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns'> {
    * 给封装的 table 的 style
    */
   tableStyle?: CSSProperties;
+
+  /**
+   * 左上角的 title
+   */
+  headerTitle?: React.ReactNode;
 }
 
 const mergePagination = <T extends any[], U>(
@@ -204,11 +209,11 @@ const defaultRenderText = (
   }
 
   if (valueType === 'index') {
-    return <IndexColumn>{index}</IndexColumn>;
+    return <IndexColumn>{index + 1}</IndexColumn>;
   }
 
   if (valueType === 'indexBorder') {
-    return <IndexColumn border>{index}</IndexColumn>;
+    return <IndexColumn border>{index + 1}</IndexColumn>;
   }
 
   return text;
@@ -273,6 +278,7 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     params = {},
     defaultData = [],
     effects = [],
+    headerTitle,
     manual,
     filterDate,
     pagination: propsPagination,
@@ -338,23 +344,31 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
   const className = classNames('ant-pro-table', propsClassName);
   return (
     <div className={className}>
-      <div className="ant-pro-table-toolbar">
-        {renderToolBar(action).map((node, index) => (
-          // eslint-disable-next-line react/no-array-index-key
-          <div key={index} className="ant-pro-table-toolbar-item">
-            {node}
-          </div>
-        ))}
-      </div>
-      <Table
-        {...reset}
-        className={tableClassName}
-        style={tableStyle}
-        columns={columns}
-        loading={action.loading}
-        dataSource={action.dataSource as T[]}
-        pagination={pagination}
-      />
+      <Card
+        bordered={false}
+        bodyStyle={{
+          padding: 0,
+        }}
+      >
+        <div className="ant-pro-table-toolbar">
+          {headerTitle && <div className="ant-pro-table-toolbar-title">{headerTitle}</div>}
+          {renderToolBar(action).map((node, index) => (
+            // eslint-disable-next-line react/no-array-index-key
+            <div key={index} className="ant-pro-table-toolbar-item">
+              {node}
+            </div>
+          ))}
+        </div>
+        <Table
+          {...reset}
+          className={tableClassName}
+          style={tableStyle}
+          columns={columns}
+          loading={action.loading}
+          dataSource={action.dataSource as T[]}
+          pagination={pagination}
+        />
+      </Card>
     </div>
   );
 };
