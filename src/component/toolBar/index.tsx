@@ -1,14 +1,17 @@
 import React from 'react';
-import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider/context';
-import { UseFetchDataAction, RequestData } from '../../useFetchData';
 import { Icon, Divider } from 'antd';
+import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider/context';
+import ColumnSetting from '../columnSetting';
+
+import { UseFetchDataAction, RequestData } from '../../useFetchData';
+
 import './index.less';
 
-export type OptionsType<T> =
+export type OptionsType<T = unknown> =
   | ((e: React.MouseEvent<HTMLSpanElement>, action: UseFetchDataAction<RequestData<T>>) => void)
   | boolean;
 
-export interface ToolBarProps<T> {
+export interface ToolBarProps<T = unknown> {
   headerTitle?: React.ReactNode;
   renderToolBar?: (action: UseFetchDataAction<RequestData<T>>) => React.ReactNode[];
   action: UseFetchDataAction<RequestData<T>>;
@@ -19,12 +22,20 @@ export interface ToolBarProps<T> {
   };
 }
 
+/**
+ * 渲染默认的 工具栏
+ * @param options
+ * @param className
+ */
 const renderDefaultOption = <T, U = {}>(options: ToolBarProps<T>['options'], className: string) =>
   options &&
   Object.keys(options).map(key => {
     const value = options[key];
     if (!value) {
       return null;
+    }
+    if (key === 'setting') {
+      return <ColumnSetting />;
     }
     return <Icon key={key} type={key} className={className} onClick={value} />;
   });

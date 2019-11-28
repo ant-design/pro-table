@@ -1,0 +1,19 @@
+@import '~antd/es/style/themes/default.less';
+
+@column-setting-prefix-cls: ~'@{ant-prefix}-pro-table-column-setting';
+
+.@{column-setting-prefix-cls} {
+  width: auto;
+}
+.@{column-setting-prefix-cls}-list {
+  display: flex;
+  flex-direction: column;
+  width: 168px;
+  .@{ant-prefix}-checkbox-wrapper {
+    margin-left: 0px;
+    margin-bottom: 8px;
+    :last-child {
+      margin-bottom: 0;
+    }
+  }
+}

@@ -6,6 +6,7 @@ import classNames from 'classnames';
 import moment from 'moment';
 import { ColumnProps, PaginationConfig, TableProps } from 'antd/es/table';
 import useFetchData, { UseFetchDataAction, RequestData } from './useFetchData';
+import Container from './container';
 import IndexColumn from './component/indexColumn';
 import Toolbar from './component/toolBar';
 
@@ -351,6 +352,13 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
   const pagination = mergePagination<T[], {}>(propsPagination, action);
   const columns = genColumnList<T>(propsColumns, action);
   const className = classNames('ant-pro-table', propsClassName);
+  const counter = Container.useContainer();
+
+  useEffect(() => {
+    counter.setAction(action);
+    counter.setColumns(propsColumns);
+  }, [columns.toString()]);
+
   return (
     <div className={className} ref={rootRef}>
       <Card
@@ -377,4 +385,15 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
   );
 };
 
-export default ProTable;
+/**
+ * 🏆 Use Ant Design Table like a Pro!
+ * 更快 更好 更方便
+ * @param props
+ */
+const ProviderWarp = <T, U = {}>(props: ProTableProps<T>) => (
+  <Container.Provider>
+    <ProTable {...props} />
+  </Container.Provider>
+);
+
+export default ProviderWarp;
