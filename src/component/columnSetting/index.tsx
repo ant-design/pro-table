@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider/context';
-import { Checkbox, Popover, Icon } from 'antd';
+import { Checkbox, Popover, Icon, Tooltip } from 'antd';
 import Container from '../../container';
 import { ProColumns } from '../../Table';
 import './index.less';
@@ -13,9 +13,9 @@ const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
   const counter = Container.useContainer();
   const localColumns: ProColumns<T>[] = props.columns || counter.columns || [];
 
-  const [columnsObject, setColumnsObject] = useState<{ [key: string]: boolean }>({});
+  const { columnsMap, setColumnsMap } = counter;
 
-  useEffect(() => {
+  const selectAll = () => {
     const columnKeyMap = {};
     localColumns.forEach(({ key, dataIndex }) => {
       const columnKey = `${key || ''}-${dataIndex || ''}`;
@@ -23,10 +23,16 @@ const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
         columnKeyMap[columnKey] = true;
       }
     });
-    setColumnsObject(columnKeyMap);
+    setColumnsMap(columnKeyMap);
+  };
+
+  useEffect(() => {
+    selectAll();
   }, [localColumns.toString()]);
-  const selectKeys = Object.values(columnsObject).filter(value => value);
+
+  const selectKeys = Object.values(columnsMap).filter(value => value);
   const indeterminate = selectKeys.length > 0 && selectKeys.length !== localColumns.length;
+
   return (
     <ConfigConsumer>
       {({ getPrefixCls }: ConfigConsumerProps) => {
@@ -38,13 +44,13 @@ const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
             <Checkbox
               onChange={e => {
                 if (columnKey) {
-                  const columnKeyMap = { ...columnsObject };
+                  const columnKeyMap = { ...columnsMap };
                   columnKeyMap[columnKey || ''] = e.target.checked;
-                  setColumnsObject(columnKeyMap);
+                  setColumnsMap(columnKeyMap);
                 }
               }}
               key={columnKey}
-              checked={columnsObject[columnKey || 'null']}
+              checked={columnsMap[columnKey || 'null']}
             >
               {title}
             </Checkbox>
@@ -56,20 +62,30 @@ const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
               <Checkbox
                 indeterminate={indeterminate}
                 checked={selectKeys.length === localColumns.length}
+                onChange={e => {
+                  if (e.target.checked) {
+                    selectAll();
+                  } else {
+                    setColumnsMap({});
+                  }
+                }}
               >
                 列展示
               </Checkbox>
             }
+            trigger="click"
             placement="bottomRight"
             content={<div className={`${className}-list`}>{list}</div>}
           >
-            <Icon
-              type="setting"
-              className={`${toolBarClassName}-item-icon`}
-              style={{
-                fontSize: 16,
-              }}
-            />
+            <Tooltip title="列设置">
+              <Icon
+                type="setting"
+                className={`${toolBarClassName}-item-icon`}
+                style={{
+                  fontSize: 16,
+                }}
+              />
+            </Tooltip>
           </Popover>
         );
       }}

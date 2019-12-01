@@ -49,7 +49,6 @@ const columns: ProColumns[] = [
     title: 'Address',
     dataIndex: 'address',
     ellipsis: true,
-    width: 100,
   },
   {
     title: 'money',

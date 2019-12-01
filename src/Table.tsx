@@ -27,7 +27,7 @@ export type ProColumnsValueType =
   | 'index'
   | 'indexBorder';
 
-export interface ProColumns<T = unknown> extends Omit<ColumnProps<T>, 'render'> {
+export interface ProColumns<T = unknown> extends Omit<ColumnProps<T>, 'render' | 'children'> {
   /**
    * 自定义 render
    */
@@ -57,6 +57,8 @@ export interface ProColumns<T = unknown> extends Omit<ColumnProps<T>, 'render'> 
    * 值的类型
    */
   valueType?: ProColumnsValueType;
+
+  children?: ProColumns<T>[];
 }
 
 export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns'> {
@@ -227,8 +229,8 @@ const genColumnList = <T, U = {}>(
 ): ColumnProps<T>[] =>
   columns.map(item => ({
     ...item,
+    children: item.children ? genColumnList(item.children, action) : undefined,
     ellipsis: false,
-
     render: (text: any, row: T, index: number) => {
       const { renderText = (val: any) => val } = item;
       const renderTextStr = renderText(text, row, index, action);
@@ -350,14 +352,13 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
   }, [action.pageSize, action.current]);
 
   const pagination = mergePagination<T[], {}>(propsPagination, action);
-  const columns = genColumnList<T>(propsColumns, action);
   const className = classNames('ant-pro-table', propsClassName);
   const counter = Container.useContainer();
 
   useEffect(() => {
     counter.setAction(action);
     counter.setColumns(propsColumns);
-  }, [columns.toString()]);
+  }, [propsColumns.toString()]);
 
   return (
     <div className={className} ref={rootRef}>
@@ -375,7 +376,10 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
           {...reset}
           className={tableClassName}
           style={tableStyle}
-          columns={columns}
+          columns={genColumnList<T>(counter.columns, action).filter(({ key, dataIndex }) => {
+            const columnKey = `${key || ''}-${dataIndex || ''}`;
+            return counter.columnsMap[columnKey];
+          })}
           loading={action.loading}
           dataSource={action.dataSource as T[]}
           pagination={pagination}

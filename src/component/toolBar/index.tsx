@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon, Divider } from 'antd';
+import { Icon, Divider, Tooltip } from 'antd';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider/context';
 import ColumnSetting from '../columnSetting';
 
@@ -22,12 +22,35 @@ export interface ToolBarProps<T = unknown> {
   };
 }
 
+const buttonText = {
+  fullscreen: {
+    text: '全屏',
+    icon: <Icon type="fullscreen" />,
+  },
+  reload: {
+    text: '刷新',
+    icon: <Icon type="reload" />,
+  },
+  setting: {
+    text: '列设置',
+    icon: <Icon type="setting" />,
+  },
+};
+
 /**
  * 渲染默认的 工具栏
  * @param options
  * @param className
  */
-const renderDefaultOption = <T, U = {}>(options: ToolBarProps<T>['options'], className: string) =>
+const renderDefaultOption = <T, U = {}>(
+  options: ToolBarProps<T>['options'],
+  className: string,
+  defaultOptions: {
+    fullscreen: OptionsType<T>;
+    reload: OptionsType<T>;
+    setting: OptionsType<T>;
+  },
+) =>
   options &&
   Object.keys(options).map(key => {
     const value = options[key];
@@ -35,9 +58,21 @@ const renderDefaultOption = <T, U = {}>(options: ToolBarProps<T>['options'], cla
       return null;
     }
     if (key === 'setting') {
-      return <ColumnSetting />;
+      return <ColumnSetting key={key} />;
     }
-    return <Icon key={key} type={key} className={className} onClick={value} />;
+    const optionItem = buttonText[key];
+    if (optionItem) {
+      return (
+        <span
+          key={key}
+          className={className}
+          onClick={value === true ? defaultOptions[key] : value}
+        >
+          <Tooltip title={optionItem.text}>{optionItem.icon}</Tooltip>
+        </span>
+      );
+    }
+    return null;
   });
 
 const ToolBar = <T, U = {}>({
@@ -65,7 +100,11 @@ const ToolBar = <T, U = {}>({
                 </div>
               ))}
             <Divider type="vertical" />
-            {renderDefaultOption<T>(options, `${tempClassName}-item-icon`)}
+            {renderDefaultOption<T>(options, `${tempClassName}-item-icon`, {
+              fullscreen: () => action.fullscreen && action.fullscreen(),
+              reload: () => action.reload(),
+              setting: () => null,
+            })}
           </div>
         </div>
       );
