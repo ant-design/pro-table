@@ -59,6 +59,8 @@ export interface ProColumns<T = unknown> extends Omit<ColumnProps<T>, 'render' |
   valueType?: ProColumnsValueType;
 
   children?: ProColumns<T>[];
+
+  valueEnum?: { [key: string]: any };
 }
 
 export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns'> {
@@ -233,12 +235,12 @@ interface ColumRenderInterface<T> {
 const ColumRender = <T, U = any>({ item, text, row, index }: ColumRenderInterface<T>): any => {
   const counter = Container.useContainer();
   const { action } = counter;
-  const { renderText = (val: any) => val } = item;
+  const { renderText = (val: any) => val, valueEnum = {} } = item;
   if (!action) {
     return null;
   }
 
-  const renderTextStr = renderText(text, row, index, action);
+  const renderTextStr = renderText(valueEnum[text] || text, row, index, action);
 
   const textDom = defaultRenderText(renderTextStr, item.valueType || 'text', index);
 

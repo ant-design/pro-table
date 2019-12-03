@@ -39,6 +39,7 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 | render | 类似 table 的 render，第一个参数变成了 dom,增加了第四个参数 action | `(text: React.ReactNode,record: T,index: number,action: UseFetchDataAction<RequestData<T>>) => React.ReactNode \| React.ReactNode[]` | - |
 | ellipsis | 是否自动缩略 | boolean | - |
 | copyable | 是否支持复制 | boolean | - |
+| valueEnum | 值的枚举，会自动转化把值当成 key 来取出要显示的内容 | {[key:string]: React.ReactNode} | - |
 | valueType | 值的类型 | `'money' \| 'option' \| 'date' \| 'dateTime' \| 'time' \| 'text'\| 'index' \| 'indexBorder'` | 'text' |
 
 ### valueType

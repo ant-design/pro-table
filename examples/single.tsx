@@ -41,7 +41,10 @@ const columns: ProColumns[] = [
     title: 'sex',
     dataIndex: 'sex',
     copyable: true,
-    renderText: text => (text === 'man' ? '男' : '女'),
+    valueEnum: {
+      man: '男',
+      woman: '女',
+    },
   },
   {
     title: 'Age',

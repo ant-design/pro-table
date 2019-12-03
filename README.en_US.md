@@ -39,6 +39,7 @@ pro-table is encapsulated in an antd table, supports some presets, and encapsula
 | render | Like table's render, the first argument becomes dom, and the fourth argument is added. | `(text: React.ReactNode,record: T,index: number,action: UseFetchDataAction<RequestData<T>>) => React.ReactNode \| React.ReactNode[]` | - |
 | ellipsis | Whether to automatically abbreviate | boolean | - |
 | copyable | Whether to support replication | boolean | - |
+| valueEnum | The enumeration of values will automatically convert the value as a key to get the content to be displayed | {[key: string]: React.ReactNode} | - |
 | valueType | Type of value | `'money' \| 'option' \| 'date' \| 'dateTime' \| 'time' \| 'text'\| 'index' \| 'indexBorder'` | 'text' |
 
 ### valueType
