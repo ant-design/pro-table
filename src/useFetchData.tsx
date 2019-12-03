@@ -18,6 +18,7 @@ export interface UseFetchDataAction<T extends RequestData<any>> {
   resetPageIndex: () => void;
   setCurrent: (current: number) => void;
   setPageSize: (pageSize: number) => void;
+  restColumnsConfig?: () => void;
 }
 
 const useFetchData = <T extends RequestData<any>, U = {}>(

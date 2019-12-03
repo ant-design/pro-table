@@ -28,7 +28,9 @@ const columns: ProColumns[] = [
   {
     title: '序号',
     dataIndex: 'index',
-    valueType: 'index',
+    valueType: 'indexBorder',
+    fixed: 'left',
+    width: 80,
   },
   {
     title: 'Name',
@@ -77,6 +79,7 @@ const columns: ProColumns[] = [
     title: 'option',
     valueType: 'option',
     dataIndex: 'id',
+    fixed: 'right',
     render: (text, row, index, action) => [
       <a
         onClick={() => {

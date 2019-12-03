@@ -6,7 +6,7 @@ import classNames from 'classnames';
 import moment from 'moment';
 import { ColumnProps, PaginationConfig, TableProps } from 'antd/es/table';
 import useFetchData, { UseFetchDataAction, RequestData } from './useFetchData';
-import Container from './container';
+import Container, { ColumnsMapItem } from './container';
 import IndexColumn from './component/indexColumn';
 import Toolbar from './component/toolBar';
 
@@ -223,52 +223,80 @@ const defaultRenderText = (
   return text;
 };
 
+interface ColumRenderInterface<T> {
+  item: ProColumns<T>;
+  text: any;
+  row: T;
+  index: number;
+}
+
+const ColumRender = <T, U = any>({ item, text, row, index }: ColumRenderInterface<T>): any => {
+  const counter = Container.useContainer();
+  const { action } = counter;
+  const { renderText = (val: any) => val } = item;
+  if (!action) {
+    return null;
+  }
+
+  const renderTextStr = renderText(text, row, index, action);
+
+  const textDom = defaultRenderText(renderTextStr, item.valueType || 'text', index);
+
+  let dom: React.ReactNode = textDom;
+  if (item.copyable || item.ellipsis) {
+    dom = (
+      <Typography.Text
+        style={{
+          width: item.width,
+        }}
+        copyable={item.copyable}
+        ellipsis={item.ellipsis}
+      >
+        {textDom}
+      </Typography.Text>
+    );
+  }
+  if (item.render) {
+    const renderDom = item.render(dom, row, index, action);
+    if (renderDom && item.valueType === 'option' && Array.isArray(renderDom)) {
+      return (
+        <div className="ant-pro-table-option-cell">
+          {renderDom.map((optionDom, domIndex) => (
+            // eslint-disable-next-line react/no-array-index-key
+            <div className="ant-pro-table-option-cell-item" key={`${index}-${domIndex}`}>
+              {optionDom}
+            </div>
+          ))}
+        </div>
+      );
+    }
+    return renderDom as React.ReactNode;
+  }
+  return dom as React.ReactNode;
+};
+
 const genColumnList = <T, U = {}>(
   columns: ProColumns<T>[],
   action: UseFetchDataAction<RequestData<T>>,
+  map: {
+    [key: string]: ColumnsMapItem;
+  },
 ): ColumnProps<T>[] =>
-  columns.map(item => ({
-    ...item,
-    children: item.children ? genColumnList(item.children, action) : undefined,
-    ellipsis: false,
-    render: (text: any, row: T, index: number) => {
-      const { renderText = (val: any) => val } = item;
-      const renderTextStr = renderText(text, row, index, action);
-      const textDom = defaultRenderText(renderTextStr, item.valueType || 'text', index);
-
-      let dom: React.ReactNode = textDom;
-      if (item.copyable || item.ellipsis) {
-        dom = (
-          <Typography.Text
-            style={{
-              width: item.width,
-            }}
-            copyable={item.copyable}
-            ellipsis={item.ellipsis}
-          >
-            {textDom}
-          </Typography.Text>
-        );
-      }
-      if (item.render) {
-        const renderDom = item.render(dom, row, index, action);
-        if (renderDom && item.valueType === 'option' && Array.isArray(renderDom)) {
-          return (
-            <div className="ant-pro-table-option-cell">
-              {renderDom.map((optionDom, domIndex) => (
-                // eslint-disable-next-line react/no-array-index-key
-                <div className="ant-pro-table-option-cell-item" key={`${index}-${domIndex}`}>
-                  {optionDom}
-                </div>
-              ))}
-            </div>
-          );
-        }
-        return renderDom;
-      }
-      return dom;
-    },
-  }));
+  columns.map(item => {
+    const { key, dataIndex } = item;
+    const columnKey = `${key || ''}-${dataIndex || ''}`;
+    const config = map[columnKey] || { fixed: item.fixed };
+    return {
+      ...item,
+      fixed: config.fixed,
+      width: item.width || (item.fixed ? 200 : undefined),
+      children: item.children ? genColumnList(item.children, action, map) : undefined,
+      ellipsis: false,
+      render: (text: any, row: T, index: number) => (
+        <ColumRender<T> item={item} text={text} row={row} index={index} />
+      ),
+    };
+  });
 
 /**
  * 🏆 Use Ant Design Table like a Pro!
@@ -357,8 +385,15 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
 
   useEffect(() => {
     counter.setAction(action);
-    counter.setColumns(propsColumns);
-  }, [propsColumns.toString()]);
+  }, [JSON.stringify(propsColumns)]);
+
+  const tableColumn = genColumnList<T>(propsColumns, action, counter.columnsMap);
+
+  useEffect(() => {
+    if (tableColumn && tableColumn.length > 0) {
+      counter.setColumns(tableColumn);
+    }
+  }, [JSON.stringify(tableColumn)]);
 
   return (
     <div className={className} ref={rootRef}>
@@ -376,9 +411,15 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
           {...reset}
           className={tableClassName}
           style={tableStyle}
-          columns={genColumnList<T>(counter.columns, action).filter(({ key, dataIndex }) => {
+          columns={counter.columns.filter(item => {
+            // 删掉不应该显示的
+            const { key, dataIndex } = item;
             const columnKey = `${key || ''}-${dataIndex || ''}`;
-            return counter.columnsMap[columnKey];
+            const config = counter.columnsMap[columnKey];
+            if (config && config.show === false) {
+              return false;
+            }
+            return true;
           })}
           loading={action.loading}
           dataSource={action.dataSource as T[]}
