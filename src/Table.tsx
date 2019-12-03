@@ -8,7 +8,7 @@ import { ColumnProps, PaginationConfig, TableProps } from 'antd/es/table';
 import useFetchData, { UseFetchDataAction, RequestData } from './useFetchData';
 import Container, { ColumnsMapItem } from './container';
 import IndexColumn from './component/indexColumn';
-import Toolbar from './component/toolBar';
+import Toolbar, { OptionsType } from './component/toolBar';
 
 /**
  * money 金额
@@ -132,6 +132,15 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns'> {
    * 左上角的 title
    */
   headerTitle?: React.ReactNode;
+
+  /**
+   * 默认的操作栏配置
+   */
+  options?: {
+    fullscreen: OptionsType<T>;
+    reload: OptionsType<T>;
+    setting: boolean;
+  };
 }
 
 const mergePagination = <T extends any[], U>(
@@ -323,6 +332,7 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     tableStyle,
     tableClassName,
     url,
+    options,
     ...reset
   } = props;
 
@@ -408,7 +418,12 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
           padding: 0,
         }}
       >
-        <Toolbar<T> headerTitle={headerTitle} action={action} renderToolBar={renderToolBar} />
+        <Toolbar<T>
+          options={options}
+          headerTitle={headerTitle}
+          action={action}
+          renderToolBar={renderToolBar}
+        />
         <Table
           {...reset}
           className={tableClassName}

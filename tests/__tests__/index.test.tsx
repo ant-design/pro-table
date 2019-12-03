@@ -71,4 +71,48 @@ describe('BasicTable', () => {
     );
     expect(html).toMatchSnapshot();
   });
+
+  it('🎏  do not render default option', () => {
+    const html = render(
+      <ProTable
+        size="small"
+        options={{
+          fullscreen: false,
+          reload: false,
+          setting: false,
+        }}
+        columns={[
+          {
+            dataIndex: 'money',
+            valueType: 'money',
+          },
+        ]}
+        request={request}
+        rowKey="key"
+      />,
+    );
+    expect(html).toMatchSnapshot();
+  });
+
+  it('🎏  do not render setting', () => {
+    const html = render(
+      <ProTable
+        size="small"
+        options={{
+          fullscreen: true,
+          reload: true,
+          setting: false,
+        }}
+        columns={[
+          {
+            dataIndex: 'money',
+            valueType: 'money',
+          },
+        ]}
+        request={request}
+        rowKey="key"
+      />,
+    );
+    expect(html).toMatchSnapshot();
+  });
 });

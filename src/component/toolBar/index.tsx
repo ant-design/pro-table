@@ -18,7 +18,7 @@ export interface ToolBarProps<T = unknown> {
   options?: {
     fullscreen: OptionsType<T>;
     reload: OptionsType<T>;
-    setting: OptionsType<T>;
+    setting: boolean;
   };
 }
 
@@ -52,28 +52,30 @@ const renderDefaultOption = <T, U = {}>(
   },
 ) =>
   options &&
-  Object.keys(options).map(key => {
-    const value = options[key];
-    if (!value) {
+  Object.keys(options)
+    .map(key => {
+      const value = options[key];
+      if (!value) {
+        return null;
+      }
+      if (key === 'setting') {
+        return <ColumnSetting key={key} />;
+      }
+      const optionItem = buttonText[key];
+      if (optionItem) {
+        return (
+          <span
+            key={key}
+            className={className}
+            onClick={value === true ? defaultOptions[key] : value}
+          >
+            <Tooltip title={optionItem.text}>{optionItem.icon}</Tooltip>
+          </span>
+        );
+      }
       return null;
-    }
-    if (key === 'setting') {
-      return <ColumnSetting key={key} />;
-    }
-    const optionItem = buttonText[key];
-    if (optionItem) {
-      return (
-        <span
-          key={key}
-          className={className}
-          onClick={value === true ? defaultOptions[key] : value}
-        >
-          <Tooltip title={optionItem.text}>{optionItem.icon}</Tooltip>
-        </span>
-      );
-    }
-    return null;
-  });
+    })
+    .filter(item => item);
 
 const ToolBar = <T, U = {}>({
   headerTitle,
@@ -82,12 +84,18 @@ const ToolBar = <T, U = {}>({
   options = {
     fullscreen: () => action.fullscreen && action.fullscreen(),
     reload: () => action.reload(),
-    setting: () => null,
+    setting: true,
   },
 }: ToolBarProps<T>) => (
   <ConfigConsumer>
     {({ getPrefixCls }: ConfigConsumerProps) => {
       const tempClassName = getPrefixCls('pro-table-toolbar');
+      const optionDom =
+        renderDefaultOption<T>(options, `${tempClassName}-item-icon`, {
+          fullscreen: () => action.fullscreen && action.fullscreen(),
+          reload: () => action.reload(),
+          setting: true,
+        }) || [];
       return (
         <div className={tempClassName}>
           {headerTitle && <div className={`${tempClassName}-title`}>{headerTitle}</div>}
@@ -99,12 +107,8 @@ const ToolBar = <T, U = {}>({
                   {node}
                 </div>
               ))}
-            <Divider type="vertical" />
-            {renderDefaultOption<T>(options, `${tempClassName}-item-icon`, {
-              fullscreen: () => action.fullscreen && action.fullscreen(),
-              reload: () => action.reload(),
-              setting: () => null,
-            })}
+            {optionDom.length > 0 && <Divider type="vertical" />}
+            {optionDom}
           </div>
         </div>
       );
