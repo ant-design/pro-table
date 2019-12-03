@@ -16,14 +16,14 @@ export interface ToolBarProps<T = unknown> {
   renderToolBar?: (action: UseFetchDataAction<RequestData<T>>) => React.ReactNode[];
   action: UseFetchDataAction<RequestData<T>>;
   options?: {
-    fullscreen: OptionsType<T>;
+    fullScreen: OptionsType<T>;
     reload: OptionsType<T>;
     setting: boolean;
   };
 }
 
 const buttonText = {
-  fullscreen: {
+  fullScreen: {
     text: '全屏',
     icon: <Icon type="fullscreen" />,
   },
@@ -46,7 +46,7 @@ const renderDefaultOption = <T, U = {}>(
   options: ToolBarProps<T>['options'],
   className: string,
   defaultOptions: {
-    fullscreen: OptionsType<T>;
+    fullScreen: OptionsType<T>;
     reload: OptionsType<T>;
     setting: OptionsType<T>;
   },
@@ -82,7 +82,7 @@ const ToolBar = <T, U = {}>({
   renderToolBar,
   action,
   options = {
-    fullscreen: () => action.fullscreen && action.fullscreen(),
+    fullScreen: () => action.fullScreen && action.fullScreen(),
     reload: () => action.reload(),
     setting: true,
   },
@@ -92,7 +92,7 @@ const ToolBar = <T, U = {}>({
       const tempClassName = getPrefixCls('pro-table-toolbar');
       const optionDom =
         renderDefaultOption<T>(options, `${tempClassName}-item-icon`, {
-          fullscreen: () => action.fullscreen && action.fullscreen(),
+          fullScreen: () => action.fullScreen && action.fullScreen(),
           reload: () => action.reload(),
           setting: true,
         }) || [];

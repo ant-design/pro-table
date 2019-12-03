@@ -77,7 +77,7 @@ describe('BasicTable', () => {
       <ProTable
         size="small"
         options={{
-          fullscreen: false,
+          fullScreen: false,
           reload: false,
           setting: false,
         }}
@@ -99,7 +99,7 @@ describe('BasicTable', () => {
       <ProTable
         size="small"
         options={{
-          fullscreen: true,
+          fullScreen: true,
           reload: true,
           setting: false,
         }}

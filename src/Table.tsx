@@ -137,7 +137,7 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns'> {
    * 默认的操作栏配置
    */
   options?: {
-    fullscreen: OptionsType<T>;
+    fullScreen: OptionsType<T>;
     reload: OptionsType<T>;
     setting: boolean;
   };
@@ -377,7 +377,7 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
 
   const rootRef = useRef<HTMLDivElement>(null);
 
-  action.fullscreen = () => {
+  action.fullScreen = () => {
     if (rootRef.current) {
       rootRef.current.requestFullscreen();
     }

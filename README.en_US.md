@@ -30,6 +30,7 @@ pro-table is encapsulated in an antd table, supports some presets, and encapsula
 | onLoad | Triggered after the data is loaded, it will be triggered multiple times. | `(dataSource: T[]) => void` | - |
 | tableClassName | The className of the packaged table | string | - |
 | tableStyle | The style of the packaged table | CSSProperties | - |
+| options | table's default operation, set to false to close it | `{{ fullScreen: boolean | function, reload: boolean | function,setting: true }}` | `{{ fullScreen: true, reload:true,setting: true }}` |
 
 ### Columns
 
