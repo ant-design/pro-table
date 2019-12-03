@@ -1,6 +1,6 @@
 import './index.less';
 
-import React, { useEffect, CSSProperties, useRef } from 'react';
+import React, { useEffect, CSSProperties, useRef, useState } from 'react';
 import { Table, Card, Typography } from 'antd';
 import classNames from 'classnames';
 import moment from 'moment';
@@ -9,6 +9,7 @@ import useFetchData, { UseFetchDataAction, RequestData } from './useFetchData';
 import Container, { ColumnsMapItem } from './container';
 import IndexColumn from './component/indexColumn';
 import Toolbar, { OptionsType } from './component/toolBar';
+import FormSearch from './Form';
 
 /**
  * money 金额
@@ -38,12 +39,30 @@ export interface ProColumns<T = unknown> extends Omit<ColumnProps<T>, 'render' |
     action: UseFetchDataAction<RequestData<T>>,
   ) => React.ReactNode | React.ReactNode[];
 
+  /**
+   * 自定义 render，但是需要返回 string
+   */
   renderText?: (
     text: any,
     record: T,
     index: number,
     action: UseFetchDataAction<RequestData<T>>,
   ) => string;
+
+  /**
+   * 自定义搜索 form 的输入
+   */
+  renderFormItem?: (
+    item: ProColumns<T>,
+    value?: any,
+    onChange?: (value: any) => void,
+  ) => React.ReactNode;
+
+  /**
+   * 搜索表单的默认值
+   */
+  initialValue?: any;
+
   /**
    * 是否缩略
    */
@@ -141,6 +160,8 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns'> {
     reload: OptionsType<T>;
     setting: boolean;
   };
+
+  search?: boolean;
 }
 
 const mergePagination = <T extends any[], U>(
@@ -333,8 +354,10 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     tableClassName,
     url,
     options,
+    search = true,
     ...reset
   } = props;
+  const [formSearch, setFormSearch] = useState<{}>({});
 
   /**
    * 需要初始化一样不然默认可能报错
@@ -370,6 +393,9 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
         Object.values(params)
           .filter(item => item)
           .join('-'),
+        Object.values(formSearch)
+          .filter(item => item)
+          .join('-'),
         ...effects,
       ],
     },
@@ -397,6 +423,7 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
 
   useEffect(() => {
     counter.setAction(action);
+    counter.setProColumns(propsColumns);
   }, [JSON.stringify(propsColumns)]);
 
   const tableColumn = genColumnList<T>(propsColumns, action, counter.columnsMap);
@@ -409,6 +436,7 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
 
   return (
     <div className={className} ref={rootRef}>
+      {search && <FormSearch onSubmit={value => setFormSearch(value)} />}
       <Card
         bordered={false}
         style={{

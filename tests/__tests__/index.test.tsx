@@ -72,6 +72,23 @@ describe('BasicTable', () => {
     expect(html).toMatchSnapshot();
   });
 
+  it('🎏 do not render Search ', () => {
+    const html = render(
+      <ProTable
+        size="small"
+        columns={columns}
+        request={request}
+        rowKey="key"
+        search={false}
+        params={{ keyword: 'test' }}
+        pagination={{
+          defaultCurrent: 10,
+        }}
+      />,
+    );
+    expect(html).toMatchSnapshot();
+  });
+
   it('🎏  do not render default option', () => {
     const html = render(
       <ProTable
