@@ -30,8 +30,8 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 | onLoad | 数据加载完成后触发,会多次触发 | `(dataSource: T[]) => void` | - |
 | tableClassName | 封装的 table 的 className | string | - |
 | tableStyle | 封装的 table 的 style | CSSProperties | - |
-| options | table 的默认操作，设置为 false 可以关闭它 | `{{ fullScreen: boolean | function, reload: boolean | function,setting: true }}` | `{{ fullScreen: true, reload:true,setting: true }}` | - |
-| search | 是否搜索表单 | boolean | true |
+| options | table 的默认操作，设置为 false 可以关闭它 | `{{ fullScreen: boolean \| function, reload: boolean \| function,setting: true }}` | `{ fullScreen: true, reload:true , setting: true }` | - |
+| search | 是否显示搜索表单 | boolean | true |
 
 ### Columns
 
