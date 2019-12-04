@@ -130,6 +130,25 @@ const FormSearch = <T, U = {}>({ form, onSubmit }: FormItem<T>) => {
       }
     });
   };
+
+  const domList = counter.proColumns
+    .filter(
+      (item, index) =>
+        item.valueType !== 'index' &&
+        item.valueType !== 'indexBorder' &&
+        item.valueType !== 'option' &&
+        (collapse ? index < 3 : true) &&
+        !item.hideInSearch,
+    )
+    .map(item => (
+      <Col span={8} key={item.key || item.dataIndex}>
+        <Form.Item label={item.title}>
+          {form.getFieldDecorator((item.key || item.dataIndex) as string, {
+            initialValue: item.initialValue,
+          })(<FromInputRender item={item} />)}
+        </Form.Item>
+      </Col>
+    ));
   return (
     <ConfigConsumer>
       {({ getPrefixCls }: ConfigConsumerProps) => {
@@ -137,25 +156,14 @@ const FormSearch = <T, U = {}>({ form, onSubmit }: FormItem<T>) => {
         return (
           <div className={className}>
             <Form>
-              <Row gutter={16}>
-                {counter.proColumns
-                  .filter(
-                    (item, index) =>
-                      item.valueType !== 'index' &&
-                      item.valueType !== 'indexBorder' &&
-                      item.valueType !== 'option' &&
-                      (collapse ? index < 3 : true),
-                  )
-                  .map(item => (
-                    <Col span={8} key={item.key || item.dataIndex}>
-                      <Form.Item label={item.title}>
-                        {form.getFieldDecorator((item.key || item.dataIndex) as string, {
-                          initialValue: item.initialValue,
-                        })(<FromInputRender item={item} />)}
-                      </Form.Item>
-                    </Col>
-                  ))}
-                <Col span={8} key="option" className={`${className}-option`}>
+              <Row gutter={16} justify="end">
+                {domList}
+                <Col
+                  span={8}
+                  offset={(2 - (domList.length % 3)) * 8}
+                  key="option"
+                  className={`${className}-option`}
+                >
                   <Button type="primary" htmlType="submit" onClick={() => submit()}>
                     搜索
                   </Button>

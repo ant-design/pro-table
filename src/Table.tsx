@@ -78,7 +78,15 @@ export interface ProColumns<T = unknown> extends Omit<ColumnProps<T>, 'render' |
 
   children?: ProColumns<T>[];
 
+  /**
+   * 值的枚举，如果存在枚举，Search 中会生成 select
+   */
   valueEnum?: { [key: string]: any };
+
+  /**
+   * 在查询表单中隐藏
+   */
+  hideInSearch?: boolean;
 }
 
 export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns'> {
@@ -361,7 +369,7 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
   const [formSearch, setFormSearch] = useState<{}>({});
 
   /**
-   * 需要初始化一样不然默认可能报错
+   * 需要初始化 不然默认可能报错
    */
   const { defaultCurrent, defaultPageSize } =
     typeof propsPagination === 'object'
@@ -422,6 +430,10 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
   const className = classNames('ant-pro-table', propsClassName);
   const counter = Container.useContainer();
 
+  /**
+   *  保存一下 propsColumns
+   *  生成 from 需要用
+   */
   useEffect(() => {
     counter.setAction(action);
     counter.setProColumns(propsColumns);
@@ -429,6 +441,9 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
 
   const tableColumn = genColumnList<T>(propsColumns, action, counter.columnsMap);
 
+  /**
+   * tableColumn 变化的时候更新一下，这个参数将会用于渲染
+   */
   useEffect(() => {
     if (tableColumn && tableColumn.length > 0) {
       counter.setColumns(tableColumn);

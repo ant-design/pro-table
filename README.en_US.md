@@ -44,6 +44,7 @@ pro-table is encapsulated in an antd table, supports some presets, and encapsula
 | copyable | Whether to support replication | boolean | - |
 | valueEnum | The enumeration of values will automatically convert the value as a key to get the content to be displayed | {[key: string]: React.ReactNode} | - |
 | valueType | Type of value | `'money' \| 'option' \| 'date' \| 'dateTime' \| 'time' \| 'text'\| 'index' \| 'indexBorder'` | 'text' |
+| hideInSearch | Do not show this in the query form | boolean | - |
 
 ### valueType
 

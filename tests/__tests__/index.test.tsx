@@ -59,10 +59,7 @@ describe('BasicTable', () => {
             重置
           </Button>,
           <TableDropdown.Button
-            menus={[
-              { key: 'copy', name: '复制' },
-              { key: 'clear', name: '清空' },
-            ]}
+            menus={[{ key: 'copy', name: '复制' }, { key: 'clear', name: '清空' }]}
           >
             更多操作
           </TableDropdown.Button>,

@@ -50,6 +50,7 @@ const columns: ProColumns[] = [
   {
     title: 'Age',
     dataIndex: 'age',
+    hideInSearch: true,
   },
   {
     title: 'Address',
@@ -109,10 +110,7 @@ const columns: ProColumns[] = [
       </a>,
       <TableDropdown
         onSelect={key => window.alert(key)}
-        menus={[
-          { key: 'copy', name: '复制' },
-          { key: 'delete', name: '删除' },
-        ]}
+        menus={[{ key: 'copy', name: '复制' }, { key: 'delete', name: '删除' }]}
       />,
     ],
   },
@@ -178,10 +176,7 @@ export default () => {
           </Button>,
           <TableDropdown.Button
             onSelect={key => window.alert(key)}
-            menus={[
-              { key: 'copy', name: '复制' },
-              { key: 'clear', name: '清空' },
-            ]}
+            menus={[{ key: 'copy', name: '复制' }, { key: 'clear', name: '清空' }]}
           >
             更多操作
           </TableDropdown.Button>,

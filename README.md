@@ -44,6 +44,7 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 | copyable | 是否支持复制 | boolean | - |
 | valueEnum | 值的枚举，会自动转化把值当成 key 来取出要显示的内容 | {[key:string]: React.ReactNode} | - |
 | valueType | 值的类型 | `'money' \| 'option' \| 'date' \| 'dateTime' \| 'time' \| 'text'\| 'index' \| 'indexBorder'` | 'text' |
+| hideInSearch | 在查询表单中不展示此项 | boolean | - |
 
 ### valueType
 
