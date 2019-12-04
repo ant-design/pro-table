@@ -31,6 +31,7 @@ pro-table is encapsulated in an antd table, supports some presets, and encapsula
 | tableClassName | The className of the packaged table | string | - |
 | tableStyle | The style of the packaged table | CSSProperties | - |
 | options | table's default operation, set to false to close it | `{{ fullScreen: boolean | function, reload: boolean | function,setting: true }}` | `{{ fullScreen: true, reload:true,setting: true }}` |
+| search | whether to search the form | boolean | true |
 
 ### Columns
 
@@ -38,6 +39,7 @@ pro-table is encapsulated in an antd table, supports some presets, and encapsula
 | --- | --- | --- | --- |
 | renderText | Similar to table render, but must return string, if you just want to convert the enumeration, you can use this scheme | `(text: any,record: T,index: number,action: UseFetchDataAction<RequestData<T>>) => string` | - |
 | render | Like table's render, the first argument becomes dom, and the fourth argument is added. | `(text: React.ReactNode,record: T,index: number,action: UseFetchDataAction<RequestData<T>>) => React.ReactNode \| React.ReactNode[]` | - |
+| renderFormItem | input component for rendering query form | `(item, props: {value, onChange}) => React.ReactNode` | - |
 | ellipsis | Whether to automatically abbreviate | boolean | - |
 | copyable | Whether to support replication | boolean | - |
 | valueEnum | The enumeration of values will automatically convert the value as a key to get the content to be displayed | {[key: string]: React.ReactNode} | - |

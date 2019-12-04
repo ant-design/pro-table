@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Input } from 'antd';
+import { Button, Input, Select } from 'antd';
 import moment from 'moment';
 import ProTable, { ProColumns, TableDropdown } from '../src';
 
@@ -55,6 +55,12 @@ const columns: ProColumns[] = [
     title: 'Address',
     dataIndex: 'address',
     ellipsis: true,
+    renderFormItem: (item, config) => (
+      <Select {...config}>
+        <Select.Option value="山西">山西</Select.Option>
+        <Select.Option value="杭州">杭州</Select.Option>
+      </Select>
+    ),
   },
   {
     title: 'money',

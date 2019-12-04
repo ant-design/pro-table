@@ -54,8 +54,7 @@ export interface ProColumns<T = unknown> extends Omit<ColumnProps<T>, 'render' |
    */
   renderFormItem?: (
     item: ProColumns<T>,
-    value?: any,
-    onChange?: (value: any) => void,
+    config: { value?: any; onChange?: (value: any) => void },
   ) => React.ReactNode;
 
   /**
@@ -160,7 +159,9 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns'> {
     reload: OptionsType<T>;
     setting: boolean;
   };
-
+  /**
+   * 是否显示搜索表单
+   */
   search?: boolean;
 }
 
@@ -377,7 +378,7 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
           success: true,
         } as RequestData<T>;
       }
-      const msg = await tempRequest({ current, pageSize, ...params });
+      const msg = await tempRequest({ current, pageSize, ...params, ...formSearch });
       if (filterDate) {
         return { ...msg, data: filterDate(msg.data) };
       }
@@ -436,7 +437,9 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
 
   return (
     <div className={className} ref={rootRef}>
-      {search && <FormSearch onSubmit={value => setFormSearch(value)} />}
+      {search && (
+        <FormSearch onSubmit={value => setFormSearch(value)} onReset={() => setFormSearch({})} />
+      )}
       <Card
         bordered={false}
         style={{

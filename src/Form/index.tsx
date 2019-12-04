@@ -31,7 +31,7 @@ const FromInputRender: React.FC<{
    * 自定义 render
    */
   if (item.renderFormItem) {
-    return item.renderFormItem(item, rest.value, rest.onChange) as any;
+    return item.renderFormItem(item, rest) as any;
   }
   if (!item.valueType || item.valueType === 'text') {
     const { valueEnum } = item;
