@@ -151,7 +151,7 @@ export default () => {
         columns={columns}
         request={request}
         rowKey="key"
-        momentFormat="number"
+        momentFormat="string"
         headerTitle="基础表单"
         params={{ keyword }}
         renderToolBar={action => [

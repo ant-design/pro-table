@@ -466,7 +466,6 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     }
   }, [JSON.stringify(tableColumn)]);
 
-  console.log(formSearch);
   return (
     <div className={className} ref={rootRef}>
       {search && (

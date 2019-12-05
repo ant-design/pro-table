@@ -11,12 +11,12 @@ import {
   Button,
   Icon,
 } from 'antd';
+import moment, { Moment } from 'moment';
 import { FormComponentProps } from 'antd/lib/form';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
 import Container from '../container';
 import { ProColumns } from '../index';
 import './index.less';
-import moment, { Moment } from 'moment';
 
 interface FormItem<T> extends FormComponentProps {
   onSubmit?: (value: T) => void;
@@ -118,6 +118,29 @@ const momentFormatMap = {
   dateTime: 'YYYY-MM-DD HH:mm:SS',
 };
 
+const genValue = (value: any, momentFormat?: string | boolean, proColumnsMap?: any) => {
+  const tmpValue = {};
+  Object.keys(value).forEach(key => {
+    const itemValue = value[key];
+    if (itemValue && itemValue !== 'all') {
+      if (moment.isMoment(itemValue) && momentFormat) {
+        if (momentFormat === 'string') {
+          const formatString =
+            momentFormatMap[(proColumnsMap[key || 'null'] || {}).valueType || 'dateTime'];
+          tmpValue[key] = (itemValue as Moment).format(formatString || 'YYYY-MM-DD HH:mm:SS');
+          return;
+        }
+        if (momentFormat === 'number') {
+          tmpValue[key] = (itemValue as Moment).valueOf();
+          return;
+        }
+      }
+      tmpValue[key] = itemValue;
+    }
+  });
+  return tmpValue;
+};
+
 const FormSearch = <T, U = {}>({ form, onSubmit, momentFormat }: FormItem<T>) => {
   const counter = Container.useContainer();
   const [collapse, setCollapse] = useState<boolean>(true);
@@ -130,47 +153,18 @@ const FormSearch = <T, U = {}>({ form, onSubmit, momentFormat }: FormItem<T>) =>
       if (err) {
         return;
       }
-      const tmpValue = {};
-      Object.keys(value).forEach(key => {
-        if (value[key] && value[key] !== 'all') {
-          if (moment.isMoment(value[key]) && momentFormat) {
-            console.log(momentFormat, value[key]);
-
-            if (momentFormat === 'string') {
-              const formatString =
-                momentFormatMap[(proColumnsMap[key || 'null'] || {}).valueType || 'dateTime'];
-              tmpValue[key] = (value[key] as Moment).format(formatString || 'YYYY-MM-DD HH:mm:SS');
-              return;
-            }
-            if (momentFormat === 'number') {
-              tmpValue[key] = (value[key] as Moment).valueOf();
-              return;
-            }
-          }
-          tmpValue[key] = value[key];
-        }
-      });
       if (onSubmit) {
-        onSubmit(value as T);
+        onSubmit(genValue(value, momentFormat, proColumnsMap) as T);
       }
     });
   };
 
   useEffect(() => {
     const tempMap = {};
-    counter.proColumns
-      .filter(
-        (item, index) =>
-          item.valueType !== 'index' &&
-          item.valueType !== 'indexBorder' &&
-          item.valueType !== 'option' &&
-          (collapse ? index < 3 : true) &&
-          !item.hideInSearch,
-      )
-      .forEach(item => {
-        const columnsKey = item.key || item.dataIndex || 'null';
-        tempMap[columnsKey] = item;
-      });
+    counter.proColumns.forEach(item => {
+      const columnsKey = item.key || item.dataIndex || 'null';
+      tempMap[columnsKey] = item;
+    });
     setProColumnsMap(tempMap);
   }, [JSON.stringify(counter.proColumns)]);
 
