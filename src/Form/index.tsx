@@ -141,7 +141,7 @@ const genValue = (value: any, momentFormat?: string | boolean, proColumnsMap?: a
   return tmpValue;
 };
 
-const FormSearch = <T, U = {}>({ form, onSubmit, momentFormat }: FormItem<T>) => {
+const FormSearch = <T, U = {}>({ form, onSubmit, momentFormat = 'string' }: FormItem<T>) => {
   const counter = Container.useContainer();
   const [collapse, setCollapse] = useState<boolean>(true);
   const [proColumnsMap, setProColumnsMap] = useState<{
