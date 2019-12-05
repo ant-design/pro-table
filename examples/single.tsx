@@ -85,6 +85,7 @@ const columns: ProColumns[] = [
     key: 'time',
     dataIndex: 'date',
     valueType: 'time',
+    hideInTable: true,
   },
   {
     title: 'option',
@@ -110,7 +111,10 @@ const columns: ProColumns[] = [
       </a>,
       <TableDropdown
         onSelect={key => window.alert(key)}
-        menus={[{ key: 'copy', name: '复制' }, { key: 'delete', name: '删除' }]}
+        menus={[
+          { key: 'copy', name: '复制' },
+          { key: 'delete', name: '删除' },
+        ]}
       />,
     ],
   },
@@ -147,6 +151,7 @@ export default () => {
         columns={columns}
         request={request}
         rowKey="key"
+        momentFormat="number"
         headerTitle="基础表单"
         params={{ keyword }}
         renderToolBar={action => [
@@ -176,7 +181,10 @@ export default () => {
           </Button>,
           <TableDropdown.Button
             onSelect={key => window.alert(key)}
-            menus={[{ key: 'copy', name: '复制' }, { key: 'clear', name: '清空' }]}
+            menus={[
+              { key: 'copy', name: '复制' },
+              { key: 'clear', name: '清空' },
+            ]}
           >
             更多操作
           </TableDropdown.Button>,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Form,
   Input,
@@ -16,10 +16,12 @@ import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
 import Container from '../container';
 import { ProColumns } from '../index';
 import './index.less';
+import moment, { Moment } from 'moment';
 
 interface FormItem<T> extends FormComponentProps {
   onSubmit?: (value: T) => void;
   onReset?: () => void;
+  momentFormat?: 'string' | 'number' | false;
 }
 
 const FromInputRender: React.FC<{
@@ -110,9 +112,18 @@ const FromInputRender: React.FC<{
   return undefined;
 });
 
-const FormSearch = <T, U = {}>({ form, onSubmit }: FormItem<T>) => {
+const momentFormatMap = {
+  time: 'HH:mm:SS',
+  date: 'YYYY-MM-DD',
+  dateTime: 'YYYY-MM-DD HH:mm:SS',
+};
+
+const FormSearch = <T, U = {}>({ form, onSubmit, momentFormat }: FormItem<T>) => {
   const counter = Container.useContainer();
   const [collapse, setCollapse] = useState<boolean>(true);
+  const [proColumnsMap, setProColumnsMap] = useState<{
+    [key: string]: ProColumns<any>;
+  }>({});
 
   const submit = () => {
     form.validateFields((err, value) => {
@@ -122,6 +133,20 @@ const FormSearch = <T, U = {}>({ form, onSubmit }: FormItem<T>) => {
       const tmpValue = {};
       Object.keys(value).forEach(key => {
         if (value[key] && value[key] !== 'all') {
+          if (moment.isMoment(value[key]) && momentFormat) {
+            console.log(momentFormat, value[key]);
+
+            if (momentFormat === 'string') {
+              const formatString =
+                momentFormatMap[(proColumnsMap[key || 'null'] || {}).valueType || 'dateTime'];
+              tmpValue[key] = (value[key] as Moment).format(formatString || 'YYYY-MM-DD HH:mm:SS');
+              return;
+            }
+            if (momentFormat === 'number') {
+              tmpValue[key] = (value[key] as Moment).valueOf();
+              return;
+            }
+          }
           tmpValue[key] = value[key];
         }
       });
@@ -130,6 +155,24 @@ const FormSearch = <T, U = {}>({ form, onSubmit }: FormItem<T>) => {
       }
     });
   };
+
+  useEffect(() => {
+    const tempMap = {};
+    counter.proColumns
+      .filter(
+        (item, index) =>
+          item.valueType !== 'index' &&
+          item.valueType !== 'indexBorder' &&
+          item.valueType !== 'option' &&
+          (collapse ? index < 3 : true) &&
+          !item.hideInSearch,
+      )
+      .forEach(item => {
+        const columnsKey = item.key || item.dataIndex || 'null';
+        tempMap[columnsKey] = item;
+      });
+    setProColumnsMap(tempMap);
+  }, [JSON.stringify(counter.proColumns)]);
 
   const domList = counter.proColumns
     .filter(

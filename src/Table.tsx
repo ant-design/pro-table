@@ -87,6 +87,11 @@ export interface ProColumns<T = unknown> extends Omit<ColumnProps<T>, 'render' |
    * 在查询表单中隐藏
    */
   hideInSearch?: boolean;
+
+  /**
+   * 在 table 中隐藏
+   */
+  hideInTable?: boolean;
 }
 
 export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns'> {
@@ -171,6 +176,14 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns'> {
    * 是否显示搜索表单
    */
   search?: boolean;
+  /**
+   * 如何格式化moment
+   */
+  momentFormat?: 'string' | 'number' | false;
+  /**
+   * 格式化搜索表单提交数据
+   */
+  beforeSearchSubmit?: (params: Partial<T>) => Partial<T>;
 }
 
 const mergePagination = <T extends any[], U>(
@@ -323,21 +336,23 @@ const genColumnList = <T, U = {}>(
     [key: string]: ColumnsMapItem;
   },
 ): ColumnProps<T>[] =>
-  columns.map(item => {
-    const { key, dataIndex } = item;
-    const columnKey = `${key || ''}-${dataIndex || ''}`;
-    const config = map[columnKey] || { fixed: item.fixed };
-    return {
-      ...item,
-      fixed: config.fixed,
-      width: item.width || (item.fixed ? 200 : undefined),
-      children: item.children ? genColumnList(item.children, action, map) : undefined,
-      ellipsis: false,
-      render: (text: any, row: T, index: number) => (
-        <ColumRender<T> item={item} text={text} row={row} index={index} />
-      ),
-    };
-  });
+  columns
+    .map(item => {
+      const { key, dataIndex } = item;
+      const columnKey = `${key || ''}-${dataIndex || ''}`;
+      const config = map[columnKey] || { fixed: item.fixed };
+      return {
+        ...item,
+        fixed: config.fixed,
+        width: item.width || (item.fixed ? 200 : undefined),
+        children: item.children ? genColumnList(item.children, action, map) : undefined,
+        ellipsis: false,
+        render: (text: any, row: T, index: number) => (
+          <ColumRender<T> item={item} text={text} row={row} index={index} />
+        ),
+      };
+    })
+    .filter(item => !item.hideInTable);
 
 /**
  * 🏆 Use Ant Design Table like a Pro!
@@ -364,6 +379,7 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     url,
     options,
     search = true,
+    beforeSearchSubmit = (searchParams: any) => searchParams,
     ...reset
   } = props;
   const [formSearch, setFormSearch] = useState<{}>({});
@@ -450,10 +466,15 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     }
   }, [JSON.stringify(tableColumn)]);
 
+  console.log(formSearch);
   return (
     <div className={className} ref={rootRef}>
       {search && (
-        <FormSearch onSubmit={value => setFormSearch(value)} onReset={() => setFormSearch({})} />
+        <FormSearch
+          onSubmit={value => setFormSearch(beforeSearchSubmit(value))}
+          onReset={() => setFormSearch(beforeSearchSubmit({}))}
+          momentFormat={reset.momentFormat}
+        />
       )}
       <Card
         bordered={false}
