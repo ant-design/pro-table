@@ -465,7 +465,6 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
       counter.setColumns(tableColumn);
     }
   }, [JSON.stringify(tableColumn)]);
-
   return (
     <div className={className} ref={rootRef}>
       {search && (
