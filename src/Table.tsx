@@ -4,11 +4,12 @@ import React, { useEffect, CSSProperties, useRef, useState } from 'react';
 import { Table, Card, Typography } from 'antd';
 import classNames from 'classnames';
 import moment from 'moment';
-import { ColumnProps, PaginationConfig, TableProps } from 'antd/es/table';
+import { ColumnProps, PaginationConfig, TableProps, TableRowSelection } from 'antd/es/table';
 import useFetchData, { UseFetchDataAction, RequestData } from './useFetchData';
 import Container, { ColumnsMapItem } from './container';
 import IndexColumn from './component/indexColumn';
 import Toolbar, { OptionsType } from './component/toolBar';
+import Alert from './component/alert';
 import FormSearch from './Form';
 
 /**
@@ -94,7 +95,7 @@ export interface ProColumns<T = unknown> extends Omit<ColumnProps<T>, 'render' |
   hideInTable?: boolean;
 }
 
-export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns'> {
+export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSelection'> {
   columns?: ProColumns<T>[];
   params?: { [key: string]: any };
 
@@ -184,6 +185,13 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns'> {
    * 格式化搜索表单提交数据
    */
   beforeSearchSubmit?: (params: Partial<T>) => Partial<T>;
+  /**
+   * 自定义 table 的 alert
+   * 设置或者返回false 即可关闭
+   */
+  renderTableAlert?: (keys: (string | number)[], rows: T[]) => React.ReactNode;
+
+  rowSelection?: TableProps<T>['rowSelection'] | false;
 }
 
 const mergePagination = <T extends any[], U>(
@@ -379,7 +387,9 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     url,
     options,
     search = true,
+    rowSelection: propsRowSelection,
     beforeSearchSubmit = (searchParams: any) => searchParams,
+    renderTableAlert,
     ...reset
   } = props;
   const [formSearch, setFormSearch] = useState<{}>({});
@@ -465,6 +475,22 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
       counter.setColumns(tableColumn);
     }
   }, [JSON.stringify(tableColumn)]);
+
+  const [selectedRowKeys, setSelectedRowKeys] = useState<string[] | number[]>([]);
+  const [selectedRows, setSelectedRows] = useState<T[]>([]);
+
+  const rowSelection: TableRowSelection<T> = {
+    selectedRowKeys,
+    ...propsRowSelection,
+    onChange: (keys, rows) => {
+      if (propsRowSelection && propsRowSelection.onChange) {
+        propsRowSelection.onChange(keys, rows);
+      }
+      setSelectedRowKeys(keys);
+      setSelectedRows(rows);
+    },
+  };
+  console.log(propsRowSelection);
   return (
     <div className={className} ref={rootRef}>
       {search && (
@@ -489,8 +515,23 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
           action={action}
           renderToolBar={renderToolBar}
         />
+        {propsRowSelection !== false && (
+          <Alert<T>
+            selectedRowKeys={selectedRowKeys}
+            selectedRows={selectedRows}
+            onCleanSelected={() => {
+              if (propsRowSelection && propsRowSelection.onChange) {
+                propsRowSelection.onChange([], []);
+              }
+              setSelectedRowKeys([]);
+              setSelectedRows([]);
+            }}
+            renderInfo={renderTableAlert}
+          />
+        )}
         <Table
           {...reset}
+          rowSelection={propsRowSelection === false ? undefined : rowSelection}
           className={tableClassName}
           style={tableStyle}
           columns={counter.columns.filter(item => {

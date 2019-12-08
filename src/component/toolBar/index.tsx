@@ -53,7 +53,7 @@ const renderDefaultOption = <T, U = {}>(
 ) =>
   options &&
   Object.keys(options)
-    .map(key => {
+    .map((key, index) => {
       const value = options[key];
       if (!value) {
         return null;
@@ -66,6 +66,9 @@ const renderDefaultOption = <T, U = {}>(
         return (
           <span
             key={key}
+            style={{
+              marginLeft: index === 0 ? 8 : 16,
+            }}
             className={className}
             onClick={value === true ? defaultOptions[key] : value}
           >
@@ -102,8 +105,11 @@ const ToolBar = <T, U = {}>({
           <div className={`${tempClassName}-option`}>
             {renderToolBar &&
               renderToolBar(action).map((node, index) => (
-                // eslint-disable-next-line react/no-array-index-key
-                <div key={index} className={`${tempClassName}-item`}>
+                <div
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={index}
+                  className={`${tempClassName}-item`}
+                >
                   {node}
                 </div>
               ))}

@@ -3,7 +3,7 @@ import { Button, Input, Select } from 'antd';
 import moment from 'moment';
 import ProTable, { ProColumns, TableDropdown } from '../src';
 
-const data: {
+interface DataItem {
   key: string | number;
   name: string;
   age: string | number;
@@ -11,7 +11,9 @@ const data: {
   money: number;
   date: number;
   sex: string;
-}[] = [];
+}
+
+const data: DataItem[] = [];
 for (let i = 0; i < 46; i += 1) {
   data.push({
     key: i,
@@ -24,7 +26,7 @@ for (let i = 0; i < 46; i += 1) {
   });
 }
 
-const columns: ProColumns[] = [
+const columns: ProColumns<DataItem>[] = [
   {
     title: '序号',
     dataIndex: 'index',
@@ -121,12 +123,7 @@ const columns: ProColumns[] = [
 ];
 
 const request = (): Promise<{
-  data: {
-    key: string | number;
-    name: string;
-    age: string | number;
-    address: string;
-  }[];
+  data: DataItem[];
   success: true;
 }> =>
   new Promise(resolve => {
@@ -147,10 +144,19 @@ export default () => {
         backgroundColor: '#ddd',
       }}
     >
-      <ProTable
+      <ProTable<DataItem>
         columns={columns}
         request={request}
         rowKey="key"
+        renderTableAlert={(keys, rows) => {
+          if (keys.length < 0) {
+            return false;
+          }
+          return `当前选中了 ${keys.length} 人，共有金额 ${rows.reduce(
+            (pre, next) => pre + next.money,
+            0,
+          )}元  `;
+        }}
         momentFormat="string"
         headerTitle="基础表单"
         params={{ keyword }}
