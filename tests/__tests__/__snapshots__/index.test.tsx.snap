@@ -15,7 +15,7 @@ exports[`BasicTable 🎏  do not render default option 1`] = `
         style="margin-left:-8px;margin-right:-8px"
       >
         <div
-          class="ant-col ant-col-8 ant-pro-table-form-search-option"
+          class="ant-col ant-col-8 ant-col-offset-16 ant-pro-table-form-search-option"
           style="padding-left:8px;padding-right:8px"
         >
           <button
@@ -99,10 +99,54 @@ exports[`BasicTable 🎏  do not render default option 1`] = `
                   <table
                     class=""
                   >
-                    <colgroup />
+                    <colgroup>
+                      <col
+                        class="ant-table-selection-col"
+                      />
+                    </colgroup>
                     <thead
                       class="ant-table-thead"
-                    />
+                    >
+                      <tr>
+                        <th
+                          class="ant-table-selection-column ant-table-row-cell-last"
+                        >
+                          <span
+                            class="ant-table-header-column"
+                          >
+                            <div>
+                              <span
+                                class="ant-table-column-title"
+                              >
+                                <div
+                                  class="ant-table-selection"
+                                >
+                                  <label
+                                    class="ant-checkbox-wrapper ant-checkbox-wrapper-disabled"
+                                  >
+                                    <span
+                                      class="ant-checkbox ant-checkbox-disabled"
+                                    >
+                                      <input
+                                        class="ant-checkbox-input"
+                                        disabled=""
+                                        type="checkbox"
+                                      />
+                                      <span
+                                        class="ant-checkbox-inner"
+                                      />
+                                    </span>
+                                  </label>
+                                </div>
+                              </span>
+                              <span
+                                class="ant-table-column-sorter"
+                              />
+                            </div>
+                          </span>
+                        </th>
+                      </tr>
+                    </thead>
                     <tbody
                       class="ant-table-tbody"
                     />
@@ -182,7 +226,7 @@ exports[`BasicTable 🎏  do not render setting 1`] = `
         style="margin-left:-8px;margin-right:-8px"
       >
         <div
-          class="ant-col ant-col-8 ant-pro-table-form-search-option"
+          class="ant-col ant-col-8 ant-col-offset-16 ant-pro-table-form-search-option"
           style="padding-left:8px;padding-right:8px"
         >
           <button
@@ -250,6 +294,7 @@ exports[`BasicTable 🎏  do not render setting 1`] = `
           />
           <span
             class="ant-pro-table-toolbar-item-icon"
+            style="margin-left:8px"
           >
             <i
               aria-label="icon: fullscreen"
@@ -273,6 +318,7 @@ exports[`BasicTable 🎏  do not render setting 1`] = `
           </span>
           <span
             class="ant-pro-table-toolbar-item-icon"
+            style="margin-left:16px"
           >
             <i
               aria-label="icon: reload"
@@ -317,10 +363,54 @@ exports[`BasicTable 🎏  do not render setting 1`] = `
                   <table
                     class=""
                   >
-                    <colgroup />
+                    <colgroup>
+                      <col
+                        class="ant-table-selection-col"
+                      />
+                    </colgroup>
                     <thead
                       class="ant-table-thead"
-                    />
+                    >
+                      <tr>
+                        <th
+                          class="ant-table-selection-column ant-table-row-cell-last"
+                        >
+                          <span
+                            class="ant-table-header-column"
+                          >
+                            <div>
+                              <span
+                                class="ant-table-column-title"
+                              >
+                                <div
+                                  class="ant-table-selection"
+                                >
+                                  <label
+                                    class="ant-checkbox-wrapper ant-checkbox-wrapper-disabled"
+                                  >
+                                    <span
+                                      class="ant-checkbox ant-checkbox-disabled"
+                                    >
+                                      <input
+                                        class="ant-checkbox-input"
+                                        disabled=""
+                                        type="checkbox"
+                                      />
+                                      <span
+                                        class="ant-checkbox-inner"
+                                      />
+                                    </span>
+                                  </label>
+                                </div>
+                              </span>
+                              <span
+                                class="ant-table-column-sorter"
+                              />
+                            </div>
+                          </span>
+                        </th>
+                      </tr>
+                    </thead>
                     <tbody
                       class="ant-table-tbody"
                     />
@@ -400,7 +490,7 @@ exports[`BasicTable 🎏 base use 1`] = `
         style="margin-left:-8px;margin-right:-8px"
       >
         <div
-          class="ant-col ant-col-8 ant-pro-table-form-search-option"
+          class="ant-col ant-col-8 ant-col-offset-16 ant-pro-table-form-search-option"
           style="padding-left:8px;padding-right:8px"
         >
           <button
@@ -576,6 +666,7 @@ exports[`BasicTable 🎏 base use 1`] = `
           />
           <span
             class="ant-pro-table-toolbar-item-icon"
+            style="margin-left:8px"
           >
             <i
               aria-label="icon: fullscreen"
@@ -599,6 +690,7 @@ exports[`BasicTable 🎏 base use 1`] = `
           </span>
           <span
             class="ant-pro-table-toolbar-item-icon"
+            style="margin-left:16px"
           >
             <i
               aria-label="icon: reload"
@@ -664,10 +756,54 @@ exports[`BasicTable 🎏 base use 1`] = `
                   <table
                     class=""
                   >
-                    <colgroup />
+                    <colgroup>
+                      <col
+                        class="ant-table-selection-col"
+                      />
+                    </colgroup>
                     <thead
                       class="ant-table-thead"
-                    />
+                    >
+                      <tr>
+                        <th
+                          class="ant-table-selection-column ant-table-row-cell-last"
+                        >
+                          <span
+                            class="ant-table-header-column"
+                          >
+                            <div>
+                              <span
+                                class="ant-table-column-title"
+                              >
+                                <div
+                                  class="ant-table-selection"
+                                >
+                                  <label
+                                    class="ant-checkbox-wrapper ant-checkbox-wrapper-disabled"
+                                  >
+                                    <span
+                                      class="ant-checkbox ant-checkbox-disabled"
+                                    >
+                                      <input
+                                        class="ant-checkbox-input"
+                                        disabled=""
+                                        type="checkbox"
+                                      />
+                                      <span
+                                        class="ant-checkbox-inner"
+                                      />
+                                    </span>
+                                  </label>
+                                </div>
+                              </span>
+                              <span
+                                class="ant-table-column-sorter"
+                              />
+                            </div>
+                          </span>
+                        </th>
+                      </tr>
+                    </thead>
                     <tbody
                       class="ant-table-tbody"
                     />
@@ -756,6 +892,7 @@ exports[`BasicTable 🎏 do not render Search  1`] = `
           />
           <span
             class="ant-pro-table-toolbar-item-icon"
+            style="margin-left:8px"
           >
             <i
               aria-label="icon: fullscreen"
@@ -779,6 +916,7 @@ exports[`BasicTable 🎏 do not render Search  1`] = `
           </span>
           <span
             class="ant-pro-table-toolbar-item-icon"
+            style="margin-left:16px"
           >
             <i
               aria-label="icon: reload"
@@ -844,10 +982,54 @@ exports[`BasicTable 🎏 do not render Search  1`] = `
                   <table
                     class=""
                   >
-                    <colgroup />
+                    <colgroup>
+                      <col
+                        class="ant-table-selection-col"
+                      />
+                    </colgroup>
                     <thead
                       class="ant-table-thead"
-                    />
+                    >
+                      <tr>
+                        <th
+                          class="ant-table-selection-column ant-table-row-cell-last"
+                        >
+                          <span
+                            class="ant-table-header-column"
+                          >
+                            <div>
+                              <span
+                                class="ant-table-column-title"
+                              >
+                                <div
+                                  class="ant-table-selection"
+                                >
+                                  <label
+                                    class="ant-checkbox-wrapper ant-checkbox-wrapper-disabled"
+                                  >
+                                    <span
+                                      class="ant-checkbox ant-checkbox-disabled"
+                                    >
+                                      <input
+                                        class="ant-checkbox-input"
+                                        disabled=""
+                                        type="checkbox"
+                                      />
+                                      <span
+                                        class="ant-checkbox-inner"
+                                      />
+                                    </span>
+                                  </label>
+                                </div>
+                              </span>
+                              <span
+                                class="ant-table-column-sorter"
+                              />
+                            </div>
+                          </span>
+                        </th>
+                      </tr>
+                    </thead>
                     <tbody
                       class="ant-table-tbody"
                     />
