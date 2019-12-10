@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Button, Input, Select } from 'antd';
+import React from 'react';
+import { Button, Select } from 'antd';
 import moment from 'moment';
 import ProTable, { ProColumns, TableDropdown } from '../src';
 
@@ -135,52 +135,50 @@ const request = (): Promise<{
     }, 2000);
   });
 
-export default () => {
-  return (
-    <div
-      style={{
-        padding: 48,
-        backgroundColor: '#ddd',
-      }}
-    >
-      <ProTable<DataItem>
-        columns={columns}
-        request={request}
-        search={false}
-        momentFormat="string"
-        headerTitle="基础表单"
-        renderTableAlert={rows => (rows.length > 0 ? `已选中 ${rows.length} 项` : false)}
-        renderToolBar={(action, { selectedRowKeys }) => {
-          const options = [
-            <Button
-              key="3"
-              onClick={() => {
-                action.resetPageIndex();
-              }}
-              type="primary"
+export default () => (
+  <div
+    style={{
+      padding: 48,
+      backgroundColor: '#ddd',
+    }}
+  >
+    <ProTable<DataItem>
+      columns={columns}
+      request={request}
+      search={false}
+      momentFormat="string"
+      headerTitle="基础表单"
+      renderTableAlert={rows => (rows.length > 0 ? `已选中 ${rows.length} 项` : false)}
+      renderToolBar={(action, { selectedRowKeys }) => {
+        const options = [
+          <Button
+            key="3"
+            onClick={() => {
+              action.resetPageIndex();
+            }}
+            type="primary"
+          >
+            新建
+          </Button>,
+        ];
+        if (selectedRowKeys && selectedRowKeys.length > 0) {
+          options.push(
+            <TableDropdown.Button
+              onSelect={key => window.alert(key)}
+              menus={[
+                { key: 'copy', name: '批量复制' },
+                { key: 'clear', name: '批量删除' },
+              ]}
             >
-              新建
-            </Button>,
-          ];
-          if (selectedRowKeys && selectedRowKeys.length > 0) {
-            options.push(
-              <TableDropdown.Button
-                onSelect={key => window.alert(key)}
-                menus={[
-                  { key: 'copy', name: '批量复制' },
-                  { key: 'clear', name: '批量删除' },
-                ]}
-              >
-                批量操作
-              </TableDropdown.Button>,
-            );
-          }
-          return options;
-        }}
-        pagination={{
-          defaultCurrent: 10,
-        }}
-      />
-    </div>
-  );
-};
+              批量操作
+            </TableDropdown.Button>,
+          );
+        }
+        return options;
+      }}
+      pagination={{
+        defaultCurrent: 10,
+      }}
+    />
+  </div>
+);
