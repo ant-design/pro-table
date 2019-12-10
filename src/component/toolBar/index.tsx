@@ -13,13 +13,21 @@ export type OptionsType<T = unknown> =
 
 export interface ToolBarProps<T = unknown> {
   headerTitle?: React.ReactNode;
-  renderToolBar?: (action: UseFetchDataAction<RequestData<T>>) => React.ReactNode[];
+  renderToolBar?: (
+    action: UseFetchDataAction<RequestData<T>>,
+    rows: {
+      selectedRowKeys?: (string | number)[];
+      selectedRows?: T[];
+    },
+  ) => React.ReactNode[];
   action: UseFetchDataAction<RequestData<T>>;
   options?: {
     fullScreen: OptionsType<T>;
     reload: OptionsType<T>;
     setting: boolean;
   };
+  selectedRowKeys?: (string | number)[];
+  selectedRows?: T[];
 }
 
 const buttonText = {
@@ -89,6 +97,8 @@ const ToolBar = <T, U = {}>({
     reload: () => action.reload(),
     setting: true,
   },
+  selectedRowKeys,
+  selectedRows,
 }: ToolBarProps<T>) => (
   <ConfigConsumer>
     {({ getPrefixCls }: ConfigConsumerProps) => {
@@ -104,7 +114,7 @@ const ToolBar = <T, U = {}>({
           {headerTitle && <div className={`${tempClassName}-title`}>{headerTitle}</div>}
           <div className={`${tempClassName}-option`}>
             {renderToolBar &&
-              renderToolBar(action).map((node, index) => (
+              renderToolBar(action, { selectedRowKeys, selectedRows }).map((node, index) => (
                 <div
                   // eslint-disable-next-line react/no-array-index-key
                   key={index}

@@ -3,12 +3,13 @@ import './index.less';
 import React, { useEffect, CSSProperties, useRef, useState } from 'react';
 import { Table, Card, Typography } from 'antd';
 import classNames from 'classnames';
+import useMergeValue from 'use-merge-value';
 import moment from 'moment';
 import { ColumnProps, PaginationConfig, TableProps, TableRowSelection } from 'antd/es/table';
 import useFetchData, { UseFetchDataAction, RequestData } from './useFetchData';
 import Container, { ColumnsMapItem } from './container';
 import IndexColumn from './component/indexColumn';
-import Toolbar, { OptionsType } from './component/toolBar';
+import Toolbar, { OptionsType, ToolBarProps } from './component/toolBar';
 import Alert from './component/alert';
 import FormSearch from './Form';
 
@@ -143,7 +144,7 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSe
   /**
    * 渲染操作栏
    */
-  renderToolBar?: (action: UseFetchDataAction<RequestData<T>>) => React.ReactNode[];
+  renderToolBar?: ToolBarProps<T>['renderToolBar'];
 
   /**
    * 数据加载完成后触发
@@ -389,7 +390,7 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     search = true,
     rowSelection: propsRowSelection,
     beforeSearchSubmit = (searchParams: any) => searchParams,
-    renderTableAlert,
+    renderTableAlert = false,
     ...reset
   } = props;
   const [formSearch, setFormSearch] = useState<{}>({});
@@ -476,8 +477,27 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     }
   }, [JSON.stringify(tableColumn)]);
 
-  const [selectedRowKeys, setSelectedRowKeys] = useState<string[] | number[]>([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useMergeValue<string[] | number[]>([], {
+    value: propsRowSelection ? propsRowSelection.selectedRowKeys : undefined,
+  });
   const [selectedRows, setSelectedRows] = useState<T[]>([]);
+
+  // 映射 selectedRowKeys 与 selectedRow
+  useEffect(() => {
+    const tableKey = reset.rowKey;
+    setSelectedRows(
+      (action.dataSource as T[]).filter((item, index) => {
+        if (!tableKey) {
+          return (selectedRowKeys as any).includes(index);
+        }
+        if (typeof tableKey === 'function') {
+          const key = tableKey(item, index);
+          return (selectedRowKeys as any).includes(key);
+        }
+        return (selectedRowKeys as any).includes(item[tableKey]);
+      }),
+    );
+  }, [selectedRowKeys.join('-'), action.loading]);
 
   const rowSelection: TableRowSelection<T> = {
     selectedRowKeys,
@@ -487,10 +507,9 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
         propsRowSelection.onChange(keys, rows);
       }
       setSelectedRowKeys(keys);
-      setSelectedRows(rows);
     },
   };
-  console.log(propsRowSelection);
+
   return (
     <div className={className} ref={rootRef}>
       {search && (
@@ -513,6 +532,8 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
           options={options}
           headerTitle={headerTitle}
           action={action}
+          selectedRows={selectedRows}
+          selectedRowKeys={selectedRowKeys}
           renderToolBar={renderToolBar}
         />
         {propsRowSelection !== false && (

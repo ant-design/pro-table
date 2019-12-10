@@ -136,7 +136,6 @@ const request = (): Promise<{
   });
 
 export default () => {
-  const [keyword, setKeyword] = useState<string>('');
   return (
     <div
       style={{
@@ -147,45 +146,37 @@ export default () => {
       <ProTable<DataItem>
         columns={columns}
         request={request}
+        search={false}
         momentFormat="string"
         headerTitle="基础表单"
-        params={{ keyword }}
-        renderToolBar={action => [
-          <Input.Search
-            style={{
-              width: 200,
-            }}
-            onSearch={value => setKeyword(value)}
-          />,
-          <Button
-            key="2"
-            onClick={() => {
-              action.setCurrent(3);
-            }}
-            type="dashed"
-          >
-            go
-          </Button>,
-          <Button
-            key="3"
-            onClick={() => {
-              action.resetPageIndex();
-            }}
-            type="default"
-          >
-            reset
-          </Button>,
-
-          <Button
-            key="3"
-            onClick={() => {
-              action.resetPageIndex();
-            }}
-            type="primary"
-          >
-            新建
-          </Button>,
-        ]}
+        renderTableAlert={rows => (rows.length > 0 ? `已选中 ${rows.length} 项` : false)}
+        renderToolBar={(action, { selectedRowKeys }) => {
+          const options = [
+            <Button
+              key="3"
+              onClick={() => {
+                action.resetPageIndex();
+              }}
+              type="primary"
+            >
+              新建
+            </Button>,
+          ];
+          if (selectedRowKeys && selectedRowKeys.length > 0) {
+            options.push(
+              <TableDropdown.Button
+                onSelect={key => window.alert(key)}
+                menus={[
+                  { key: 'copy', name: '批量复制' },
+                  { key: 'clear', name: '批量删除' },
+                ]}
+              >
+                批量操作
+              </TableDropdown.Button>,
+            );
+          }
+          return options;
+        }}
         pagination={{
           defaultCurrent: 10,
         }}
