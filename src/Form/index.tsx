@@ -12,6 +12,7 @@ import {
   Icon,
 } from 'antd';
 import moment, { Moment } from 'moment';
+import RcResizeObserver from 'rc-resize-observer';
 import { FormComponentProps } from 'antd/lib/form';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
 import Container from '../container';
@@ -147,16 +148,13 @@ const FormSearch = <T, U = {}>({ form, onSubmit, momentFormat = 'string' }: Form
   const [proColumnsMap, setProColumnsMap] = useState<{
     [key: string]: ProColumns<any>;
   }>({});
+  const [formHeight, setFormHeight] = useState<number>(88);
 
   const submit = () => {
-    form.validateFields((err, value) => {
-      if (err) {
-        return;
-      }
-      if (onSubmit) {
-        onSubmit(genValue(value, momentFormat, proColumnsMap) as T);
-      }
-    });
+    const value = form.getFieldsValue();
+    if (onSubmit) {
+      onSubmit(genValue(value, momentFormat, proColumnsMap) as T);
+    }
   };
 
   useEffect(() => {
@@ -170,13 +168,14 @@ const FormSearch = <T, U = {}>({ form, onSubmit, momentFormat = 'string' }: Form
 
   const domList = counter.proColumns
     .filter(
-      (item, index) =>
+      item =>
         item.valueType !== 'index' &&
         item.valueType !== 'indexBorder' &&
         item.valueType !== 'option' &&
-        (collapse ? index < 3 : true) &&
-        !item.hideInSearch,
+        !item.hideInSearch &&
+        (item.key || item.dataIndex),
     )
+    .filter((_, index) => (collapse ? index < 2 : true))
     .map(item => (
       <Col span={8} key={item.key || item.dataIndex}>
         <Form.Item label={item.title}>
@@ -191,34 +190,53 @@ const FormSearch = <T, U = {}>({ form, onSubmit, momentFormat = 'string' }: Form
       {({ getPrefixCls }: ConfigConsumerProps) => {
         const className = getPrefixCls('pro-table-form-search');
         return (
-          <div className={className}>
-            <Form>
-              <Row gutter={16} justify="end">
-                {domList}
-                <Col
-                  span={8}
-                  offset={(2 - (domList.length % 3)) * 8}
-                  key="option"
-                  className={`${className}-option`}
-                >
-                  <Button type="primary" htmlType="submit" onClick={() => submit()}>
-                    搜索
-                  </Button>
-                  <Button style={{ marginLeft: 8 }} onClick={() => form.resetFields()}>
-                    重置
-                  </Button>
-                  <a
-                    style={{ marginLeft: 8 }}
-                    onClick={() => {
-                      setCollapse(!collapse);
-                    }}
+          <div
+            className={className}
+            style={{
+              height: formHeight,
+            }}
+          >
+            <RcResizeObserver onResize={({ height }) => setFormHeight(height + 24)}>
+              <Form>
+                <Row gutter={16} justify="end">
+                  {domList}
+                  <Col
+                    span={8}
+                    offset={(2 - (domList.length % 3)) * 8}
+                    key="option"
+                    className={`${className}-option`}
                   >
-                    {collapse ? '展开' : '收起'}{' '}
-                    {collapse ? <Icon type="down" /> : <Icon type="up" />}
-                  </a>
-                </Col>
-              </Row>
-            </Form>
+                    <Button type="primary" htmlType="submit" onClick={() => submit()}>
+                      搜索
+                    </Button>
+                    <Button
+                      style={{ marginLeft: 8 }}
+                      onClick={() => {
+                        form.resetFields();
+                        submit();
+                      }}
+                    >
+                      重置
+                    </Button>
+                    <a
+                      style={{ marginLeft: 8 }}
+                      onClick={() => {
+                        setCollapse(!collapse);
+                      }}
+                    >
+                      {collapse ? '展开' : '收起'}{' '}
+                      <Icon
+                        style={{
+                          transition: '0.3s all',
+                          transform: `rotate(${collapse ? 0 : 0.5}turn)`,
+                        }}
+                        type="down"
+                      />
+                    </a>
+                  </Col>
+                </Row>
+              </Form>
+            </RcResizeObserver>
           </div>
         );
       }}

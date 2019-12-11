@@ -102,23 +102,26 @@ const ToolBar = <T, U = {}>({
 }: ToolBarProps<T>) => (
   <ConfigConsumer>
     {({ getPrefixCls }: ConfigConsumerProps) => {
-      const tempClassName = getPrefixCls('pro-table-toolbar');
+      const className = getPrefixCls('pro-table-toolbar');
       const optionDom =
-        renderDefaultOption<T>(options, `${tempClassName}-item-icon`, {
+        renderDefaultOption<T>(options, `${className}-item-icon`, {
           fullScreen: () => action.fullScreen && action.fullScreen(),
           reload: () => action.reload(),
           setting: true,
         }) || [];
+      // 操作列表
+      const actions = renderToolBar ? renderToolBar(action, { selectedRowKeys, selectedRows }) : [];
       return (
-        <div className={tempClassName}>
-          {headerTitle && <div className={`${tempClassName}-title`}>{headerTitle}</div>}
-          <div className={`${tempClassName}-option`}>
-            {renderToolBar &&
-              renderToolBar(action, { selectedRowKeys, selectedRows }).map((node, index) => (
+        <div className={className}>
+          <div className={`${className}-title`}>{headerTitle}</div>
+          <div className={`${className}-option`}>
+            {actions
+              .filter(item => item)
+              .map((node, index) => (
                 <div
                   // eslint-disable-next-line react/no-array-index-key
                   key={index}
-                  className={`${tempClassName}-item`}
+                  className={`${className}-item`}
                 >
                   {node}
                 </div>

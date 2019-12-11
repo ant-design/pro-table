@@ -47,14 +47,14 @@ const DropdownButton: React.FC<DropdownProps> = ({
 );
 
 const TableDropdown: React.FC<DropdownProps> & { Button: typeof DropdownButton } = ({
-  className,
+  className: propsClassName,
   style,
   onSelect,
   menus = [],
 }) => (
   <ConfigConsumer>
     {({ getPrefixCls }: ConfigConsumerProps) => {
-      const tempClassName = getPrefixCls('pro-table-dropdown');
+      const className = getPrefixCls('pro-table-dropdown');
       const menu = (
         <Menu onClick={params => onSelect && onSelect(params.key)}>
           {menus.map(item => (
@@ -63,7 +63,7 @@ const TableDropdown: React.FC<DropdownProps> & { Button: typeof DropdownButton }
         </Menu>
       );
       return (
-        <Dropdown overlay={menu} className={classnames(tempClassName, className)}>
+        <Dropdown overlay={menu} className={classnames(className, propsClassName)}>
           <a style={style}>
             <Icon type="ellipsis" />
           </a>

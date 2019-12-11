@@ -10,11 +10,11 @@ import './index.less';
 const IndexColumn: React.FC<{ border?: boolean }> = ({ border = false, children }) => (
   <ConfigConsumer>
     {({ getPrefixCls }: ConfigConsumerProps) => {
-      const tempClassName = getPrefixCls('pro-table-index-column');
+      const className = getPrefixCls('pro-table-index-column');
       return (
         <div
-          className={classnames(tempClassName, {
-            [`${tempClassName}-border`]: border,
+          className={classnames(className, {
+            [`${className}-border`]: border,
             'top-three': (children as number) > 2,
           })}
         >
