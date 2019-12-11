@@ -6,6 +6,7 @@ exports[`BasicTable 🎏  do not render default option 1`] = `
 >
   <div
     class="ant-pro-table-form-search"
+    style="height:88px"
   >
     <form
       class="ant-form ant-form-horizontal"
@@ -42,6 +43,7 @@ exports[`BasicTable 🎏  do not render default option 1`] = `
             <i
               aria-label="icon: down"
               class="anticon anticon-down"
+              style="transition:0.3s all;transform:rotate(0turn)"
             >
               <svg
                 aria-hidden="true"
@@ -74,6 +76,9 @@ exports[`BasicTable 🎏  do not render default option 1`] = `
       <div
         class="ant-pro-table-toolbar"
       >
+        <div
+          class="ant-pro-table-toolbar-title"
+        />
         <div
           class="ant-pro-table-toolbar-option"
         />
@@ -109,7 +114,7 @@ exports[`BasicTable 🎏  do not render default option 1`] = `
                     >
                       <tr>
                         <th
-                          class="ant-table-selection-column ant-table-row-cell-last"
+                          class="ant-table-selection-column"
                         >
                           <span
                             class="ant-table-header-column"
@@ -217,6 +222,7 @@ exports[`BasicTable 🎏  do not render setting 1`] = `
 >
   <div
     class="ant-pro-table-form-search"
+    style="height:88px"
   >
     <form
       class="ant-form ant-form-horizontal"
@@ -253,6 +259,7 @@ exports[`BasicTable 🎏  do not render setting 1`] = `
             <i
               aria-label="icon: down"
               class="anticon anticon-down"
+              style="transition:0.3s all;transform:rotate(0turn)"
             >
               <svg
                 aria-hidden="true"
@@ -285,6 +292,9 @@ exports[`BasicTable 🎏  do not render setting 1`] = `
       <div
         class="ant-pro-table-toolbar"
       >
+        <div
+          class="ant-pro-table-toolbar-title"
+        />
         <div
           class="ant-pro-table-toolbar-option"
         >
@@ -373,7 +383,7 @@ exports[`BasicTable 🎏  do not render setting 1`] = `
                     >
                       <tr>
                         <th
-                          class="ant-table-selection-column ant-table-row-cell-last"
+                          class="ant-table-selection-column"
                         >
                           <span
                             class="ant-table-header-column"
@@ -481,6 +491,7 @@ exports[`BasicTable 🎏 base use 1`] = `
 >
   <div
     class="ant-pro-table-form-search"
+    style="height:88px"
   >
     <form
       class="ant-form ant-form-horizontal"
@@ -517,6 +528,7 @@ exports[`BasicTable 🎏 base use 1`] = `
             <i
               aria-label="icon: down"
               class="anticon anticon-down"
+              style="transition:0.3s all;transform:rotate(0turn)"
             >
               <svg
                 aria-hidden="true"
@@ -549,6 +561,9 @@ exports[`BasicTable 🎏 base use 1`] = `
       <div
         class="ant-pro-table-toolbar"
       >
+        <div
+          class="ant-pro-table-toolbar-title"
+        />
         <div
           class="ant-pro-table-toolbar-option"
         >
@@ -766,7 +781,7 @@ exports[`BasicTable 🎏 base use 1`] = `
                     >
                       <tr>
                         <th
-                          class="ant-table-selection-column ant-table-row-cell-last"
+                          class="ant-table-selection-column"
                         >
                           <span
                             class="ant-table-header-column"
@@ -884,6 +899,9 @@ exports[`BasicTable 🎏 do not render Search  1`] = `
         class="ant-pro-table-toolbar"
       >
         <div
+          class="ant-pro-table-toolbar-title"
+        />
+        <div
           class="ant-pro-table-toolbar-option"
         >
           <div
@@ -992,7 +1010,7 @@ exports[`BasicTable 🎏 do not render Search  1`] = `
                     >
                       <tr>
                         <th
-                          class="ant-table-selection-column ant-table-row-cell-last"
+                          class="ant-table-selection-column"
                         >
                           <span
                             class="ant-table-header-column"
