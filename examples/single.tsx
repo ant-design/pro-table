@@ -45,7 +45,10 @@ const columns: ProColumns<DataItem>[] = [
     copyable: true,
     initialValue: 'man',
     valueEnum: {
-      man: '男',
+      man: {
+        text: '男',
+        status: 'Processing',
+      },
       woman: '女',
     },
   },

@@ -41,11 +41,17 @@ const FromInputRender: React.FC<{
     if (valueEnum) {
       return (
         <Select placeholder="请选择" ref={ref} {...rest}>
-          {Object.keys(valueEnum).map(key => (
-            <Select.Option key={key} value={key}>
-              {valueEnum[key] || ''}
-            </Select.Option>
-          ))}
+          {Object.keys(valueEnum).map(key => {
+            const value =
+              (valueEnum[key] as {
+                text: string;
+              }) || '';
+            return (
+              <Select.Option key={key} value={key}>
+                {value.text || value || ''}
+              </Select.Option>
+            );
+          })}
         </Select>
       );
     }

@@ -24,4 +24,6 @@ const Status: {
   Warning: ({ children }) => <Badge status="warning" text={children} />,
 };
 
+export type StatusType = keyof typeof Status;
+
 export default Status;

@@ -1,7 +1,7 @@
 import './index.less';
 
-import React, { useEffect, CSSProperties, useRef, useState } from 'react';
-import { Table, Card, Typography } from 'antd';
+import React, { useEffect, CSSProperties, useRef, useState, ReactNode } from 'react';
+import { Table, Card, Typography, Tooltip } from 'antd';
 import classNames from 'classnames';
 import useMergeValue from 'use-merge-value';
 import moment from 'moment';
@@ -12,6 +12,8 @@ import IndexColumn from './component/indexColumn';
 import Toolbar, { OptionsType, ToolBarProps } from './component/toolBar';
 import Alert from './component/alert';
 import FormSearch from './Form';
+import { StatusType } from './component/status';
+import { parsingText } from './component/util';
 
 /**
  * money 金额
@@ -83,7 +85,14 @@ export interface ProColumns<T = unknown> extends Omit<ColumnProps<T>, 'render' |
   /**
    * 值的枚举，如果存在枚举，Search 中会生成 select
    */
-  valueEnum?: { [key: string]: any };
+  valueEnum?: {
+    [key: string]:
+      | {
+          text: ReactNode;
+          status: StatusType;
+        }
+      | ReactNode;
+  };
 
   /**
    * 在查询表单中隐藏
@@ -293,6 +302,36 @@ interface ColumRenderInterface<T> {
   index: number;
 }
 
+/**
+ * 生成 Ellipsis 的 tooltip
+ * @param dom
+ * @param item
+ * @param text
+ */
+const genEllipsis = (dom: React.ReactNode, item: ProColumns<any>, text: string) => {
+  if (!item.ellipsis) {
+    return dom;
+  }
+  return <Tooltip title={text}>{dom}</Tooltip>;
+};
+
+const genCopyable = (dom: React.ReactNode, item: ProColumns<any>) => {
+  if (item.copyable || item.ellipsis) {
+    return (
+      <Typography.Text
+        style={{
+          width: item.width,
+        }}
+        copyable={item.copyable}
+        ellipsis={item.ellipsis}
+      >
+        {dom}
+      </Typography.Text>
+    );
+  }
+  return dom;
+};
+
 const ColumRender = <T, U = any>({ item, text, row, index }: ColumRenderInterface<T>): any => {
   const counter = Container.useContainer();
   const { action } = counter;
@@ -301,24 +340,11 @@ const ColumRender = <T, U = any>({ item, text, row, index }: ColumRenderInterfac
     return null;
   }
 
-  const renderTextStr = renderText(valueEnum[text] || text, row, index, action);
-
+  const renderTextStr = renderText(parsingText(text, valueEnum), row, index, action);
   const textDom = defaultRenderText(renderTextStr, item.valueType || 'text', index);
 
-  let dom: React.ReactNode = textDom;
-  if (item.copyable || item.ellipsis) {
-    dom = (
-      <Typography.Text
-        style={{
-          width: item.width,
-        }}
-        copyable={item.copyable}
-        ellipsis={item.ellipsis}
-      >
-        {textDom}
-      </Typography.Text>
-    );
-  }
+  const dom: React.ReactNode = genEllipsis(genCopyable(textDom, item), item, text);
+
   if (item.render) {
     const renderDom = item.render(dom, row, index, action);
     if (renderDom && item.valueType === 'option' && Array.isArray(renderDom)) {
