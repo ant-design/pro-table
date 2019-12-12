@@ -56,7 +56,7 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
       current: pageIndex,
       pageSize,
     });
-    if (success) {
+    if (success !== false) {
       if (isAppend && list) {
         setList([...list, ...data]);
       } else {
