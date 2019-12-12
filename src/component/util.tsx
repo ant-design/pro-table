@@ -42,6 +42,10 @@ export const parsingText = (
   return domText.text || domText;
 };
 
+/**
+ * 把 value 的枚举转化为 数组
+ * @param valueEnum
+ */
 export const parsingValueEnumToArray = (
   valueEnum: {
     [key: string]:

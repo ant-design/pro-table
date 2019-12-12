@@ -3,8 +3,9 @@
 @table-prefix-cls: ~'@{ant-prefix}-pro-table';
 
 .@{table-prefix-cls} {
-  :fullscreen {
+  &:not(:root):fullscreen {
     min-height: 100vh;
+    background: @component-background;
   }
   &-option-cell {
     display: flex;

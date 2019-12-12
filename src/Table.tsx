@@ -202,6 +202,8 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSe
   renderTableAlert?: (keys: (string | number)[], rows: T[]) => React.ReactNode;
 
   rowSelection?: TableProps<T>['rowSelection'] | false;
+
+  style?: React.CSSProperties;
 }
 
 const mergePagination = <T extends any[], U>(
@@ -312,7 +314,16 @@ const genEllipsis = (dom: React.ReactNode, item: ProColumns<any>, text: string) 
   if (!item.ellipsis) {
     return dom;
   }
-  return <Tooltip title={text}>{dom}</Tooltip>;
+  return (
+    <Tooltip
+      getPopupContainer={() =>
+        ((document.fullscreenElement || document.body) as any) as HTMLElement
+      }
+      title={text}
+    >
+      {dom}
+    </Tooltip>
+  );
 };
 
 const genCopyable = (dom: React.ReactNode, item: ProColumns<any>) => {
@@ -414,6 +425,7 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     columns: propsColumns = [],
     renderToolBar = () => [],
     onLoad,
+    style,
     tableStyle,
     tableClassName,
     url,
@@ -424,8 +436,8 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     renderTableAlert = false,
     ...reset
   } = props;
-  const [formSearch, setFormSearch] = useState<{}>({});
 
+  const [formSearch, setFormSearch] = useState<{}>({});
   /**
    * 需要初始化 不然默认可能报错
    */
@@ -471,7 +483,12 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
   const rootRef = useRef<HTMLDivElement>(null);
 
   action.fullScreen = () => {
-    if (rootRef.current) {
+    if (!rootRef.current || !document.fullscreenEnabled) {
+      return;
+    }
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
       rootRef.current.requestFullscreen();
     }
   };
@@ -542,7 +559,7 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
   };
 
   return (
-    <div className={className} ref={rootRef}>
+    <div className={className} style={style} ref={rootRef}>
       {search && (
         <FormSearch
           onSubmit={value => setFormSearch(beforeSearchSubmit(value))}

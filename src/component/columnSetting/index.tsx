@@ -171,6 +171,9 @@ const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
         return (
           <Popover
             arrowPointAtCenter
+            getPopupContainer={() =>
+              ((document.fullscreenElement || document.body) as any) as HTMLElement
+            }
             title={
               <div className={`${className}-title`}>
                 <Checkbox

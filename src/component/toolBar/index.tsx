@@ -6,6 +6,7 @@ import ColumnSetting from '../columnSetting';
 import { UseFetchDataAction, RequestData } from '../../useFetchData';
 
 import './index.less';
+import FullScreenIcon from './FullscreenIcon';
 
 export type OptionsType<T = unknown> =
   | ((e: React.MouseEvent<HTMLSpanElement>, action: UseFetchDataAction<RequestData<T>>) => void)
@@ -33,7 +34,7 @@ export interface ToolBarProps<T = unknown> {
 const buttonText = {
   fullScreen: {
     text: '全屏',
-    icon: <Icon type="fullscreen" />,
+    icon: <FullScreenIcon />,
   },
   reload: {
     text: '刷新',
@@ -61,6 +62,7 @@ const renderDefaultOption = <T, U = {}>(
 ) =>
   options &&
   Object.keys(options)
+    .filter(item => item)
     .map((key, index) => {
       const value = options[key];
       if (!value) {
@@ -68,6 +70,20 @@ const renderDefaultOption = <T, U = {}>(
       }
       if (key === 'setting') {
         return <ColumnSetting key={key} />;
+      }
+      if (key === 'fullScreen') {
+        return (
+          <span
+            key={key}
+            style={{
+              marginLeft: index === 0 ? 8 : 16,
+            }}
+            className={className}
+            onClick={value === true ? defaultOptions[key] : value}
+          >
+            <FullScreenIcon />
+          </span>
+        );
       }
       const optionItem = buttonText[key];
       if (optionItem) {
@@ -80,7 +96,14 @@ const renderDefaultOption = <T, U = {}>(
             className={className}
             onClick={value === true ? defaultOptions[key] : value}
           >
-            <Tooltip title={optionItem.text}>{optionItem.icon}</Tooltip>
+            <Tooltip
+              getPopupContainer={() =>
+                ((document.fullscreenElement || document.body) as any) as HTMLElement
+              }
+              title={optionItem.text}
+            >
+              {optionItem.icon}
+            </Tooltip>
           </span>
         );
       }
@@ -126,7 +149,7 @@ const ToolBar = <T, U = {}>({
                   {node}
                 </div>
               ))}
-            {optionDom.length > 0 && <Divider type="vertical" />}
+            {optionDom.length > 0 && actions.length > 0 && <Divider type="vertical" />}
             {optionDom}
           </div>
         </div>
