@@ -58,6 +58,19 @@ pro-table is encapsulated in an antd table, supports some presets, and encapsula
 - option operation item, it will automatically increase marginRight, only one array is supported.
 - text default value, no processing
 
+### valueEnums
+
+```typescript
+interface IValueEnum {
+  [key: string]:
+    | React.ReactNode
+    | {
+        text: React.ReactNode;
+        status: 'Success' | 'Error' | 'Processing' | 'Warning' | 'Default';
+      };
+}
+```
+
 ## Usage
 
 ```bash
@@ -74,10 +87,6 @@ const columns: ProColumns[] = [
     title: 'Name',
     dataIndex: 'name',
     copyable: true,
-  },
-  {
-    title: 'Age',
-    dataIndex: 'age',
   },
   {
     title: 'date',
@@ -97,14 +106,6 @@ const columns: ProColumns[] = [
       >
         delete
       </a>,
-      <a
-        onClick={() => {
-          window.alert('确认刷新？');
-          action.reload();
-        }}
-      >
-        reload
-      </a>,
     ],
   },
 ];
@@ -115,7 +116,7 @@ export default () => (
     columns={columns}
     url={request}
     rowKey="key"
-    params={{ keyword }}
+    params={{}}
     renderToolBar={action => [
       <Input.Search
         style={{
@@ -134,21 +135,7 @@ export default () => (
       >
         reload
       </Button>,
-      <Button
-        onClick={() => {
-          action.resetPageIndex();
-        }}
-        type="default"
-        style={{
-          marginRight: 8,
-        }}
-      >
-        go home
-      </Button>,
     ]}
-    pagination={{
-      defaultCurrent: 10,
-    }}
   />
 );
 ```

@@ -39,12 +39,12 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 
 | 属性 | 描述 | 类型 | 默认值 |
 | --- | --- | --- | --- |
-| renderText | 类似 table 的 render，但是必须返回 string，如果只是希望转化枚举，可以使用 valueEnum | `(text: any,record: T,index: number,action: UseFetchDataAction<RequestData<T>>) => string` | - |
+| renderText | 类似 table 的 render，但是必须返回 string，如果只是希望转化枚举，可以使用 [valueEnum](#valueEnum) | `(text: any,record: T,index: number,action: UseFetchDataAction<RequestData<T>>) => string` | - |
 | render | 类似 table 的 render，第一个参数变成了 dom,增加了第四个参数 action | `(text: React.ReactNode,record: T,index: number,action: UseFetchDataAction<RequestData<T>>) => React.ReactNode \| React.ReactNode[]` | - |
 | renderFormItem | 渲染查询表单的输入组件 | `(item,props:{value,onChange}) => React.ReactNode` | - |
 | ellipsis | 是否自动缩略 | boolean | - |
 | copyable | 是否支持复制 | boolean | - |
-| valueEnum | 值的枚举，会自动转化把值当成 key 来取出要显示的内容 | {[key:string]: React.ReactNode} | - |
+| valueEnum | 值的枚举，会自动转化把值当成 key 来取出要显示的内容 | [valueEnum](#valueEnum) | - |
 | valueType | 值的类型 | `'money' \| 'option' \| 'date' \| 'dateTime' \| 'time' \| 'text'\| 'index' \| 'indexBorder'` | 'text' |
 | hideInSearch | 在查询表单中不展示此项 | boolean | - |
 | hideInTable | 在 Table 中不展示此列 | boolean | - |
@@ -59,6 +59,21 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 - text 默认值，不做任何处理
 - index 序号列
 - indexBorder 带 border 的序号列
+
+### valueEnum
+
+当前列值的枚举
+
+```typescript
+interface IValueEnum {
+  [key: string]:
+    | React.ReactNode
+    | {
+        text: React.ReactNode;
+        status: 'Success' | 'Error' | 'Processing' | 'Warning' | 'Default';
+      };
+}
+```
 
 ## Usage
 
