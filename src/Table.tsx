@@ -388,7 +388,7 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     url,
     options,
     search = true,
-    rowSelection: propsRowSelection,
+    rowSelection: propsRowSelection = false,
     beforeSearchSubmit = (searchParams: any) => searchParams,
     renderTableAlert = false,
     ...reset
