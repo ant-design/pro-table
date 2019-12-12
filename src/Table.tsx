@@ -13,7 +13,7 @@ import Toolbar, { OptionsType, ToolBarProps } from './component/toolBar';
 import Alert from './component/alert';
 import FormSearch from './Form';
 import { StatusType } from './component/status';
-import { parsingText } from './component/util';
+import { parsingText, parsingValueEnumToArray } from './component/util';
 
 /**
  * money 金额
@@ -377,6 +377,11 @@ const genColumnList = <T, U = {}>(
       const columnKey = `${key || ''}-${dataIndex || ''}`;
       const config = map[columnKey] || { fixed: item.fixed };
       return {
+        onFilter: (value: string, record: T) => {
+          const itemValue = (record[item.dataIndex || ''] || '') as string;
+          return itemValue === value;
+        },
+        filters: parsingValueEnumToArray(item.valueEnum),
         ...item,
         fixed: config.fixed,
         width: item.width || (item.fixed ? 200 : undefined),

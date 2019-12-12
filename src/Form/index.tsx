@@ -15,6 +15,7 @@ import moment, { Moment } from 'moment';
 import RcResizeObserver from 'rc-resize-observer';
 import { FormComponentProps } from 'antd/lib/form';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
+import { parsingValueEnumToArray } from '../component/util';
 import Container from '../container';
 import { ProColumns } from '../index';
 import './index.less';
@@ -41,17 +42,11 @@ const FromInputRender: React.FC<{
     if (valueEnum) {
       return (
         <Select placeholder="请选择" ref={ref} {...rest}>
-          {Object.keys(valueEnum).map(key => {
-            const value =
-              (valueEnum[key] as {
-                text: string;
-              }) || '';
-            return (
-              <Select.Option key={key} value={key}>
-                {value.text || value || ''}
-              </Select.Option>
-            );
-          })}
+          {parsingValueEnumToArray(valueEnum).map(({ value, text }) => (
+            <Select.Option key={value} value={value}>
+              {text}
+            </Select.Option>
+          ))}
         </Select>
       );
     }

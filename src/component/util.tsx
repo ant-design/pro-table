@@ -18,7 +18,7 @@ export const parsingText = (
         }
       | ReactNode;
   },
-  prue?: boolean,
+  pure?: boolean,
 ) => {
   if (!valueEnum) {
     return text;
@@ -32,7 +32,7 @@ export const parsingText = (
   }
 
   if (domText.status) {
-    if (prue) {
+    if (pure) {
       return domText.text;
     }
     const { status } = domText;
@@ -41,3 +41,28 @@ export const parsingText = (
   }
   return domText.text || domText;
 };
+
+export const parsingValueEnumToArray = (
+  valueEnum: {
+    [key: string]:
+      | {
+          text: ReactNode;
+          type: StatusType;
+        }
+      | ReactNode;
+  } = {},
+): {
+  value: string;
+  text: string;
+}[] =>
+  Object.keys(valueEnum).map(key => {
+    const value =
+      (valueEnum[key] as {
+        text: string;
+      }) || '';
+
+    return {
+      text: ((value.text || value || '') as unknown) as string,
+      value: key,
+    };
+  });
