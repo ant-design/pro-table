@@ -317,7 +317,7 @@ const genEllipsis = (dom: React.ReactNode, item: ProColumns<any>, text: string) 
   return (
     <Tooltip
       getPopupContainer={() =>
-        ((document.fullscreenElement || document.body) as any) as HTMLElement
+        ((document.getElementById('ant-design-pro-table') || document.body) as any) as HTMLElement
       }
       title={text}
     >
@@ -559,7 +559,7 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
   };
 
   return (
-    <div className={className} style={style} ref={rootRef}>
+    <div className={className} id="ant-design-pro-table" style={style} ref={rootRef}>
       {search && (
         <FormSearch
           onSubmit={value => setFormSearch(beforeSearchSubmit(value))}

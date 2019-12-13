@@ -12,7 +12,7 @@ const FullScreenIcon = () => {
     <Tooltip
       title="退出全屏"
       getPopupContainer={() =>
-        ((document.fullscreenElement || document.body) as any) as HTMLElement
+        ((document.getElementById('ant-design-pro-table') || document.body) as any) as HTMLElement
       }
     >
       <Icon type="fullscreen-exit" />
@@ -21,7 +21,7 @@ const FullScreenIcon = () => {
     <Tooltip
       title="全屏"
       getPopupContainer={() =>
-        ((document.fullscreenElement || document.body) as any) as HTMLElement
+        ((document.getElementById('ant-design-pro-table') || document.body) as any) as HTMLElement
       }
     >
       <Icon type="fullscreen" />

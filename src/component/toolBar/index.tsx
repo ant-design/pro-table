@@ -98,7 +98,8 @@ const renderDefaultOption = <T, U = {}>(
           >
             <Tooltip
               getPopupContainer={() =>
-                ((document.fullscreenElement || document.body) as any) as HTMLElement
+                ((document.getElementById('ant-design-pro-table') ||
+                  document.body) as any) as HTMLElement
               }
               title={optionItem.text}
             >
