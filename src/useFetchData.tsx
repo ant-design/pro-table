@@ -11,6 +11,7 @@ export interface UseFetchDataAction<T extends RequestData<any>> {
   hasMore: boolean;
   current: number;
   pageSize: number;
+  total: number;
   fetch: () => Promise<void>;
   reload: () => Promise<void>;
   fetchMore: () => void;
@@ -39,6 +40,7 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
 
   const [pageIndex, setPageIndex] = useState<number>(defaultCurrent);
   const [pageSize, setPageSize] = useState<number>(defaultPageSize);
+  const [total, setTotal] = useState<number>(0);
   const [hasMore, setHasMore] = useState<boolean>(false);
 
   const { manual = false, effects = [] } = options || {};
@@ -52,19 +54,23 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
       return;
     }
     setLoading(true);
-    const { data, success, total = 0 } = await getData({
-      current: pageIndex,
-      pageSize,
-    });
+    const { data, success, total: dataTotal = 0 } =
+      (await getData({
+        current: pageIndex,
+        pageSize,
+      })) || {};
     if (success !== false) {
       if (isAppend && list) {
         setList([...list, ...data]);
       } else {
         setList(data);
       }
+      if (dataTotal !== total) {
+        setTotal(dataTotal);
+      }
 
       // 判断是否可以继续翻页
-      setHasMore(total > pageSize * pageIndex);
+      setHasMore(dataTotal > pageSize * pageIndex);
     }
     setLoading(false);
     if (onLoad) {
@@ -83,12 +89,13 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
    * pageIndex 改变的时候自动刷新
    */
   useEffect(() => {
-    if (pageIndex > 1) {
-      // 如果 list 的长度大于 pageSize 的长度
-      // 说明是一个假分页
-      if (list.length <= pageSize * (pageIndex - 1)) {
-        fetchList();
-      }
+    // 如果 list 的长度大于 pageSize 的长度
+    // 说明是一个假分页
+    // (pageIndex - 1 || 1) 至少要第一页
+    // 在第一页大于 10
+    // 第二页也应该是大于 10
+    if (pageIndex !== undefined && list.length <= pageSize) {
+      fetchList();
     }
   }, [pageIndex]);
 
@@ -116,6 +123,7 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
     fetch: fetchList,
     reload: fetchList,
     fetchMore,
+    total,
     hasMore,
     resetPageIndex,
     current: pageIndex,

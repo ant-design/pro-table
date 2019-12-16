@@ -62,11 +62,12 @@
     "enzyme-to-json": "^3.4.3",
     "eslint": "5.16.0",
     "father": "^2.26.0",
-    "father-doc": "^1.0.0-alpha.4",
+    "father-doc": "^1.0.0-alpha.6",
     "jsdom-global": "^3.0.2",
     "np": "^5.1.3",
     "stylelint": "^11.0.0",
-    "typescript": "^3.3.3"
+    "typescript": "^3.3.3",
+    "umi-request": "^1.2.15"
   },
   "license": "MIT",
   "dependencies": {

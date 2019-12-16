@@ -113,8 +113,8 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSe
    * 一个获得 dataSource 的方法
    */
   request?: (params?: {
-    pageSize: number;
-    current: number;
+    pageSize?: number;
+    current?: number;
     [key: string]: any;
   }) => Promise<RequestData<T>>;
   /**
@@ -199,7 +199,7 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSe
    * 自定义 table 的 alert
    * 设置或者返回false 即可关闭
    */
-  renderTableAlert?: (keys: (string | number)[], rows: T[]) => React.ReactNode;
+  tableAlertRender?: (keys: (string | number)[], rows: T[]) => React.ReactNode;
 
   rowSelection?: TableProps<T>['rowSelection'] | false;
 
@@ -207,18 +207,19 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSe
 }
 
 const mergePagination = <T extends any[], U>(
-  pagination: PaginationConfig | boolean | undefined,
+  pagination: PaginationConfig | boolean | undefined = {},
   action: UseFetchDataAction<RequestData<T>>,
 ): PaginationConfig | false | undefined => {
-  if (!pagination) {
-    return pagination;
+  if (pagination === false) {
+    return {};
   }
-  let defaultPagination: PaginationConfig | {} = pagination;
+  let defaultPagination: PaginationConfig | {} = pagination || {};
   const { current, pageSize } = action;
   if (pagination === true) {
     defaultPagination = {};
   }
   return {
+    total: action.total,
     ...(defaultPagination as PaginationConfig),
     current,
     pageSize,
@@ -372,7 +373,7 @@ const ColumRender = <T, U = any>({ item, text, row, index }: ColumRenderInterfac
     }
     return renderDom as React.ReactNode;
   }
-  return dom as React.ReactNode;
+  return (dom as React.ReactNode) || null;
 };
 
 const genColumnList = <T, U = {}>(
@@ -433,7 +434,7 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     search = true,
     rowSelection: propsRowSelection = false,
     beforeSearchSubmit = (searchParams: any) => searchParams,
-    renderTableAlert = false,
+    tableAlertRender = false,
     ...reset
   } = props;
 
@@ -499,12 +500,12 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     if (onInit) {
       onInit(action);
     }
-  }, [action.pageSize, action.current]);
+  }, [action.pageSize, action.current, action.total]);
 
   const pagination = mergePagination<T[], {}>(propsPagination, action);
+
   const className = classNames('ant-pro-table', propsClassName);
   const counter = Container.useContainer();
-
   /**
    *  保存一下 propsColumns
    *  生成 from 需要用
@@ -534,7 +535,7 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
   useEffect(() => {
     const tableKey = reset.rowKey;
     setSelectedRows(
-      (action.dataSource as T[]).filter((item, index) => {
+      ((action.dataSource as T[]) || []).filter((item, index) => {
         if (!tableKey) {
           return (selectedRowKeys as any).includes(index);
         }
@@ -595,7 +596,7 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
               setSelectedRowKeys([]);
               setSelectedRows([]);
             }}
-            renderInfo={renderTableAlert}
+            renderInfo={tableAlertRender}
           />
         )}
         <Table

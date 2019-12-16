@@ -152,7 +152,7 @@ export default () => (
       search={false}
       momentFormat="string"
       headerTitle="基础表单"
-      renderTableAlert={rows => (rows.length > 0 ? `已选中 ${rows.length} 项` : false)}
+      tableAlertRender={rows => (rows.length > 0 ? `已选中 ${rows.length} 项` : false)}
       renderToolBar={(action, { selectedRowKeys }) => {
         const options = [
           <Button

@@ -19,6 +19,6 @@ npm install @ant-design/pro-table
 yarn add @ant-design/pro-table
 ```
 
-```tsx
-export default () => <div>name</div>;
-```
+## Demo
+
+<code src="./single.tsx" inline />

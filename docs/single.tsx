@@ -1,118 +1,128 @@
-import React, { useState } from 'react';
-import { Button, Input, Select } from 'antd';
-import moment from 'moment';
-import ProTable, { ProColumns, TableDropdown } from '../src';
+import React from 'react';
+import { Button, Icon, Tag } from 'antd';
+// eslint-disable-next-line import/no-unresolved
+import ProTable, { ProColumns, TableDropdown } from '@ant-design/pro-table';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import request from 'umi-request';
 
-interface DataItem {
-  key: string | number;
+interface GithubIssueItem {
+  url: string;
+  repository_url: string;
+  labels_url: string;
+  comments_url: string;
+  events_url: string;
+  html_url: string;
+  id: number;
+  node_id: string;
+  number: number;
+  title: string;
+  user: User;
+  labels: Label[];
+  state: string;
+  locked: boolean;
+  assignee?: any;
+  assignees: any[];
+  milestone?: any;
+  comments: number;
+  created_at: string;
+  updated_at: string;
+  closed_at?: any;
+  author_association: string;
+  body: string;
+}
+
+interface Label {
+  id: number;
+  node_id: string;
+  url: string;
   name: string;
-  age: string | number;
-  address: string;
-  money: number;
-  date: number;
-  sex: string;
+  color: string;
+  default: boolean;
+  description: string;
 }
 
-const data: DataItem[] = [];
-for (let i = 0; i < 46; i += 1) {
-  data.push({
-    key: i,
-    sex: i % 2 === 0 ? 'man' : 'woman',
-    name: `Edward King ${i}`,
-    age: 10 + i,
-    money: parseFloat((10000.26 * (i + 1)).toFixed(2)),
-    date: moment('2019-11-16 12:50:26').valueOf() + i * 1000 * 60 * 2,
-    address: `London, Park Lane no. ${i}`,
-  });
+interface User {
+  login: string;
+  id: number;
+  node_id: string;
+  avatar_url: string;
+  gravatar_id: string;
+  url: string;
+  html_url: string;
+  followers_url: string;
+  following_url: string;
+  gists_url: string;
+  starred_url: string;
+  subscriptions_url: string;
+  organizations_url: string;
+  repos_url: string;
+  events_url: string;
+  received_events_url: string;
+  type: string;
+  site_admin: boolean;
 }
 
-const columns: ProColumns<DataItem>[] = [
+const columns: ProColumns<GithubIssueItem>[] = [
   {
     title: '序号',
     dataIndex: 'index',
     valueType: 'indexBorder',
-    fixed: 'left',
     width: 80,
   },
   {
-    title: 'Name',
-    dataIndex: 'name',
+    title: '标题',
+    dataIndex: 'title',
     copyable: true,
-  },
-  {
-    title: 'sex',
-    dataIndex: 'sex',
-    copyable: true,
-    initialValue: 'man',
-    valueEnum: {
-      man: {
-        text: '男',
-        status: 'Processing',
-      },
-      woman: '女',
-    },
-  },
-  {
-    title: 'Age',
-    dataIndex: 'age',
+    ellipsis: true,
+    width: 400,
     hideInSearch: true,
   },
   {
-    title: 'Address',
-    dataIndex: 'address',
-    ellipsis: true,
-    renderFormItem: (item, config) => (
-      <Select {...config}>
-        <Select.Option value="山西">山西</Select.Option>
-        <Select.Option value="杭州">杭州</Select.Option>
-      </Select>
-    ),
+    title: '状态',
+    dataIndex: 'state',
+    initialValue: 'all',
+    valueEnum: {
+      open: {
+        text: '未解决',
+        status: 'Error',
+      },
+      closed: {
+        text: '已解决',
+        status: 'Success',
+      },
+    },
   },
   {
-    title: 'money',
-    dataIndex: 'money',
-    valueType: 'money',
+    title: '标签',
+    dataIndex: 'labels',
+    render: (_, row) =>
+      row.labels.map(({ name, id, color }) => (
+        <Tag color={`#${color}`} key={id}>
+          {name}
+        </Tag>
+      )),
   },
   {
-    title: 'date',
-    key: 'date',
-    dataIndex: 'date',
-    valueType: 'date',
-  },
-  {
-    title: 'dateTime',
-    key: 'dateTime',
-    dataIndex: 'date',
+    title: '创建时间',
+    key: 'since',
+    dataIndex: 'created_at',
     valueType: 'dateTime',
-  },
-  {
-    title: 'time',
-    key: 'time',
-    dataIndex: 'date',
-    valueType: 'time',
-    hideInTable: true,
   },
   {
     title: 'option',
     valueType: 'option',
     dataIndex: 'id',
-    fixed: 'right',
     render: (text, row, index, action) => [
-      <a
-        onClick={() => {
-          window.alert('确认删除？');
-          action.reload();
-        }}
-      >
-        delete
+      <a href={row.html_url} target="_blank" rel="noopener noreferrer">
+        查看
       </a>,
       <a
         onClick={() => {
-          window.alert('确认刷新？');
+          window.alert('确认关闭吗?');
           action.reload();
         }}
       >
-        reload
+        关闭
       </a>,
       <TableDropdown
         onSelect={key => window.alert(key)}
@@ -125,74 +135,50 @@ const columns: ProColumns<DataItem>[] = [
   },
 ];
 
-const request = (): Promise<{
-  data: DataItem[];
-  success: true;
-}> =>
-  new Promise(resolve => {
-    setTimeout(() => {
-      resolve({
+export default () => (
+  <ProTable<GithubIssueItem>
+    columns={columns}
+    request={async (params = {}) => {
+      const data = await request<GithubIssueItem[]>(
+        'https://api.github.com/repos/ant-design/ant-design-pro/issues',
+        {
+          params: {
+            ...params,
+            access_token: 'be078f45e968257ff9a94d35b25b55e0c8437284',
+            page: params.current,
+            per_page: params.pageSize,
+          },
+        },
+      );
+      const totalObj = await request(
+        'https://api.github.com/repos/ant-design/ant-design-pro/issues?per_page=1',
+        {
+          params,
+        },
+      );
+      return {
         data,
+        page: params.current,
         success: true,
-      });
-    }, 2000);
-  });
-
-export default () => {
-  const [keyword, setKeyword] = useState<string>('');
-  return (
-    <div
-      style={{
-        padding: 48,
-        backgroundColor: '#ddd',
-      }}
-    >
-      <ProTable<DataItem>
-        columns={columns}
-        request={request}
-        momentFormat="string"
-        headerTitle="基础表单"
-        params={{ keyword }}
-        renderToolBar={action => [
-          <Input.Search
-            style={{
-              width: 200,
-            }}
-            onSearch={value => setKeyword(value)}
-          />,
-          <Button
-            key="2"
-            onClick={() => {
-              action.setCurrent(3);
-            }}
-            type="dashed"
-          >
-            go
-          </Button>,
-          <Button
-            key="3"
-            onClick={() => {
-              action.resetPageIndex();
-            }}
-            type="default"
-          >
-            reset
-          </Button>,
-
-          <Button
-            key="3"
-            onClick={() => {
-              action.resetPageIndex();
-            }}
-            type="primary"
-          >
-            新建
-          </Button>,
-        ]}
-        pagination={{
-          defaultCurrent: 10,
+        total: ((totalObj[0] || { number: 0 }).number - 56) as number,
+      };
+    }}
+    tableAlertRender={keys => `当前共选中 ${keys.length} 项！`}
+    rowKey="id"
+    momentFormat="string"
+    headerTitle="基础表单"
+    params={{ state: 'all' }}
+    renderToolBar={action => [
+      <Button
+        key="3"
+        onClick={() => {
+          action.resetPageIndex();
         }}
-      />
-    </div>
-  );
-};
+        type="primary"
+      >
+        <Icon type="plus" />
+        新建
+      </Button>,
+    ]}
+  />
+);
