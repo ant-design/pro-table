@@ -14,7 +14,7 @@ export type OptionsType<T = unknown> =
 
 export interface ToolBarProps<T = unknown> {
   headerTitle?: React.ReactNode;
-  renderToolBar?: (
+  toolBarRender?: (
     action: UseFetchDataAction<RequestData<T>>,
     rows: {
       selectedRowKeys?: (string | number)[];
@@ -114,7 +114,7 @@ const renderDefaultOption = <T, U = {}>(
 
 const ToolBar = <T, U = {}>({
   headerTitle,
-  renderToolBar,
+  toolBarRender,
   action,
   options = {
     fullScreen: () => action.fullScreen && action.fullScreen(),
@@ -134,7 +134,7 @@ const ToolBar = <T, U = {}>({
           setting: true,
         }) || [];
       // 操作列表
-      const actions = renderToolBar ? renderToolBar(action, { selectedRowKeys, selectedRows }) : [];
+      const actions = toolBarRender ? toolBarRender(action, { selectedRowKeys, selectedRows }) : [];
       return (
         <div className={className}>
           <div className={`${className}-title`}>{headerTitle}</div>

@@ -153,7 +153,7 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSe
   /**
    * 渲染操作栏
    */
-  renderToolBar?: ToolBarProps<T>['renderToolBar'];
+  toolBarRender?: ToolBarProps<T>['toolBarRender'];
 
   /**
    * 数据加载完成后触发
@@ -424,7 +424,7 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     pagination: propsPagination,
     onInit,
     columns: propsColumns = [],
-    renderToolBar = () => [],
+    toolBarRender = () => [],
     onLoad,
     style,
     tableStyle,
@@ -434,7 +434,7 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     search = true,
     rowSelection: propsRowSelection = false,
     beforeSearchSubmit = (searchParams: any) => searchParams,
-    tableAlertRender = false,
+    tableAlertRender,
     ...reset
   } = props;
 
@@ -583,7 +583,7 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
           action={action}
           selectedRows={selectedRows}
           selectedRowKeys={selectedRowKeys}
-          renderToolBar={renderToolBar}
+          toolBarRender={toolBarRender}
         />
         {propsRowSelection !== false && (
           <Alert<T>

@@ -26,7 +26,7 @@ pro-table is encapsulated in an antd table, supports some presets, and encapsula
 | manual | Whether manual mode, you need to manually call fetch. | boolean | - |
 | effects | When the dependent parameter changes, the load data is automatically removed. | `(number \| string \| boolean)[]` | [] |
 | onInit | Triggered after the table data is successfully initialized, it will be triggered multiple times. | `(action: UseFetchDataAction<RequestData<T>>) => void` | [] |
-| renderToolBar | Render toolbar, support for returning a dom array, will automatically increase margin-right. | `(action: UseFetchDataAction<RequestData<T>>) => React.ReactNode[]` | - |
+| toolBarRender | Render toolbar, support for returning a dom array, will automatically increase margin-right. | `(action: UseFetchDataAction<RequestData<T>>) => React.ReactNode[]` | - |
 | onLoad | Triggered after the data is loaded, it will be triggered multiple times. | `(dataSource: T[]) => void` | - |
 | tableClassName | The className of the packaged table | string | - |
 | tableStyle | The style of the packaged table | CSSProperties | - |
@@ -117,7 +117,7 @@ export default () => (
     url={request}
     rowKey="key"
     params={{}}
-    renderToolBar={action => [
+    toolBarRender={action => [
       <Input.Search
         style={{
           width: 200,

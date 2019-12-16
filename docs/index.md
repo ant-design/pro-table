@@ -21,4 +21,4 @@ yarn add @ant-design/pro-table
 
 ## Demo
 
-<code src="./single.tsx" inline />
+<code src="./demo/single.tsx" />

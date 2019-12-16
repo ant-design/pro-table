@@ -26,7 +26,7 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 | manual | 是否手动模式 | boolean | - |
 | effects | 依赖的参数改变时，会自动去 load 数据 | `(number \| string \| boolean)[]` | [] |
 | onInit | 表格的数据初始化成功之后触发，会多次触发。 | `(action: UseFetchDataAction<RequestData<T>>) => void` | [] |
-| renderToolBar | 渲染工具栏，支持返回一个 dom 数组，会自动增加 margin-right | `(action: UseFetchDataAction<RequestData<T>>) => React.ReactNode[]` | - |
+| toolBarRender | 渲染工具栏，支持返回一个 dom 数组，会自动增加 margin-right | `(action: UseFetchDataAction<RequestData<T>>) => React.ReactNode[]` | - |
 | onLoad | 数据加载完成后触发,会多次触发 | `(dataSource: T[]) => void` | - |
 | tableClassName | 封装的 table 的 className | string | - |
 | tableStyle | 封装的 table 的 style | CSSProperties | - |
@@ -133,7 +133,7 @@ export default () => (
     url={request}
     rowKey="key"
     params={{ keyword }}
-    renderToolBar={action => [
+    toolBarRender={action => [
       <Input.Search
         style={{
           width: 200,

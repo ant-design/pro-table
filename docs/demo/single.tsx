@@ -144,7 +144,6 @@ export default () => (
         {
           params: {
             ...params,
-            access_token: 'be078f45e968257ff9a94d35b25b55e0c8437284',
             page: params.current,
             per_page: params.pageSize,
           },
@@ -163,12 +162,11 @@ export default () => (
         total: ((totalObj[0] || { number: 0 }).number - 56) as number,
       };
     }}
-    tableAlertRender={keys => `当前共选中 ${keys.length} 项！`}
     rowKey="id"
     momentFormat="string"
     headerTitle="基础表单"
     params={{ state: 'all' }}
-    renderToolBar={action => [
+    toolBarRender={action => [
       <Button
         key="3"
         onClick={() => {
