@@ -128,7 +128,7 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSe
   /**
    * 对数据进行一些处理
    */
-  filterDate?: (data: any[]) => any[];
+  filterData?: (data: any[]) => any[];
   /**
    * 默认的数据
    */
@@ -419,7 +419,7 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     effects = [],
     headerTitle,
     manual,
-    filterDate,
+    filterData,
     pagination: propsPagination,
     onInit,
     columns: propsColumns = [],
@@ -457,8 +457,8 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
         } as RequestData<T>;
       }
       const msg = await tempRequest({ current, pageSize, ...params, ...formSearch });
-      if (filterDate) {
-        return { ...msg, data: filterDate(msg.data) };
+      if (filterData) {
+        return { ...msg, data: filterData(msg.data) };
       }
       return msg;
     },

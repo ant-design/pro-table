@@ -11,7 +11,7 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 | 属性 | 描述 | 类型 | 默认值 |
 | --- | --- | --- | --- |
 | request | 一个获得 dataSource 的方法 | `(params?: {pageSize: number;current: number;[key: string]: any;}) => Promise<RequestData<T>>` | - |
-| filterDate | 对通过 url 获取的数据进行一些处理 | `(data: T[]) => T[]` | - |
+| filterData | 对通过 url 获取的数据进行一些处理 | `(data: T[]) => T[]` | - |
 | defaultData | 默认的数据 | `T[]` | - |
 | manual | 是否手动模式 | boolean | - |
 | effects | 依赖的参数改变时，会自动去 load 数据 | `(number \| string \| boolean)[]` | [] |
