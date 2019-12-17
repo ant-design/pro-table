@@ -227,7 +227,8 @@ const FormSearch = <T, U = {}>({ form, onSubmit, momentFormat = 'string' }: Form
                           style={{
                             transition: '0.3s all',
                             transform: `rotate(${collapse ? 0 : 0.5}turn)`,
-                          }} />
+                          }}
+                        />
                       </a>
                     )}
                   </Col>

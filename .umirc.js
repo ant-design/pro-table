@@ -13,8 +13,5 @@ export default {
       },
     ],
   ],
-  hash: true,
-  base: '/pro-table/',
-  publicPath: '/pro-table/',
   disableCSSModules: true,
 };
