@@ -93,6 +93,16 @@ const columns: ProColumns<GithubIssueItem>[] = [
     },
   },
   {
+    title: '排序方式',
+    key: 'direction',
+    hideInTable: true,
+    dataIndex: 'direction',
+    valueEnum: {
+      asc: '正序',
+      desc: '倒序',
+    },
+  },
+  {
     title: '标签',
     dataIndex: 'labels',
     width: 80,
@@ -156,22 +166,16 @@ export default () => (
           },
         },
       );
-      const totalObj = await request(
-        'https://api.github.com/repos/ant-design/ant-design-pro/issues?per_page=1',
-        {
-          params,
-        },
-      );
       return {
         data,
         page: params.current,
         success: true,
-        total: ((totalObj[0] || { number: 0 }).number - 56) as number,
+        total: 5713,
       };
     }}
     rowKey="id"
     momentFormat="string"
-    headerTitle="基础 Table"
+    headerTitle="查询 Table"
     params={{ state: 'all' }}
     toolBarRender={action => [
       <Button

@@ -74,7 +74,7 @@ const columns: ProColumns<GithubIssueItem>[] = [
     dataIndex: 'title',
     copyable: true,
     ellipsis: true,
-    width: 400,
+    width: 200,
     hideInSearch: true,
   },
   {
@@ -95,9 +95,16 @@ const columns: ProColumns<GithubIssueItem>[] = [
   {
     title: '标签',
     dataIndex: 'labels',
+    width: 80,
     render: (_, row) =>
       row.labels.map(({ name, id, color }) => (
-        <Tag color={`#${color}`} key={id}>
+        <Tag
+          color={`#${color}`}
+          key={id}
+          style={{
+            margin: 4,
+          }}
+        >
           {name}
         </Tag>
       )),
@@ -108,6 +115,7 @@ const columns: ProColumns<GithubIssueItem>[] = [
     dataIndex: 'created_at',
     valueType: 'dateTime',
   },
+
   {
     title: 'option',
     valueType: 'option',
@@ -173,7 +181,7 @@ export default () => (
       }, 0)} 项未解决 `
     }
     momentFormat="string"
-    headerTitle="基础表单"
+    headerTitle="批量操作"
     params={{ state: 'all' }}
     toolBarRender={(action, { selectedRowKeys }) => [
       <Button

@@ -170,15 +170,16 @@ const FormSearch = <T, U = {}>({ form, onSubmit, momentFormat = 'string' }: Form
     setProColumnsMap(tempMap);
   }, [JSON.stringify(counter.proColumns)]);
 
-  const domList = counter.proColumns
-    .filter(
-      item =>
-        item.valueType !== 'index' &&
-        item.valueType !== 'indexBorder' &&
-        item.valueType !== 'option' &&
-        !item.hideInSearch &&
-        (item.key || item.dataIndex),
-    )
+  const columnsList = counter.proColumns.filter(
+    item =>
+      item.valueType !== 'index' &&
+      item.valueType !== 'indexBorder' &&
+      item.valueType !== 'option' &&
+      !item.hideInSearch &&
+      (item.key || item.dataIndex),
+  );
+
+  const domList = columnsList
     .filter((_, index) => (collapse ? index < 2 : true))
     .map(item => (
       <Col span={8} key={item.key || item.dataIndex}>
@@ -222,21 +223,23 @@ const FormSearch = <T, U = {}>({ form, onSubmit, momentFormat = 'string' }: Form
                     >
                       重置
                     </Button>
-                    <a
-                      style={{ marginLeft: 8 }}
-                      onClick={() => {
-                        setCollapse(!collapse);
-                      }}
-                    >
-                      {collapse ? '展开' : '收起'}{' '}
-                      <Icon
-                        style={{
-                          transition: '0.3s all',
-                          transform: `rotate(${collapse ? 0 : 0.5}turn)`,
+                    {columnsList.length > 2 && (
+                      <a
+                        style={{ marginLeft: 8 }}
+                        onClick={() => {
+                          setCollapse(!collapse);
                         }}
-                        type="down"
-                      />
-                    </a>
+                      >
+                        {collapse ? '展开' : '收起'}{' '}
+                        <Icon
+                          style={{
+                            transition: '0.3s all',
+                            transform: `rotate(${collapse ? 0 : 0.5}turn)`,
+                          }}
+                          type="down"
+                        />
+                      </a>
+                    )}
                   </Col>
                 </Row>
               </Form>
