@@ -8,7 +8,7 @@
     "name": "chenshuai2144",
     "email": "qixian.cs@outlook.com"
   },
-  "repository": "https://github.com/ant-design/pro-table/@ant-design/pro-table",
+  "repository": "https://github.com/ant-design/pro-table",
   "scripts": {
     "start": "father-doc dev",
     "build": "father build",
