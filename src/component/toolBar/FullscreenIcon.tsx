@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Icon, Tooltip } from 'antd';
+import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons';
+import { Tooltip } from 'antd';
 
 const FullScreenIcon = () => {
   const [fullscreen, setFullscreen] = useState<boolean>(false);
@@ -15,7 +16,7 @@ const FullScreenIcon = () => {
         ((document.getElementById('ant-design-pro-table') || document.body) as any) as HTMLElement
       }
     >
-      <Icon type="fullscreen-exit" />
+      <FullscreenExitOutlined />
     </Tooltip>
   ) : (
     <Tooltip
@@ -24,7 +25,7 @@ const FullScreenIcon = () => {
         ((document.getElementById('ant-design-pro-table') || document.body) as any) as HTMLElement
       }
     >
-      <Icon type="fullscreen" />
+      <FullscreenOutlined />
     </Tooltip>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider/context';
-import { Checkbox, Popover, Icon, Tooltip } from 'antd';
+import { PushpinOutlined, SettingOutlined, VerticalAlignMiddleOutlined } from '@ant-design/icons';
+import { Checkbox, Popover, Tooltip } from 'antd';
 import Container, { ColumnsMapItem } from '../../container';
 import { ProColumns } from '../../Table';
 import './index.less';
@@ -74,15 +75,13 @@ const CheckboxList: React.FC<{
             title="固定到左边"
             show={fixed !== 'left'}
           >
-            <Icon
-              type="pushpin"
+            <PushpinOutlined
               style={{
                 transform: 'rotate(-90deg)',
-              }}
-            />
+              }} />
           </ToolTipIcon>
           <ToolTipIcon columnKey={columnKey} fixed={undefined} title="取消固定" show={!!fixed}>
-            <Icon type="vertical-align-middle" />
+            <VerticalAlignMiddleOutlined />
           </ToolTipIcon>
           <ToolTipIcon
             columnKey={columnKey}
@@ -90,7 +89,7 @@ const CheckboxList: React.FC<{
             title="固定到右边"
             show={fixed !== 'right'}
           >
-            <Icon type="pushpin" />
+            <PushpinOutlined />
           </ToolTipIcon>
         </span>
       </span>
@@ -213,13 +212,11 @@ const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
                   document.body) as any) as HTMLElement
               }
             >
-              <Icon
-                type="setting"
+              <SettingOutlined
                 className={`${toolBarClassName}-item-icon`}
                 style={{
                   fontSize: 16,
-                }}
-              />
+                }} />
             </Tooltip>
           </Popover>
         );

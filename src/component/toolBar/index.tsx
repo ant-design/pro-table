@@ -1,5 +1,6 @@
 import React from 'react';
-import { Icon, Divider, Tooltip } from 'antd';
+import { ReloadOutlined, SettingOutlined } from '@ant-design/icons';
+import { Divider, Tooltip } from 'antd';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider/context';
 import ColumnSetting from '../columnSetting';
 
@@ -38,11 +39,11 @@ const buttonText = {
   },
   reload: {
     text: '刷新',
-    icon: <Icon type="reload" />,
+    icon: <ReloadOutlined />,
   },
   setting: {
     text: '列设置',
-    icon: <Icon type="setting" />,
+    icon: <SettingOutlined />,
   },
 };
 

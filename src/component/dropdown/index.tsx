@@ -1,6 +1,7 @@
 import React from 'react';
 import classnames from 'classnames';
-import { Dropdown, Menu, Button, Icon } from 'antd';
+import { DownOutlined, EllipsisOutlined } from '@ant-design/icons';
+import { Dropdown, Menu, Button } from 'antd';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider/context';
 import './index.less';
 
@@ -38,7 +39,7 @@ const DropdownButton: React.FC<DropdownProps> = ({
       return (
         <Dropdown overlay={menu} className={classnames(tempClassName, className)}>
           <Button style={style}>
-            {children} <Icon type="down" />
+            {children} <DownOutlined />
           </Button>
         </Dropdown>
       );
@@ -72,7 +73,7 @@ const TableDropdown: React.FC<DropdownProps> & { Button: typeof DropdownButton }
           className={classnames(className, propsClassName)}
         >
           <a style={style}>
-            <Icon type="ellipsis" />
+            <EllipsisOutlined />
           </a>
         </Dropdown>
       );
