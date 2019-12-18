@@ -4,16 +4,16 @@
 
 .@{table-prefix-cls} {
   &-toolbar {
-    height: 64px;
-    line-height: 64px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+    height: 64px;
     padding: 0 24px;
+    line-height: 64px;
     &-option {
       display: flex;
-      justify-content: flex-end;
       align-items: center;
+      justify-content: flex-end;
     }
 
     &-item {
@@ -21,8 +21,8 @@
     }
 
     &-item-icon {
-      font-size: 16px;
       margin-left: 16px;
+      font-size: 16px;
       cursor: pointer;
       &:first-child {
         margin-left: 8px;
@@ -30,11 +30,11 @@
     }
 
     &-title {
-      opacity: 0.85;
-      font-size: 16px;
-      color: #000000;
-      line-height: 24px;
       flex: 1;
+      color: #000;
+      font-size: 16px;
+      line-height: 24px;
+      opacity: 0.85;
     }
   }
 }

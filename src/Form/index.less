@@ -3,12 +3,12 @@
 @form-search-prefix-cls: ~'@{ant-prefix}-pro-table-form-search';
 
 .@{form-search-prefix-cls} {
-  background: @component-background;
-  padding: 24px;
   margin-bottom: 24px;
+  padding: 24px;
   padding-bottom: 0;
-  transition: 0.3s all;
   overflow: hidden;
+  background: @component-background;
+  transition: 0.3s all;
   .ant-form-item-label {
     width: 100px;
     text-align: right;
@@ -22,8 +22,8 @@
   }
   &-option {
     display: flex;
-    text-align: right;
-    justify-content: flex-end;
     align-items: center;
+    justify-content: flex-end;
+    text-align: right;
   }
 }

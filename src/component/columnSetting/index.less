@@ -5,10 +5,10 @@
 .@{column-setting-prefix-cls} {
   width: auto;
   &-title {
-    height: 32px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    height: 32px;
   }
 }
 .@{column-setting-prefix-cls}-list {
@@ -16,15 +16,15 @@
   flex-direction: column;
   width: 168px;
   &-title {
+    margin-bottom: 8px;
     color: #8c8c8c;
     font-size: 12px;
-    margin-bottom: 8px;
   }
   &-item {
     width: 100%;
     &-option {
-      float: right;
       display: none;
+      float: right;
       > span {
         > i.anticon {
           color: @primary-color;
@@ -42,8 +42,8 @@
     }
   }
   .@{ant-prefix}-checkbox-wrapper {
-    margin-left: 0px;
     margin-bottom: 8px;
+    margin-left: 0;
     :last-child {
       margin-bottom: 0;
     }
