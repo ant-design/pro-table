@@ -10,7 +10,7 @@ exports[`BasicTable 🎏  do not render default option 1`] = `
     style="height:88px"
   >
     <form
-      class="ant-legacy-form ant-legacy-form-horizontal"
+      class="ant-form ant-form-horizontal"
     >
       <div
         class="ant-row"
@@ -158,7 +158,7 @@ exports[`BasicTable 🎏  do not render setting 1`] = `
     style="height:88px"
   >
     <form
-      class="ant-legacy-form ant-legacy-form-horizontal"
+      class="ant-form ant-form-horizontal"
     >
       <div
         class="ant-row"
@@ -357,7 +357,7 @@ exports[`BasicTable 🎏 base use 1`] = `
     style="height:88px"
   >
     <form
-      class="ant-legacy-form ant-legacy-form-horizontal"
+      class="ant-form ant-form-horizontal"
     >
       <div
         class="ant-row"
