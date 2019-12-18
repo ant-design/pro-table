@@ -28,7 +28,6 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
   options?: {
     defaultCurrent?: number;
     defaultPageSize?: number;
-    manual?: boolean;
     effects?: any[];
     onLoad?: (dataSource: T['data']) => void;
   },
@@ -43,14 +42,14 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
   const [total, setTotal] = useState<number>(0);
   const [hasMore, setHasMore] = useState<boolean>(false);
 
-  const { manual = false, effects = [] } = options || {};
+  const { effects = [] } = options || {};
 
   /**
    * 请求数据
    * @param isAppend 是否添加数据到后面
    */
   const fetchList = async (isAppend?: boolean) => {
-    if (manual && loading) {
+    if (loading) {
       return;
     }
     setLoading(true);
@@ -112,9 +111,7 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
   };
 
   useEffect(() => {
-    if (manual === false) {
-      fetchList();
-    }
+    fetchList();
   }, effects);
 
   return {

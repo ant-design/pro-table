@@ -173,14 +173,8 @@ export default () => (
     momentFormat="string"
     headerTitle="基础 Table"
     params={{ state: 'all' }}
-    toolBarRender={action => [
-      <Button
-        key="3"
-        onClick={() => {
-          action.resetPageIndex();
-        }}
-        type="primary"
-      >
+    toolBarRender={() => [
+      <Button key="3" type="primary">
         <Icon type="plus" />
         新建
       </Button>,

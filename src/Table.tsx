@@ -128,15 +128,11 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSe
   /**
    * 对数据进行一些处理
    */
-  filterData?: (data: any[]) => any[];
+  postData?: (data: any[]) => any[];
   /**
    * 默认的数据
    */
   defaultData?: T[];
-  /**
-   * 是否手动模式
-   */
-  manual?: boolean;
 
   /**
    * 某些参数改变时，自动刷新数据
@@ -432,8 +428,7 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     defaultData = [],
     effects = [],
     headerTitle,
-    manual,
-    filterData,
+    postData,
     pagination: propsPagination,
     onInit,
     columns: propsColumns = [],
@@ -471,8 +466,8 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
         } as RequestData<T>;
       }
       const msg = await tempRequest({ current, pageSize, ...params, ...formSearch });
-      if (filterData) {
-        return { ...msg, data: filterData(msg.data) };
+      if (postData) {
+        return { ...msg, data: postData(msg.data) };
       }
       return msg;
     },
@@ -481,7 +476,6 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
       defaultCurrent,
       defaultPageSize,
       onLoad,
-      manual,
       effects: [
         Object.values(params)
           .filter(item => item)

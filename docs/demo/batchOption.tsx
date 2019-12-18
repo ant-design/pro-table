@@ -183,14 +183,8 @@ export default () => (
     momentFormat="string"
     headerTitle="批量操作"
     params={{ state: 'all' }}
-    toolBarRender={(action, { selectedRowKeys }) => [
-      <Button
-        key="3"
-        onClick={() => {
-          action.resetPageIndex();
-        }}
-        type="primary"
-      >
+    toolBarRender={(_, { selectedRowKeys }) => [
+      <Button key="3" type="primary">
         <Icon type="plus" />
         新建
       </Button>,
