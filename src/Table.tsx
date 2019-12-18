@@ -563,8 +563,16 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     <div className={className} id="ant-design-pro-table" style={style} ref={rootRef}>
       {search && (
         <FormSearch
-          onSubmit={value => setFormSearch(beforeSearchSubmit(value))}
-          onReset={() => setFormSearch(beforeSearchSubmit({}))}
+          onSubmit={value => {
+            setFormSearch(beforeSearchSubmit(value));
+            // back first page
+            action.resetPageIndex();
+          }}
+          onReset={() => {
+            setFormSearch(beforeSearchSubmit({}));
+            // back first page
+            action.resetPageIndex();
+          }}
           momentFormat={reset.momentFormat}
         />
       )}
