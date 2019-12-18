@@ -390,8 +390,8 @@ const genColumnList = <T, U = {}>(
       const config = map[columnKey] || { fixed: item.fixed };
       return {
         onFilter: (value: string, record: T) => {
-          const itemValue = (record[item.dataIndex || ''] || '') as string;
-          return itemValue === value;
+          const itemValue = String(record[item.dataIndex || ''] || '') as string;
+          return String(itemValue) === String(value);
         },
         filters: parsingValueEnumToArray(item.valueEnum),
         ...item,
