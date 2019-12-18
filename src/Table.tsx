@@ -148,7 +148,11 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSe
   /**
    * 初始化的参数，可以操作 table
    */
-  onInit?: (action: UseFetchDataAction<RequestData<T>>) => void;
+  onInit?: (action: {
+    fetch: () => Promise<void>;
+    reload: () => Promise<void>;
+    fetchMore: () => void;
+  }) => void;
 
   /**
    * 渲染操作栏
@@ -507,9 +511,13 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     // 页码更改的时候触发一下
     // 不然会造成 action 中数据老旧
     if (onInit) {
-      onInit(action);
+      onInit({
+        reload: action.reload,
+        fetch: action.fetch,
+        fetchMore: action.fetchMore,
+      });
     }
-  }, [action.pageSize, action.current, action.total]);
+  }, []);
 
   const pagination = mergePagination<T[], {}>(propsPagination, action);
 
