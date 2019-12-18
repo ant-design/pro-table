@@ -235,6 +235,15 @@ const mergePagination = <T extends any[], U>(
         onChange(page, newPageSize || 10);
       }
     },
+    onShowSizeChange: (curt: number, size: number) => {
+      action.setPageSize(size);
+      action.setCurrent(curt);
+
+      const { onShowSizeChange } = pagination as PaginationConfig;
+      if (onShowSizeChange) {
+        onShowSizeChange(curt, size || 10);
+      }
+    },
   };
 };
 
