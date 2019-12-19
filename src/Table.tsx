@@ -135,13 +135,6 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSe
   defaultData?: T[];
 
   /**
-   * 某些参数改变时，自动刷新数据
-   * 等同于 effects 的值
-   * 推荐使用基本数据结构，不然可能造成重复更新
-   */
-  effects?: (number | string | boolean)[];
-
-  /**
    * 初始化的参数，可以操作 table
    */
   onInit?: (action: {
@@ -426,7 +419,6 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     className: propsClassName,
     params = {},
     defaultData = [],
-    effects = [],
     headerTitle,
     postData,
     pagination: propsPagination,
@@ -483,7 +475,6 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
         Object.values(formSearch)
           .filter(item => item)
           .join('-'),
-        ...effects,
       ],
     },
   );
