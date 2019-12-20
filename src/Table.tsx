@@ -450,7 +450,6 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
   const action = useFetchData(
     async ({ pageSize, current }) => {
       const tempRequest = request || url;
-
       if (!tempRequest) {
         return {
           data: props.dataSource || [],

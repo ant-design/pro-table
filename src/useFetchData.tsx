@@ -1,4 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+
+const usePrevious = <T,>(state: T): T | undefined => {
+  const ref = useRef<T>();
+
+  useEffect(() => {
+    ref.current = state;
+  });
+
+  return ref.current;
+};
 
 export interface RequestData<T> {
   data: T[];
@@ -37,11 +47,11 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
   const [list, setList] = useState<T['data']>(defaultData as any);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const [pageIndex, setPageIndex] = useState<number>(defaultCurrent);
+  const [pageIndex, setPageIndex] = useState<number>(defaultCurrent || 1);
   const [pageSize, setPageSize] = useState<number>(defaultPageSize);
   const [total, setTotal] = useState<number>(0);
   const [hasMore, setHasMore] = useState<boolean>(false);
-
+  const prePage = usePrevious(pageIndex);
   const { effects = [] } = options || {};
 
   /**
@@ -88,6 +98,9 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
    * pageIndex 改变的时候自动刷新
    */
   useEffect(() => {
+    if (!prePage || prePage === pageIndex) {
+      return;
+    }
     // 如果 list 的长度大于 pageSize 的长度
     // 说明是一个假分页
     // (pageIndex - 1 || 1) 至少要第一页
