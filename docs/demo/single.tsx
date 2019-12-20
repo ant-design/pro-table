@@ -170,6 +170,9 @@ export default () => (
       };
     }}
     rowKey="id"
+    pagination={{
+      showSizeChanger: true,
+    }}
     momentFormat="string"
     headerTitle="基础 Table"
     params={{ state: 'all' }}

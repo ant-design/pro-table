@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 
-const usePrevious = <T,>(state: T): T | undefined => {
+const usePrevious = <T, U = T>(state: T): T | undefined => {
   const ref = useRef<T>();
 
   useEffect(() => {
@@ -51,7 +51,11 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
   const [pageSize, setPageSize] = useState<number>(defaultPageSize);
   const [total, setTotal] = useState<number>(0);
   const [hasMore, setHasMore] = useState<boolean>(false);
+
+  // pre state
   const prePage = usePrevious(pageIndex);
+  const prePageSize = usePrevious(pageSize);
+
   const { effects = [] } = options || {};
 
   /**
@@ -98,7 +102,9 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
    * pageIndex 改变的时候自动刷新
    */
   useEffect(() => {
-    if (!prePage || prePage === pageIndex) {
+    // 如果上次的页码为空或者两次页码等于是没必要查询的
+    // 如果 pageSize 发生变化是需要查询的，所以又加了 prePageSize
+    if ((!prePage || prePage === pageIndex) && (!prePageSize || prePageSize === pageSize)) {
       return;
     }
     // 如果 list 的长度大于 pageSize 的长度
@@ -114,6 +120,9 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
   // pageSize 修改后返回第一页
   useEffect(() => {
     setPageIndex(1);
+    if (prePage === 1) {
+      fetchList();
+    }
   }, [pageSize]);
 
   /**
