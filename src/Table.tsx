@@ -128,27 +128,20 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSe
   /**
    * 对数据进行一些处理
    */
-  filterData?: (data: any[]) => any[];
+  postData?: (data: any[]) => any[];
   /**
    * 默认的数据
    */
   defaultData?: T[];
-  /**
-   * 是否手动模式
-   */
-  manual?: boolean;
-
-  /**
-   * 某些参数改变时，自动刷新数据
-   * 等同于 effects 的值
-   * 推荐使用基本数据结构，不然可能造成重复更新
-   */
-  effects?: (number | string | boolean)[];
 
   /**
    * 初始化的参数，可以操作 table
    */
-  onInit?: (action: UseFetchDataAction<RequestData<T>>) => void;
+  onInit?: (action: {
+    fetch: () => Promise<void>;
+    reload: () => Promise<void>;
+    fetchMore: () => void;
+  }) => void;
 
   /**
    * 渲染操作栏
@@ -188,9 +181,12 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSe
    */
   search?: boolean;
   /**
-   * 如何格式化moment
+   * 如何格式化日期
+   * 暂时只支持 moment
+   * string 会格式化为 YYYY-DD-MM
+   * number 代表时间戳
    */
-  momentFormat?: 'string' | 'number' | false;
+  dateFormatter?: 'string' | 'number' | false;
   /**
    * 格式化搜索表单提交数据
    */
@@ -426,10 +422,8 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     className: propsClassName,
     params = {},
     defaultData = [],
-    effects = [],
     headerTitle,
-    manual,
-    filterData,
+    postData,
     pagination: propsPagination,
     onInit,
     columns: propsColumns = [],
@@ -459,7 +453,6 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
   const action = useFetchData(
     async ({ pageSize, current }) => {
       const tempRequest = request || url;
-
       if (!tempRequest) {
         return {
           data: props.dataSource || [],
@@ -467,8 +460,8 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
         } as RequestData<T>;
       }
       const msg = await tempRequest({ current, pageSize, ...params, ...formSearch });
-      if (filterData) {
-        return { ...msg, data: filterData(msg.data) };
+      if (postData) {
+        return { ...msg, data: postData(msg.data) };
       }
       return msg;
     },
@@ -477,7 +470,6 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
       defaultCurrent,
       defaultPageSize,
       onLoad,
-      manual,
       effects: [
         Object.values(params)
           .filter(item => item)
@@ -485,7 +477,6 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
         Object.values(formSearch)
           .filter(item => item)
           .join('-'),
-        ...effects,
       ],
     },
   );
@@ -507,9 +498,13 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     // 页码更改的时候触发一下
     // 不然会造成 action 中数据老旧
     if (onInit) {
-      onInit(action);
+      onInit({
+        reload: action.reload,
+        fetch: action.fetch,
+        fetchMore: action.fetchMore,
+      });
     }
-  }, [action.pageSize, action.current, action.total]);
+  }, []);
 
   const pagination = mergePagination<T[], {}>(propsPagination, action);
 
@@ -582,7 +577,7 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
             // back first page
             action.resetPageIndex();
           }}
-          momentFormat={reset.momentFormat}
+          dateFormatter={reset.dateFormatter}
         />
       )}
       <Card

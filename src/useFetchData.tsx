@@ -1,4 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+
+const usePrevious = <T, U = T>(state: T): T | undefined => {
+  const ref = useRef<T>();
+
+  useEffect(() => {
+    ref.current = state;
+  });
+
+  return ref.current;
+};
 
 export interface RequestData<T> {
   data: T[];
@@ -28,7 +38,6 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
   options?: {
     defaultCurrent?: number;
     defaultPageSize?: number;
-    manual?: boolean;
     effects?: any[];
     onLoad?: (dataSource: T['data']) => void;
   },
@@ -38,19 +47,23 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
   const [list, setList] = useState<T['data']>(defaultData as any);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const [pageIndex, setPageIndex] = useState<number>(defaultCurrent);
+  const [pageIndex, setPageIndex] = useState<number>(defaultCurrent || 1);
   const [pageSize, setPageSize] = useState<number>(defaultPageSize);
   const [total, setTotal] = useState<number>(0);
   const [hasMore, setHasMore] = useState<boolean>(false);
 
-  const { manual = false, effects = [] } = options || {};
+  // pre state
+  const prePage = usePrevious(pageIndex);
+  const prePageSize = usePrevious(pageSize);
+
+  const { effects = [] } = options || {};
 
   /**
    * 请求数据
    * @param isAppend 是否添加数据到后面
    */
   const fetchList = async (isAppend?: boolean) => {
-    if (manual && loading) {
+    if (loading) {
       return;
     }
     setLoading(true);
@@ -89,6 +102,11 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
    * pageIndex 改变的时候自动刷新
    */
   useEffect(() => {
+    // 如果上次的页码为空或者两次页码等于是没必要查询的
+    // 如果 pageSize 发生变化是需要查询的，所以又加了 prePageSize
+    if ((!prePage || prePage === pageIndex) && (!prePageSize || prePageSize === pageSize)) {
+      return;
+    }
     // 如果 list 的长度大于 pageSize 的长度
     // 说明是一个假分页
     // (pageIndex - 1 || 1) 至少要第一页
@@ -102,6 +120,9 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
   // pageSize 修改后返回第一页
   useEffect(() => {
     setPageIndex(1);
+    if (prePage === 1) {
+      fetchList();
+    }
   }, [pageSize]);
 
   /**
@@ -112,9 +133,7 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
   };
 
   useEffect(() => {
-    if (manual === false) {
-      fetchList();
-    }
+    fetchList();
   }, effects);
 
   return {

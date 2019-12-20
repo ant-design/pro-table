@@ -2,17 +2,17 @@
   "name": "@ant-design/pro-table",
   "version": "1.0.20",
   "description": "🏆 Use Ant Design Table like a Pro!",
+  "repository": "https://github.com/ant-design/pro-table",
+  "license": "MIT",
+  "files": [
+    "/lib",
+    "/es"
+  ],
   "main": "lib/index.js",
   "module": "es/index.js",
-  "authors": {
-    "name": "chenshuai2144",
-    "email": "qixian.cs@outlook.com"
-  },
-  "repository": "https://github.com/ant-design/pro-table",
+  "types": "lib/index.d.ts",
   "scripts": {
-    "start": "father-doc dev",
     "build": "father build",
-    "prettier": "prettier -c --write \"**/*\"",
     "lint": "npm run lint-eslint && npm run lint:style",
     "lint-eslint": "eslint --cache --ext .js,.jsx,.ts,.tsx --format=pretty ./src",
     "lint-staged": "lint-staged",
@@ -20,19 +20,16 @@
     "lint:fix": "eslint --fix --cache --ext .js,.jsx,.ts,.tsx --format=pretty ./**/src ./tests && npm run lint:style",
     "lint:style": "stylelint --fix  'src/**/*.less'  --syntax less",
     "prepublishOnly": "npm run test && npm run build && np --no-cleanup --yolo --no-publish",
-    "test": "npm run lint && father test",
-    "site": "father-doc build && gh-pages -d ./dist"
+    "prettier": "prettier -c --write \"**/*\"",
+    "site": "father-doc build && gh-pages -d ./dist",
+    "start": "father-doc dev",
+    "test": "npm run lint && father test"
   },
   "husky": {
     "hooks": {
       "pre-commit": "npm run lint-staged"
     }
   },
-  "files": [
-    "/lib",
-    "/es"
-  ],
-  "types": "lib/index.d.ts",
   "lint-staged": {
     "**/*.less": "stylelint --syntax less",
     "**/*.{js,jsx,tsx,ts,less,md,json}": [
@@ -47,8 +44,15 @@
     "last 2 versions",
     "not ie <= 10"
   ],
-  "peerDependencies": {
-    "react": "16.x"
+  "dependencies": {
+    "@ant-design/compatible": "^0.0.1-alpha.7",
+    "@ant-design/icons": "^4.0.0-alpha.11",
+    "antd": "^3.25.1",
+    "classnames": "^2.2.6",
+    "moment": "^2.24.0",
+    "rc-resize-observer": "^0.1.3",
+    "unstated-next": "^1.1.0",
+    "use-merge-value": "^1.0.1"
   },
   "devDependencies": {
     "@types/classnames": "^2.2.9",
@@ -69,15 +73,11 @@
     "typescript": "^3.3.3",
     "umi-request": "^1.2.15"
   },
-  "license": "MIT",
-  "dependencies": {
-    "@ant-design/compatible": "^0.0.1-alpha.7",
-    "@ant-design/icons": "^4.0.0-alpha.11",
-    "antd": "^3.25.1",
-    "classnames": "^2.2.6",
-    "moment": "^2.24.0",
-    "rc-resize-observer": "^0.1.3",
-    "unstated-next": "^1.1.0",
-    "use-merge-value": "^1.0.1"
+  "peerDependencies": {
+    "react": "16.x"
+  },
+  "authors": {
+    "name": "chenshuai2144",
+    "email": "qixian.cs@outlook.com"
   }
 }

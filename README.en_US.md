@@ -21,10 +21,8 @@ pro-table is encapsulated in an antd table, supports some presets, and encapsula
 | Property | Description | Type | Default Value |
 | --- | --- | --- | --- |
 | request | a method to get the dataSource. | `(params?: {pageSize: number;current: number;[key: string]: any;}) => Promise<RequestData<T>>` | - |
-| filterData | Do some processing on the data obtained through the url. | `(data: T[]) => T[]` | - |
+| postData | Do some processing on the data obtained through the url. | `(data: T[]) => T[]` | - |
 | defaultData | Default data array. | `T[]` | - |
-| manual | Whether manual mode, you need to manually call fetch. | boolean | - |
-| effects | When the dependent parameter changes, the load data is automatically removed. | `(number \| string \| boolean)[]` | [] |
 | onInit | Triggered after the table data is successfully initialized, it will be triggered multiple times. | `(action: UseFetchDataAction<RequestData<T>>) => void` | [] |
 | toolBarRender | Render toolbar, support for returning a dom array, will automatically increase margin-right. | `(action: UseFetchDataAction<RequestData<T>>) => React.ReactNode[]` | - |
 | onLoad | Triggered after the data is loaded, it will be triggered multiple times. | `(dataSource: T[]) => void` | - |
@@ -32,7 +30,7 @@ pro-table is encapsulated in an antd table, supports some presets, and encapsula
 | tableStyle | The style of the packaged table | CSSProperties | - |
 | options | table's default operation, set to false to close it | `{{ fullScreen: boolean \| function, reload: boolean \| function,setting: true }}` | `{{ fullScreen: true, reload:true,setting: true }}` |
 | search | whether to search the form | boolean | true |
-| momentFormat | formatting moment type | `"string" \| "number" \| false` | string |
+| dateFormatter | formatting moment type | `"string" \| "number" \| false` | string |
 | beforeSearchSubmit | Make some changes before searching | `(params:T)=>T` | - |
 
 ### Columns
