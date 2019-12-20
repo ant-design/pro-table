@@ -42,6 +42,7 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
   const [pageSize, setPageSize] = useState<number>(defaultPageSize);
   const [total, setTotal] = useState<number>(0);
   const [hasMore, setHasMore] = useState<boolean>(false);
+  const [initalComponent, setInitalComponent] = useState<boolean>(true);
 
   const { manual = false, effects = [] } = options || {};
 
@@ -112,8 +113,12 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
   };
 
   useEffect(() => {
-    if (manual === false) {
+    if (manual === false && initalComponent === false) {
       fetchList();
+    }
+
+    if(initalComponent){
+      setInitalComponent(false);
     }
   }, effects);
 
