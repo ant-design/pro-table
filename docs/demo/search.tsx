@@ -174,7 +174,7 @@ export default () => (
       };
     }}
     rowKey="id"
-    momentFormat="string"
+    dateFormatter="string"
     headerTitle="查询 Table"
     params={{ state: 'all' }}
     toolBarRender={() => [

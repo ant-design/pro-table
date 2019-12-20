@@ -30,7 +30,7 @@ pro-table is encapsulated in an antd table, supports some presets, and encapsula
 | tableStyle | The style of the packaged table | CSSProperties | - |
 | options | table's default operation, set to false to close it | `{{ fullScreen: boolean \| function, reload: boolean \| function,setting: true }}` | `{{ fullScreen: true, reload:true,setting: true }}` |
 | search | whether to search the form | boolean | true |
-| momentFormat | formatting moment type | `"string" \| "number" \| false` | string |
+| dateFormatter | formatting moment type | `"string" \| "number" \| false` | string |
 | beforeSearchSubmit | Make some changes before searching | `(params:T)=>T` | - |
 
 ### Columns

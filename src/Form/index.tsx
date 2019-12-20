@@ -13,7 +13,7 @@ import './index.less';
 interface FormItem<T> extends FormComponentProps {
   onSubmit?: (value: T) => void;
   onReset?: () => void;
-  momentFormat?: 'string' | 'number' | false;
+  dateFormatter?: 'string' | 'number' | false;
 }
 
 const FromInputRender: React.FC<{
@@ -107,25 +107,25 @@ const FromInputRender: React.FC<{
   return undefined;
 });
 
-const momentFormatMap = {
+const dateFormatterMap = {
   time: 'HH:mm:SS',
   date: 'YYYY-MM-DD',
   dateTime: 'YYYY-MM-DD HH:mm:SS',
 };
 
-const genValue = (value: any, momentFormat?: string | boolean, proColumnsMap?: any) => {
+const genValue = (value: any, dateFormatter?: string | boolean, proColumnsMap?: any) => {
   const tmpValue = {};
   Object.keys(value).forEach(key => {
     const itemValue = value[key];
     if (itemValue && itemValue !== 'all') {
-      if (moment.isMoment(itemValue) && momentFormat) {
-        if (momentFormat === 'string') {
+      if (moment.isMoment(itemValue) && dateFormatter) {
+        if (dateFormatter === 'string') {
           const formatString =
-            momentFormatMap[(proColumnsMap[key || 'null'] || {}).valueType || 'dateTime'];
+            dateFormatterMap[(proColumnsMap[key || 'null'] || {}).valueType || 'dateTime'];
           tmpValue[key] = (itemValue as Moment).format(formatString || 'YYYY-MM-DD HH:mm:SS');
           return;
         }
-        if (momentFormat === 'number') {
+        if (dateFormatter === 'number') {
           tmpValue[key] = (itemValue as Moment).valueOf();
           return;
         }
@@ -136,7 +136,7 @@ const genValue = (value: any, momentFormat?: string | boolean, proColumnsMap?: a
   return tmpValue;
 };
 
-const FormSearch = <T, U = {}>({ form, onSubmit, momentFormat = 'string' }: FormItem<T>) => {
+const FormSearch = <T, U = {}>({ form, onSubmit, dateFormatter = 'string' }: FormItem<T>) => {
   const counter = Container.useContainer();
   const [collapse, setCollapse] = useState<boolean>(true);
   const [proColumnsMap, setProColumnsMap] = useState<{
@@ -147,7 +147,7 @@ const FormSearch = <T, U = {}>({ form, onSubmit, momentFormat = 'string' }: Form
   const submit = () => {
     const value = form.getFieldsValue();
     if (onSubmit) {
-      onSubmit(genValue(value, momentFormat, proColumnsMap) as T);
+      onSubmit(genValue(value, dateFormatter, proColumnsMap) as T);
     }
   };
 

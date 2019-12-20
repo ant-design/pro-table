@@ -181,9 +181,12 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSe
    */
   search?: boolean;
   /**
-   * 如何格式化moment
+   * 如何格式化日期
+   * 暂时只支持 moment
+   * string 会格式化为 YYYY-DD-MM
+   * number 代表时间戳
    */
-  momentFormat?: 'string' | 'number' | false;
+  dateFormatter?: 'string' | 'number' | false;
   /**
    * 格式化搜索表单提交数据
    */
@@ -574,7 +577,7 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
             // back first page
             action.resetPageIndex();
           }}
-          momentFormat={reset.momentFormat}
+          dateFormatter={reset.dateFormatter}
         />
       )}
       <Card

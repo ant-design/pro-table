@@ -180,7 +180,7 @@ export default () => (
         return pre;
       }, 0)} 项未解决 `
     }
-    momentFormat="string"
+    dateFormatter="string"
     headerTitle="批量操作"
     params={{ state: 'all' }}
     toolBarRender={(_, { selectedRowKeys }) => [

@@ -173,7 +173,7 @@ export default () => (
     pagination={{
       showSizeChanger: true,
     }}
-    momentFormat="string"
+    dateFormatter="string"
     headerTitle="基础 Table"
     params={{ state: 'all' }}
     toolBarRender={() => [
