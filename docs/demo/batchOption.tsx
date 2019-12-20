@@ -120,17 +120,9 @@ const columns: ProColumns<GithubIssueItem>[] = [
     title: 'option',
     valueType: 'option',
     dataIndex: 'id',
-    render: (text, row, index, action) => [
+    render: (text, row) => [
       <a href={row.html_url} target="_blank" rel="noopener noreferrer">
         查看
-      </a>,
-      <a
-        onClick={() => {
-          window.alert('确认关闭吗?');
-          action.reload();
-        }}
-      >
-        关闭
       </a>,
       <TableDropdown
         onSelect={key => window.alert(key)}

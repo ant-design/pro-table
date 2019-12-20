@@ -261,7 +261,7 @@ const defaultRenderText = (
   /**
    * 如果是金额的值
    */
-  if (valueType === 'money' && text) {
+  if (valueType === 'money' && (text || text === 0)) {
     /**
      * 这个 api 支持三星和华为的手机
      */
