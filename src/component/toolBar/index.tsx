@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ReloadOutlined, SettingOutlined } from '@ant-design/icons';
 import { Divider, Tooltip } from 'antd';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider/context';
@@ -30,6 +30,7 @@ export interface ToolBarProps<T = unknown> {
   };
   selectedRowKeys?: (string | number)[];
   selectedRows?: T[];
+  className?: string;
 }
 
 const buttonText = {
@@ -124,40 +125,49 @@ const ToolBar = <T, U = {}>({
   },
   selectedRowKeys,
   selectedRows,
-}: ToolBarProps<T>) => (
+  className,
+}: ToolBarProps<T>) => {
+  const optionDom = useMemo(
+    () =>
+      renderDefaultOption<T>(options, `${className}-item-icon`, {
+        fullScreen: () => action.fullScreen && action.fullScreen(),
+        reload: () => action.reload(),
+        setting: true,
+      }) || [],
+    [JSON.stringify(options)],
+  );
+  // 操作列表
+  const actions = toolBarRender ? toolBarRender(action, { selectedRowKeys, selectedRows }) : [];
+
+  return (
+    <div className={className}>
+      <div className={`${className}-title`}>{headerTitle}</div>
+      <div className={`${className}-option`}>
+        {actions
+          .filter(item => item)
+          .map((node, index) => (
+            <div
+              // eslint-disable-next-line react/no-array-index-key
+              key={index}
+              className={`${className}-item`}
+            >
+              {node}
+            </div>
+          ))}
+        {optionDom.length > 0 && actions.length > 0 && <Divider type="vertical" />}
+        {optionDom}
+      </div>
+    </div>
+  );
+};
+
+const WarpToolBar = <T, U = {}>(props: ToolBarProps<T>) => (
   <ConfigConsumer>
     {({ getPrefixCls }: ConfigConsumerProps) => {
       const className = getPrefixCls('pro-table-toolbar');
-      const optionDom =
-        renderDefaultOption<T>(options, `${className}-item-icon`, {
-          fullScreen: () => action.fullScreen && action.fullScreen(),
-          reload: () => action.reload(),
-          setting: true,
-        }) || [];
-      // 操作列表
-      const actions = toolBarRender ? toolBarRender(action, { selectedRowKeys, selectedRows }) : [];
-      return (
-        <div className={className}>
-          <div className={`${className}-title`}>{headerTitle}</div>
-          <div className={`${className}-option`}>
-            {actions
-              .filter(item => item)
-              .map((node, index) => (
-                <div
-                  // eslint-disable-next-line react/no-array-index-key
-                  key={index}
-                  className={`${className}-item`}
-                >
-                  {node}
-                </div>
-              ))}
-            {optionDom.length > 0 && actions.length > 0 && <Divider type="vertical" />}
-            {optionDom}
-          </div>
-        </div>
-      );
+      return <ToolBar className={className} {...props} />;
     }}
   </ConfigConsumer>
 );
 
-export default ToolBar;
+export default WarpToolBar;

@@ -127,6 +127,7 @@ const CheckboxList: React.FC<{
       <DnDItem
         index={index}
         id={columnKey}
+        key={columnKey}
         end={(id, targetIndex) => {
           move(id, targetIndex);
         }}
@@ -191,7 +192,6 @@ const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
   const counter = Container.useContainer();
   const localColumns: ProColumns<T>[] = props.columns || counter.columns || [];
   const { columnsMap, setColumnsMap } = counter;
-
   /**
    * 设置全部选中，或全部未选中
    * @param show

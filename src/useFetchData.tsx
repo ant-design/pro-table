@@ -17,7 +17,7 @@ export interface RequestData<T> {
 }
 export interface UseFetchDataAction<T extends RequestData<any>> {
   dataSource: T['data'] | T;
-  loading: boolean;
+  loading: boolean | undefined;
   hasMore: boolean;
   current: number;
   pageSize: number;
@@ -27,9 +27,15 @@ export interface UseFetchDataAction<T extends RequestData<any>> {
   fetchMore: () => void;
   fullScreen?: () => void;
   resetPageIndex: () => void;
-  setCurrent: (current: number) => void;
-  setPageSize: (pageSize: number) => void;
   restColumnsConfig?: () => void;
+  setPageInfo: (pageInfo: Partial<PageInfo>) => void;
+}
+
+interface PageInfo {
+  hasMore: boolean;
+  page: number;
+  pageSize: number;
+  total: number;
 }
 
 const useFetchData = <T extends RequestData<any>, U = {}>(
@@ -45,16 +51,18 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
   const { defaultPageSize = 10, defaultCurrent = 1, onLoad = () => null } = options || {};
 
   const [list, setList] = useState<T['data']>(defaultData as any);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean | undefined>(undefined);
 
-  const [pageIndex, setPageIndex] = useState<number>(defaultCurrent || 1);
-  const [pageSize, setPageSize] = useState<number>(defaultPageSize);
-  const [total, setTotal] = useState<number>(0);
-  const [hasMore, setHasMore] = useState<boolean>(false);
+  const [pageInfo, setPageInfo] = useState<PageInfo>({
+    hasMore: false,
+    page: defaultCurrent || 1,
+    total: 0,
+    pageSize: defaultPageSize,
+  });
 
   // pre state
-  const prePage = usePrevious(pageIndex);
-  const prePageSize = usePrevious(pageSize);
+  const prePage = usePrevious(pageInfo.page);
+  const prePageSize = usePrevious(pageInfo.pageSize);
 
   const { effects = [] } = options || {};
 
@@ -67,9 +75,10 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
       return;
     }
     setLoading(true);
+    const { pageSize, page } = pageInfo;
     const { data, success, total: dataTotal = 0 } =
       (await getData({
-        current: pageIndex,
+        current: page,
         pageSize,
       })) || {};
     if (success !== false) {
@@ -78,12 +87,8 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
       } else {
         setList(data);
       }
-      if (dataTotal !== total) {
-        setTotal(dataTotal);
-      }
-
       // 判断是否可以继续翻页
-      setHasMore(dataTotal > pageSize * pageIndex);
+      setPageInfo({ ...pageInfo, total: dataTotal, hasMore: dataTotal > pageSize * page });
     }
     setLoading(false);
     if (onLoad) {
@@ -93,8 +98,8 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
 
   const fetchMore = () => {
     // 如果没有更多的就忽略掉
-    if (hasMore) {
-      setPageIndex(pageIndex + 1);
+    if (pageInfo.hasMore) {
+      setPageInfo({ ...pageInfo, page: pageInfo.page + 1 });
     }
   };
 
@@ -102,9 +107,10 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
    * pageIndex 改变的时候自动刷新
    */
   useEffect(() => {
+    const { page, pageSize } = pageInfo;
     // 如果上次的页码为空或者两次页码等于是没必要查询的
     // 如果 pageSize 发生变化是需要查询的，所以又加了 prePageSize
-    if ((!prePage || prePage === pageIndex) && (!prePageSize || prePageSize === pageSize)) {
+    if ((!prePage || prePage === page) && (!prePageSize || prePageSize === pageSize)) {
       return;
     }
     // 如果 list 的长度大于 pageSize 的长度
@@ -112,24 +118,25 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
     // (pageIndex - 1 || 1) 至少要第一页
     // 在第一页大于 10
     // 第二页也应该是大于 10
-    if (pageIndex !== undefined && list.length <= pageSize) {
+    if (page !== undefined && list.length <= pageSize) {
       fetchList();
     }
-  }, [pageIndex]);
+  }, [pageInfo.page]);
 
   // pageSize 修改后返回第一页
   useEffect(() => {
-    setPageIndex(1);
-    if (prePage === 1) {
-      fetchList();
+    if (!prePageSize) {
+      return;
     }
-  }, [pageSize]);
+    setPageInfo({ ...pageInfo, page: 1 });
+    fetchList();
+  }, [pageInfo.pageSize]);
 
   /**
    * 重置pageIndex 到 1
    */
   const resetPageIndex = () => {
-    setPageIndex(1);
+    setPageInfo({ ...pageInfo, page: 1 });
   };
 
   useEffect(() => {
@@ -142,13 +149,16 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
     fetch: fetchList,
     reload: fetchList,
     fetchMore,
-    total,
-    hasMore,
+    total: pageInfo.total,
+    hasMore: pageInfo.hasMore,
     resetPageIndex,
-    current: pageIndex,
-    pageSize,
-    setCurrent: setPageIndex,
-    setPageSize,
+    current: pageInfo.page,
+    pageSize: pageInfo.pageSize,
+    setPageInfo: info =>
+      setPageInfo({
+        ...pageInfo,
+        ...info,
+      }),
   };
 };
 
