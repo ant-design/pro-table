@@ -103,6 +103,10 @@ export interface ProColumns<T = unknown> extends Omit<ColumnProps<T>, 'render' |
    * 在 table 中隐藏
    */
   hideInTable?: boolean;
+  /**
+   * from 的排序
+   */
+  order?: number;
 }
 
 export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSelection'> {
@@ -389,7 +393,7 @@ const genColumnList = <T, U = {}>(
   },
 ): ColumnProps<T>[] =>
   columns
-    .map(item => {
+    .map((item, columnsIndex) => {
       const { key, dataIndex } = item;
       const columnKey = `${key || ''}-${dataIndex || ''}`;
       const config = map[columnKey] || { fixed: item.fixed };
@@ -398,6 +402,7 @@ const genColumnList = <T, U = {}>(
           const itemValue = String(record[item.dataIndex || ''] || '') as string;
           return String(itemValue) === String(value);
         },
+        index: columnsIndex,
         filters: parsingValueEnumToArray(item.valueEnum),
         ...item,
         fixed: config.fixed,
