@@ -13,7 +13,7 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 | request | 一个获得 dataSource 的方法 | `(params?: {pageSize: number;current: number;[key: string]: any;}) => Promise<RequestData<T>>` | - |
 | postData | 对通过 url 获取的数据进行一些处理 | `(data: T[]) => T[]` | - |
 | defaultData | 默认的数据 | `T[]` | - |
-| onInit | 表格的数据初始化成功之后触发，会多次触发。 | `(action: UseFetchDataAction<RequestData<T>>) => void` | [] |
+| onPostAction | 表格的数据初始化成功之后触发，会多次触发。 | `(action: UseFetchDataAction<RequestData<T>>) => void` | [] |
 | toolBarRender | 渲染工具栏，支持返回一个 dom 数组，会自动增加 margin-right | `(action: UseFetchDataAction<RequestData<T>>) => React.ReactNode[]` | - |
 | onLoad | 数据加载完成后触发,会多次触发 | `(dataSource: T[]) => void` | - |
 | tableClassName | 封装的 table 的 className | string | - |

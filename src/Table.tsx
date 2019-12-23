@@ -141,7 +141,7 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSe
   /**
    * 初始化的参数，可以操作 table
    */
-  onInit?: (action: {
+  onPostAction?: (action: {
     fetch: () => Promise<void>;
     reload: () => Promise<void>;
     fetchMore: () => void;
@@ -437,7 +437,7 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     headerTitle,
     postData,
     pagination: propsPagination,
-    onInit,
+    onPostAction,
     columns: propsColumns = [],
     toolBarRender = () => [],
     onLoad,
@@ -497,14 +497,24 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (onInit) {
-      onInit({
+    if (onPostAction) {
+      onPostAction({
         reload: action.reload,
         fetch: action.fetch,
         fetchMore: action.fetchMore,
       });
     }
-  }, []);
+  }, [
+    action.pageSize,
+    action.current,
+    action.total,
+    Object.values(params)
+      .filter(item => item)
+      .join('-'),
+    Object.values(formSearch)
+      .filter(item => item)
+      .join('-'),
+  ]);
 
   useEffect(() => {
     action.fullScreen = () => {
