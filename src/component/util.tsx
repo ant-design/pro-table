@@ -70,3 +70,10 @@ export const parsingValueEnumToArray = (
       value: key,
     };
   });
+
+/**
+ * 检查值是否存在
+ * 为了 避开 0 和 false
+ * @param value
+ */
+export const checkUndefinedOrNull = (value: any) => value !== undefined && value !== null;

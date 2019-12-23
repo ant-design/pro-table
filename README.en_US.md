@@ -23,7 +23,7 @@ pro-table is encapsulated in an antd table, supports some presets, and encapsula
 | request | a method to get the dataSource. | `(params?: {pageSize: number;current: number;[key: string]: any;}) => Promise<RequestData<T>>` | - |
 | postData | Do some processing on the data obtained through the url. | `(data: T[]) => T[]` | - |
 | defaultData | Default data array. | `T[]` | - |
-| onInit | Triggered after the table data is successfully initialized, it will be triggered multiple times. | `(action: UseFetchDataAction<RequestData<T>>) => void` | [] |
+| onPostAction | Triggered after the table data is successfully initialized, it will be triggered multiple times. | `(action: UseFetchDataAction<RequestData<T>>) => void` | [] |
 | toolBarRender | Render toolbar, support for returning a dom array, will automatically increase margin-right. | `(action: UseFetchDataAction<RequestData<T>>) => React.ReactNode[]` | - |
 | onLoad | Triggered after the data is loaded, it will be triggered multiple times. | `(dataSource: T[]) => void` | - |
 | tableClassName | The className of the packaged table | string | - |
