@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { ReloadOutlined, SettingOutlined } from '@ant-design/icons';
 import { Divider, Tooltip } from 'antd';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider/context';
@@ -127,15 +127,12 @@ const ToolBar = <T, U = {}>({
   selectedRows,
   className,
 }: ToolBarProps<T>) => {
-  const optionDom = useMemo(
-    () =>
-      renderDefaultOption<T>(options, `${className}-item-icon`, {
-        fullScreen: () => action.fullScreen && action.fullScreen(),
-        reload: () => action.reload(),
-        setting: true,
-      }) || [],
-    [JSON.stringify(options)],
-  );
+  const optionDom =
+    renderDefaultOption<T>(options, `${className}-item-icon`, {
+      fullScreen: () => action.fullScreen && action.fullScreen(),
+      reload: () => action.reload(),
+      setting: true,
+    }) || [];
   // 操作列表
   const actions = toolBarRender ? toolBarRender(action, { selectedRowKeys, selectedRows }) : [];
 

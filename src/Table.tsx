@@ -13,7 +13,7 @@ import Toolbar, { OptionsType, ToolBarProps } from './component/toolBar';
 import Alert from './component/alert';
 import FormSearch from './Form';
 import { StatusType } from './component/status';
-import { parsingText, parsingValueEnumToArray } from './component/util';
+import { parsingText, parsingValueEnumToArray, checkUndefinedOrNull } from './component/util';
 
 /**
  * money 金额
@@ -389,7 +389,7 @@ const ColumRender = <T, U = any>({ item, text, row, index }: ColumRenderInterfac
     }
     return renderDom as React.ReactNode;
   }
-  return (dom as React.ReactNode) || null;
+  return checkUndefinedOrNull(dom) ? dom : null;
 };
 
 const genColumnList = <T, U = {}>(
@@ -485,10 +485,10 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
       onLoad,
       effects: [
         Object.values(params)
-          .filter(item => item)
+          .filter(item => checkUndefinedOrNull(item))
           .join('-'),
         Object.values(formSearch)
-          .filter(item => item)
+          .filter(item => checkUndefinedOrNull(item))
           .join('-'),
       ],
     },
@@ -509,15 +509,16 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     action.current,
     action.total,
     Object.values(params)
-      .filter(item => item)
+      .filter(item => checkUndefinedOrNull(item))
       .join('-'),
     Object.values(formSearch)
-      .filter(item => item)
+      .filter(item => checkUndefinedOrNull(item))
       .join('-'),
   ]);
 
+  const fullScreen = useRef<() => void>();
   useEffect(() => {
-    action.fullScreen = () => {
+    fullScreen.current = () => {
       if (!rootRef.current || !document.fullscreenEnabled) {
         return;
       }
@@ -528,6 +529,8 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
       }
     };
   }, [rootRef.current]);
+
+  action.fullScreen = fullScreen.current;
 
   const pagination = mergePagination<T[], {}>(propsPagination, action);
 
