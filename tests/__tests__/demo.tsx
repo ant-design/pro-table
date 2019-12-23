@@ -90,7 +90,7 @@ export const columns: ProColumns[] = [
         <br />
         <TableStatus.Processing>正在部署</TableStatus.Processing>
         <br />
-        <TableStatus.Init>正在初始化</TableStatus.Init>
+        <TableStatus.Default>正在初始化</TableStatus.Default>
       </div>
     ),
   },
@@ -117,7 +117,10 @@ export const columns: ProColumns[] = [
       </a>,
       <TableDropdown
         onSelect={key => window.alert(key)}
-        menus={[{ key: 'copy', name: '复制' }, { key: 'delete', name: '删除' }]}
+        menus={[
+          { key: 'copy', name: '复制' },
+          { key: 'delete', name: '删除' },
+        ]}
       />,
     ],
   },

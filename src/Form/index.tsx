@@ -191,8 +191,8 @@ const FormSearch = <T, U = {}>({ form, onSubmit, dateFormatter = 'string' }: For
               height: formHeight,
             }}
           >
-            <RcResizeObserver onResize={({ height }) => setFormHeight(height + 24)}>
-              <Form>
+            <RcResizeObserver onResize={({ height }) => setFormHeight(height + 32)}>
+              <Form layout="inline">
                 <Row gutter={16} justify="end">
                   {domList}
                   <Col

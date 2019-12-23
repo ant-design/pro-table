@@ -4,15 +4,21 @@
 
 .@{form-search-prefix-cls} {
   margin-bottom: 24px;
-  padding: 24px;
-  padding-bottom: 0;
+  padding: 16px;
   overflow: hidden;
   background: @component-background;
-  transition: 0.3s all;
   .ant-form-item-label {
     min-width: 80px;
     text-align: right;
   }
+  .ant-col.ant-col-8 {
+    padding: 8px;
+  }
+
+  .ant-row.ant-form-item {
+    margin: 0;
+  }
+
   .ant-form-item {
     display: flex;
   }
@@ -20,6 +26,7 @@
   .ant-form-item-control-wrapper {
     flex: 1;
   }
+
   &-option {
     display: flex;
     align-items: center;
