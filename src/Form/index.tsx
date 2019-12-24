@@ -31,7 +31,7 @@ const FromInputRender: React.FC<{
     const { valueEnum } = item;
     if (valueEnum) {
       return (
-        <Select placeholder="请选择" ref={ref} {...rest}>
+        <Select placeholder="请选择" ref={ref} {...rest} {...item.formItemProps}>
           <Select.Option key="all" value="all">
             全部
           </Select.Option>
@@ -43,7 +43,7 @@ const FromInputRender: React.FC<{
         </Select>
       );
     }
-    return <Input placeholder="请输入" {...rest} />;
+    return <Input placeholder="请输入" {...rest} {...item.formItemProps} />;
   }
   if (item.valueType === 'date') {
     return (
@@ -54,6 +54,7 @@ const FromInputRender: React.FC<{
           width: '100%',
         }}
         {...rest}
+        {...item.formItemProps}
       />
     );
   }
@@ -67,6 +68,7 @@ const FromInputRender: React.FC<{
           width: '100%',
         }}
         {...rest}
+        {...item.formItemProps}
       />
     );
   }
@@ -79,6 +81,7 @@ const FromInputRender: React.FC<{
           width: '100%',
         }}
         {...rest}
+        {...item.formItemProps}
       />
     );
   }
@@ -100,6 +103,7 @@ const FromInputRender: React.FC<{
           width: '100%',
         }}
         {...rest}
+        {...item.formItemProps}
       />
     );
   }

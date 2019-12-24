@@ -62,6 +62,11 @@ export interface ProColumns<T = unknown> extends Omit<ColumnProps<T>, 'render' |
   ) => React.ReactNode;
 
   /**
+   * 搜索表单的 props
+   */
+  formItemProps?: { [prop: string]: any };
+
+  /**
    * 搜索表单的默认值
    */
   initialValue?: any;
