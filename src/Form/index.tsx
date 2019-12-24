@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { DownOutlined } from '@ant-design/icons';
 import { Input, Form, Row, Col, TimePicker, InputNumber, DatePicker, Select, Button } from 'antd';
 import moment, { Moment } from 'moment';
 import RcResizeObserver from 'rc-resize-observer';
 import { FormComponentProps } from 'antd/lib/form';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
-import get from 'lodash/get';
-import { parsingValueEnumToArray } from '../component/util';
+import { parsingValueEnumToArray, useDeepCompareEffect } from '../component/util';
 import Container from '../container';
 import { ProColumns } from '../index';
 import './index.less';
@@ -16,6 +15,12 @@ export interface SearchConfig {
   resetText?: string;
   collapseRender?: (collapsed: boolean) => React.ReactNode;
 }
+
+const defaultSearch: Required<SearchConfig> = {
+  searchText: '查询',
+  resetText: '重置',
+  collapseRender: (collapsed: boolean) => (collapsed ? '展开' : '收起'),
+};
 
 interface FormItem<T> extends FormComponentProps {
   onSubmit?: (value: T) => void;
@@ -145,11 +150,18 @@ const genValue = (value: any, dateFormatter?: string | boolean, proColumnsMap?: 
   return tmpValue;
 };
 
+const getDefaultSearch = (search?: boolean | SearchConfig): Required<SearchConfig> => {
+  if (search === undefined || search === true) {
+    return defaultSearch;
+  }
+  return { ...defaultSearch, ...search } as Required<SearchConfig>;
+};
+
 const FormSearch = <T, U = {}>({
   form,
   onSubmit,
   dateFormatter = 'string',
-  search,
+  search: propsSearch,
 }: FormItem<T>) => {
   const counter = Container.useContainer();
   const [collapse, setCollapse] = useState<boolean>(true);
@@ -165,14 +177,14 @@ const FormSearch = <T, U = {}>({
     }
   };
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     const tempMap = {};
     counter.proColumns.forEach(item => {
       const columnsKey = item.key || item.dataIndex || 'null';
       tempMap[columnsKey] = item;
     });
     setProColumnsMap(tempMap);
-  }, [JSON.stringify(counter.proColumns)]);
+  }, counter.proColumns);
 
   const columnsList = counter.proColumns.filter(
     item =>
@@ -195,8 +207,7 @@ const FormSearch = <T, U = {}>({
       </Col>
     ));
 
-  const defaultCollapseRender = (collapsed: boolean) => (collapsed ? '展开' : '收起');
-  const collapseRender = get(search, 'collapseRender', defaultCollapseRender);
+  const defaultSearchConfig = getDefaultSearch(propsSearch);
 
   return (
     <ConfigConsumer>
@@ -221,7 +232,7 @@ const FormSearch = <T, U = {}>({
                   >
                     <Form.Item>
                       <Button type="primary" htmlType="submit" onClick={() => submit()}>
-                        {get(search, 'searchText', '搜索')}
+                        {defaultSearchConfig.searchText}
                       </Button>
                       <Button
                         style={{ marginLeft: 8 }}
@@ -230,7 +241,7 @@ const FormSearch = <T, U = {}>({
                           submit();
                         }}
                       >
-                        {get(search, 'resetText', '重置')}
+                        {defaultSearchConfig.resetText}
                       </Button>
                       {columnsList.length > 2 && (
                         <a
@@ -239,7 +250,8 @@ const FormSearch = <T, U = {}>({
                             setCollapse(!collapse);
                           }}
                         >
-                          {collapseRender(collapse)}
+                          {defaultSearchConfig.collapseRender &&
+                            defaultSearchConfig.collapseRender(collapse)}
                           <DownOutlined
                             style={{
                               marginLeft: '0.5em',

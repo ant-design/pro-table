@@ -23,7 +23,7 @@ pro-table is encapsulated in an antd table, supports some presets, and encapsula
 | request | a method to get the dataSource. | `(params?: {pageSize: number;current: number;[key: string]: any;}) => Promise<RequestData<T>>` | - |
 | postData | Do some processing on the data obtained through the url. | `(data: T[]) => T[]` | - |
 | defaultData | Default data array. | `T[]` | - |
-| onPostAction | Triggered after the table data is successfully initialized, it will be triggered multiple times. | `(action: UseFetchDataAction<RequestData<T>>) => void` | [] |
+| actionRef | Triggered after the table data is successfully initialized, it will be triggered multiple times. | `React.MutableRefObject<ActionType> \| ((actionRef: ActionType) => void)` | [] |
 | toolBarRender | Render toolbar, support for returning a dom array, will automatically increase margin-right. | `(action: UseFetchDataAction<RequestData<T>>) => React.ReactNode[]` | - |
 | onLoad | Triggered after the data is loaded, it will be triggered multiple times. | `(dataSource: T[]) => void` | - |
 | tableClassName | The className of the packaged table | string | - |
@@ -47,6 +47,31 @@ pro-table is encapsulated in an antd table, supports some presets, and encapsula
 | hideInSearch | Do not show this in the query form | boolean | - |
 | hideInTable | Do not show this column in Table | boolean | - |
 | formItemProps | Props passed into query form item | `{ [prop: string]: any }` | - |
+
+### ActionType
+
+Sometimes we need to trigger the reload of the table and other actions, and actions can help us do this.
+
+```tsx
+interface ActionType {
+  reload: () => void;
+  fetchMore: () => void;
+  reset: () => void;
+}
+
+const ref = useRef<ActionType>();
+
+<ProTable actionRef={ref} />;
+
+// Load more
+ref.reload();
+
+// 加载更多
+ref.fetchMore();
+
+// Reset to reset value
+ref.reset();
+```
 
 ### valueType
 
