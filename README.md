@@ -29,7 +29,7 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 | tableClassName | 封装的 table 的 className | string | - |
 | tableStyle | 封装的 table 的 style | CSSProperties | - |
 | options | table 的默认操作，设置为 false 可以关闭它 | `{{ fullScreen: boolean \| function, reload: boolean \| function,setting: true }}` | `{ fullScreen: true, reload:true , setting: true }` |
-| search | 是否显示搜索表单 | boolean | true |
+| search | 是否显示搜索表单，传入对象时为搜索表单的配置 | `boolean \| { searchText?: string, resetText?: string, collapseRender?: (collapsed: boolean) => React.ReactNode }` | true |
 | dateFormatter | moment 的格式化方式 | `"string" \| "number" \| false` | string |
 | beforeSearchSubmit | 搜索之前进行一些修改 | `(params:T)=>T` | - |
 
@@ -46,6 +46,7 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 | valueType | 值的类型 | `'money' \| 'option' \| 'date' \| 'dateTime' \| 'time' \| 'text'\| 'index' \| 'indexBorder'` | 'text' |
 | hideInSearch | 在查询表单中不展示此项 | boolean | - |
 | hideInTable | 在 Table 中不展示此列 | boolean | - |
+| formItemProps | 查询表单的 props，会透传给表单项 | `{ [prop: string]: any }` | - |
 
 ### valueType
 
