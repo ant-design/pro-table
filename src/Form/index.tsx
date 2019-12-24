@@ -5,15 +5,23 @@ import moment, { Moment } from 'moment';
 import RcResizeObserver from 'rc-resize-observer';
 import { FormComponentProps } from 'antd/lib/form';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
+import get from 'lodash/get';
 import { parsingValueEnumToArray } from '../component/util';
 import Container from '../container';
 import { ProColumns } from '../index';
 import './index.less';
 
+export interface SearchConfig {
+  searchText?: string;
+  resetText?: string;
+  collapseRender?: (collapsed: boolean) => React.ReactNode;
+}
+
 interface FormItem<T> extends FormComponentProps {
   onSubmit?: (value: T) => void;
   onReset?: () => void;
   dateFormatter?: 'string' | 'number' | false;
+  search?: boolean | SearchConfig;
 }
 
 const FromInputRender: React.FC<{
@@ -140,7 +148,12 @@ const genValue = (value: any, dateFormatter?: string | boolean, proColumnsMap?: 
   return tmpValue;
 };
 
-const FormSearch = <T, U = {}>({ form, onSubmit, dateFormatter = 'string' }: FormItem<T>) => {
+const FormSearch = <T, U = {}>({
+  form,
+  onSubmit,
+  dateFormatter = 'string',
+  search,
+}: FormItem<T>) => {
   const counter = Container.useContainer();
   const [collapse, setCollapse] = useState<boolean>(true);
   const [proColumnsMap, setProColumnsMap] = useState<{
@@ -184,6 +197,10 @@ const FormSearch = <T, U = {}>({ form, onSubmit, dateFormatter = 'string' }: For
         </Form.Item>
       </Col>
     ));
+
+  const defaultCollapseRender = (collapsed: boolean) => (collapsed ? '展开' : '收起');
+  const collapseRender = get(search, 'collapseRender', defaultCollapseRender);
+
   return (
     <ConfigConsumer>
       {({ getPrefixCls }: ConfigConsumerProps) => {
@@ -207,7 +224,7 @@ const FormSearch = <T, U = {}>({ form, onSubmit, dateFormatter = 'string' }: For
                   >
                     <Form.Item>
                       <Button type="primary" htmlType="submit" onClick={() => submit()}>
-                        搜索
+                        {get(search, 'searchText', '搜索')}
                       </Button>
                       <Button
                         style={{ marginLeft: 8 }}
@@ -216,7 +233,7 @@ const FormSearch = <T, U = {}>({ form, onSubmit, dateFormatter = 'string' }: For
                           submit();
                         }}
                       >
-                        重置
+                        {get(search, 'resetText', '重置')}
                       </Button>
                       {columnsList.length > 2 && (
                         <a
@@ -225,9 +242,10 @@ const FormSearch = <T, U = {}>({ form, onSubmit, dateFormatter = 'string' }: For
                             setCollapse(!collapse);
                           }}
                         >
-                          {collapse ? '展开' : '收起'}{' '}
+                          {collapseRender(collapse)}
                           <DownOutlined
                             style={{
+                              marginLeft: '0.5em',
                               transition: '0.3s all',
                               transform: `rotate(${collapse ? 0 : 0.5}turn)`,
                             }}
