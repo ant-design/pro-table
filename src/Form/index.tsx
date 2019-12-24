@@ -201,34 +201,36 @@ const FormSearch = <T, U = {}>({ form, onSubmit, dateFormatter = 'string' }: For
                     key="option"
                     className={`${className}-option`}
                   >
-                    <Button type="primary" htmlType="submit" onClick={() => submit()}>
-                      搜索
-                    </Button>
-                    <Button
-                      style={{ marginLeft: 8 }}
-                      onClick={() => {
-                        form.resetFields();
-                        submit();
-                      }}
-                    >
-                      重置
-                    </Button>
-                    {columnsList.length > 2 && (
-                      <a
+                    <Form.Item>
+                      <Button type="primary" htmlType="submit" onClick={() => submit()}>
+                        搜索
+                      </Button>
+                      <Button
                         style={{ marginLeft: 8 }}
                         onClick={() => {
-                          setCollapse(!collapse);
+                          form.resetFields();
+                          submit();
                         }}
                       >
-                        {collapse ? '展开' : '收起'}{' '}
-                        <DownOutlined
-                          style={{
-                            transition: '0.3s all',
-                            transform: `rotate(${collapse ? 0 : 0.5}turn)`,
+                        重置
+                      </Button>
+                      {columnsList.length > 2 && (
+                        <a
+                          style={{ marginLeft: 8 }}
+                          onClick={() => {
+                            setCollapse(!collapse);
                           }}
-                        />
-                      </a>
-                    )}
+                        >
+                          {collapse ? '展开' : '收起'}{' '}
+                          <DownOutlined
+                            style={{
+                              transition: '0.3s all',
+                              transform: `rotate(${collapse ? 0 : 0.5}turn)`,
+                            }}
+                          />
+                        </a>
+                      )}
+                    </Form.Item>
                   </Col>
                 </Row>
               </Form>
