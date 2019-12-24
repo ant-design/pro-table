@@ -40,9 +40,6 @@ const FromInputRender: React.FC<{
     if (valueEnum) {
       return (
         <Select placeholder="请选择" ref={ref} {...rest} {...item.formItemProps}>
-          <Select.Option key="all" value="all">
-            全部
-          </Select.Option>
           {parsingValueEnumToArray(valueEnum).map(({ value, text }) => (
             <Select.Option key={value} value={value}>
               {text}
