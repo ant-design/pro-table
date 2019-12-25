@@ -1,6 +1,6 @@
-import React, { ReactNode, useEffect, useRef } from 'react';
+import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import isEqual from 'lodash.isequal';
-import TableStaus, { StatusType } from './status';
+import TableStatus, { StatusType } from './status';
 
 /**
  * 转化 text 和 valueEnum
@@ -37,7 +37,7 @@ export const parsingText = (
       return domText.text;
     }
     const { status } = domText;
-    const Status = TableStaus[status || 'Init'];
+    const Status = TableStatus[status || 'Init'];
     return <Status>{domText.text}</Status>;
   }
   return domText.text || domText;
@@ -97,3 +97,73 @@ function useDeepCompareMemoize(value: any) {
 export function useDeepCompareEffect(effect: React.EffectCallback, dependencies?: Object) {
   useEffect(effect, useDeepCompareMemoize(dependencies));
 }
+
+const MediaQueryEnum = {
+  xs: {
+    maxWidth: 575,
+    matchMedia: '(max-width: 575px)',
+  },
+  sm: {
+    minWidth: 576,
+    maxWidth: 767,
+    matchMedia: '(min-width: 576px) and (max-width: 767px)',
+  },
+  md: {
+    minWidth: 768,
+    maxWidth: 991,
+    matchMedia: '(min-width: 768px) and (max-width: 991px)',
+  },
+  lg: {
+    minWidth: 992,
+    maxWidth: 1199,
+    matchMedia: '(min-width: 992px) and (max-width: 1199px)',
+  },
+  xl: {
+    minWidth: 1200,
+    maxWidth: 1599,
+    matchMedia: '(min-width: 1200px) and (max-width: 1599px)',
+  },
+  xxl: {
+    minWidth: 1600,
+    matchMedia: '(min-width: 1600px)',
+  },
+};
+
+type MediaQueryKey = keyof typeof MediaQueryEnum;
+
+/**
+ * loop query screen className
+ * Array.find will throw a error
+ * `Rendered more hooks than during the previous render.`
+ * So should use Array.forEach
+ */
+const getScreenClassName = () => {
+  let className: MediaQueryKey = 'md';
+
+  const mediaQueryKey = Object.keys(MediaQueryEnum).find(key => {
+    const { matchMedia } = MediaQueryEnum[key];
+    if (window.matchMedia(matchMedia).matches) {
+      return true;
+    }
+    return false;
+  });
+  className = (mediaQueryKey as unknown) as MediaQueryKey;
+  return className;
+};
+
+export const useMedia = () => {
+  const [colSpan, setColSpan] = useState<keyof typeof MediaQueryEnum>(getScreenClassName());
+  const resizeSetColSpan = useCallback(() => {
+    const newColSpan = getScreenClassName();
+    if (colSpan !== newColSpan) {
+      setColSpan(newColSpan);
+    }
+  }, []);
+  useEffect(() => {
+    window.addEventListener('resize', resizeSetColSpan, {
+      passive: true,
+    });
+    return () => window.removeEventListener('resize', resizeSetColSpan);
+  }, []);
+  return colSpan;
+};

@@ -11,8 +11,10 @@
     min-width: 80px;
     text-align: right;
   }
-  .ant-col.ant-col-8 {
-    padding: 8px;
+  .ant-row:not(.ant-form-item) {
+    > .ant-col {
+      padding: 8px 0;
+    }
   }
 
   .ant-row.ant-form-item {

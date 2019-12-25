@@ -82,6 +82,7 @@ const columns: ProColumns<GithubIssueItem>[] = [
     dataIndex: 'state',
     initialValue: 'all',
     valueEnum: {
+      all: { text: '全部', status: 'Default' },
       open: {
         text: '未解决',
         status: 'Error',

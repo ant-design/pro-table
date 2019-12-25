@@ -1,24 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DownOutlined } from '@ant-design/icons';
 import { Input, Form, Row, Col, TimePicker, InputNumber, DatePicker, Select, Button } from 'antd';
 import moment, { Moment } from 'moment';
 import RcResizeObserver from 'rc-resize-observer';
 import { FormComponentProps } from 'antd/lib/form';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
-import { parsingValueEnumToArray, useDeepCompareEffect } from '../component/util';
+import { parsingValueEnumToArray, useDeepCompareEffect, useMedia } from '../component/util';
 import Container from '../container';
 import { ProColumns } from '../index';
 import './index.less';
 
+const defaultColConfig = {
+  lg: 8,
+  md: 12,
+  xxl: 6,
+  xl: 8,
+  sm: 12,
+  xs: 24,
+};
+
 export interface SearchConfig {
   searchText?: string;
   resetText?: string;
+  span?: number | typeof defaultColConfig;
   collapseRender?: (collapsed: boolean) => React.ReactNode;
 }
+
+const getOffset = (length: number, span: number = 8) => {
+  const cols = 24 / span;
+  return (cols - 1 - (length % cols)) * span;
+};
 
 const defaultSearch: Required<SearchConfig> = {
   searchText: '查询',
   resetText: '重置',
+  span: defaultColConfig,
   collapseRender: (collapsed: boolean) => (collapsed ? '展开' : '收起'),
 };
 
@@ -157,18 +173,43 @@ const getDefaultSearch = (search?: boolean | SearchConfig): Required<SearchConfi
   return { ...defaultSearch, ...search } as Required<SearchConfig>;
 };
 
+const getSpanConfig = (
+  span: number | typeof defaultColConfig,
+  size: keyof typeof defaultColConfig,
+): number => {
+  if (typeof span === 'number') {
+    return span;
+  }
+  const config = {
+    ...defaultColConfig,
+    ...span,
+  };
+  return config[size];
+};
+
 const FormSearch = <T, U = {}>({
   form,
   onSubmit,
   dateFormatter = 'string',
   search: propsSearch,
 }: FormItem<T>) => {
+  const searchConfig = getDefaultSearch(propsSearch);
+  const { span, searchText, resetText, collapseRender } = searchConfig;
+
   const counter = Container.useContainer();
   const [collapse, setCollapse] = useState<boolean>(true);
   const [proColumnsMap, setProColumnsMap] = useState<{
     [key: string]: ProColumns<any>;
   }>({});
+
+  const windowSize = useMedia();
+  const [colSize, setColSize] = useState(getSpanConfig(span, windowSize));
   const [formHeight, setFormHeight] = useState<number>(88);
+  const rowNumber = 24 / colSize || 3;
+
+  useEffect(() => {
+    setColSize(getSpanConfig(span, windowSize));
+  }, [windowSize]);
 
   const submit = () => {
     const value = form.getFieldsValue();
@@ -196,9 +237,9 @@ const FormSearch = <T, U = {}>({
   );
 
   const domList = columnsList
-    .filter((_, index) => (collapse ? index < 2 : true))
+    .filter((_, index) => (collapse ? index < rowNumber - 1 : true))
     .map(item => (
-      <Col span={8} key={item.key || item.dataIndex}>
+      <Col {...span} key={item.key || item.dataIndex}>
         <Form.Item label={item.title}>
           {form.getFieldDecorator((item.key || item.dataIndex) as string, {
             initialValue: item.initialValue,
@@ -206,8 +247,6 @@ const FormSearch = <T, U = {}>({
         </Form.Item>
       </Col>
     ));
-
-  const defaultSearchConfig = getDefaultSearch(propsSearch);
 
   return (
     <ConfigConsumer>
@@ -225,14 +264,14 @@ const FormSearch = <T, U = {}>({
                 <Row gutter={16} justify="end">
                   {domList}
                   <Col
-                    span={8}
-                    offset={(2 - (domList.length % 3)) * 8}
+                    {...span}
+                    offset={getOffset(domList.length, colSize)}
                     key="option"
                     className={`${className}-option`}
                   >
                     <Form.Item>
                       <Button type="primary" htmlType="submit" onClick={() => submit()}>
-                        {defaultSearchConfig.searchText}
+                        {searchText}
                       </Button>
                       <Button
                         style={{ marginLeft: 8 }}
@@ -241,17 +280,16 @@ const FormSearch = <T, U = {}>({
                           submit();
                         }}
                       >
-                        {defaultSearchConfig.resetText}
+                        {resetText}
                       </Button>
-                      {columnsList.length > 2 && (
+                      {columnsList.length > rowNumber - 1 && (
                         <a
                           style={{ marginLeft: 8 }}
                           onClick={() => {
                             setCollapse(!collapse);
                           }}
                         >
-                          {defaultSearchConfig.collapseRender &&
-                            defaultSearchConfig.collapseRender(collapse)}
+                          {collapseRender && collapseRender(collapse)}
                           <DownOutlined
                             style={{
                               marginLeft: '0.5em',
