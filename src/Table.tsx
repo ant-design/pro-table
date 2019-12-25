@@ -411,7 +411,11 @@ const genColumnList = <T, U = {}>(
       const config = map[columnKey] || { fixed: item.fixed };
       return {
         onFilter: (value: string, record: T) => {
-          const itemValue = String(record[item.dataIndex || ''] || '') as string;
+          let recordElement = record[item.dataIndex || ''];
+          if (typeof recordElement === 'number') {
+            recordElement = recordElement.toString();
+          }
+          const itemValue = String(recordElement || '') as string;
           return String(itemValue) === String(value);
         },
         index: columnsIndex,
