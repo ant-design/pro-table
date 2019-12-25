@@ -47,13 +47,6 @@ const columns: ProColumns<TableListItem>[] = [
     width: 80,
   },
   {
-    title: '标题',
-    dataIndex: 'name',
-    copyable: true,
-    ellipsis: true,
-    hideInSearch: true,
-  },
-  {
     title: '金额',
     dataIndex: 'money',
     valueType: 'money',
@@ -63,6 +56,7 @@ const columns: ProColumns<TableListItem>[] = [
     dataIndex: 'status',
     initialValue: 'all',
     valueEnum: {
+      all: { text: '全部', status: 'Default' },
       close: { text: '关闭', status: 'Default' },
       running: { text: '运行中', status: 'Processing' },
       online: { text: '已上线', status: 'Success' },

@@ -67,7 +67,6 @@ const columns: ProColumns<GithubIssueItem>[] = [
     title: '序号',
     dataIndex: 'index',
     valueType: 'indexBorder',
-    width: 80,
   },
   {
     title: '标题',
@@ -82,6 +81,7 @@ const columns: ProColumns<GithubIssueItem>[] = [
     dataIndex: 'state',
     initialValue: 'all',
     valueEnum: {
+      all: { text: '全部', status: 'Default' },
       open: {
         text: '未解决',
         status: 'Error',
