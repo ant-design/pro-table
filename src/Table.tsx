@@ -11,7 +11,7 @@ import Container, { ColumnsMapItem } from './container';
 import IndexColumn from './component/indexColumn';
 import Toolbar, { OptionsType, ToolBarProps } from './component/toolBar';
 import Alert from './component/alert';
-import FormSearch from './Form';
+import FormSearch, { SearchConfig } from './Form';
 import { StatusType } from './component/status';
 import { parsingText, parsingValueEnumToArray, checkUndefinedOrNull } from './component/util';
 
@@ -60,6 +60,11 @@ export interface ProColumns<T = unknown> extends Omit<ColumnProps<T>, 'render' |
     item: ProColumns<T>,
     config: { value?: any; onChange?: (value: any) => void },
   ) => React.ReactNode;
+
+  /**
+   * 搜索表单的 props
+   */
+  formItemProps?: { [prop: string]: any };
 
   /**
    * 搜索表单的默认值
@@ -183,7 +188,7 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSe
   /**
    * 是否显示搜索表单
    */
-  search?: boolean;
+  search?: boolean | SearchConfig;
   /**
    * 如何格式化日期
    * 暂时只支持 moment
@@ -615,6 +620,7 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
             action.resetPageIndex();
           }}
           dateFormatter={reset.dateFormatter}
+          search={search}
         />
       )}
       <Card

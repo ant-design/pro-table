@@ -29,7 +29,7 @@ pro-table is encapsulated in an antd table, supports some presets, and encapsula
 | tableClassName | The className of the packaged table | string | - |
 | tableStyle | The style of the packaged table | CSSProperties | - |
 | options | table's default operation, set to false to close it | `{{ fullScreen: boolean \| function, reload: boolean \| function,setting: true }}` | `{{ fullScreen: true, reload:true,setting: true }}` |
-| search | whether to search the form | boolean | true |
+| search | Whether to search the form. It can also be a query form config when passing an object. | `boolean \| { searchText?: string, resetText?: string, collapseRender?: (collapsed: boolean) => React.ReactNode }` | true |
 | dateFormatter | formatting moment type | `"string" \| "number" \| false` | string |
 | beforeSearchSubmit | Make some changes before searching | `(params:T)=>T` | - |
 
@@ -46,6 +46,7 @@ pro-table is encapsulated in an antd table, supports some presets, and encapsula
 | valueType | Type of value | `'money' \| 'option' \| 'date' \| 'dateTime' \| 'time' \| 'text'\| 'index' \| 'indexBorder'` | 'text' |
 | hideInSearch | Do not show this in the query form | boolean | - |
 | hideInTable | Do not show this column in Table | boolean | - |
+| formItemProps | Props passed into query form item | `{ [prop: string]: any }` | - |
 
 ### valueType
 
