@@ -1,6 +1,6 @@
-import ProTable, { ProColumns, ProColumnsValueType, ProTableProps } from './Table';
+import ProTable, { ProColumns, ActionType, ProColumnsValueType, ProTableProps } from './Table';
 import IndexColumn from './component/indexColumn';
-import { UseFetchDataAction, RequestData } from './useFetchData';
+import { RequestData } from './useFetchData';
 import TableDropdown from './component/dropdown';
 import TableStatus from './component/status';
 import Search from './Form';
@@ -10,7 +10,7 @@ export {
   ProColumnsValueType,
   ProTableProps,
   IndexColumn,
-  UseFetchDataAction,
+  ActionType,
   RequestData,
   TableDropdown,
   TableStatus,

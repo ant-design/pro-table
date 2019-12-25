@@ -1,7 +1,7 @@
-import React from 'react';
-import { Button, Icon, Tag } from 'antd';
+import React, { useRef, useState } from 'react';
+import { Button, Drawer, Icon, Tag } from 'antd';
 // eslint-disable-next-line import/no-unresolved
-import ProTable, { ProColumns, TableDropdown } from '@ant-design/pro-table';
+import ProTable, { ProColumns, TableDropdown, ActionType } from '@ant-design/pro-table';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import request from 'umi-request';
 
@@ -119,12 +119,12 @@ const columns: ProColumns<GithubIssueItem>[] = [
     title: 'option',
     valueType: 'option',
     dataIndex: 'id',
-    render: (text, row) => [
+    render: (text, row, _, action) => [
       <a href={row.html_url} target="_blank" rel="noopener noreferrer">
         查看
       </a>,
       <TableDropdown
-        onSelect={key => window.alert(key)}
+        onSelect={() => action.reload()}
         menus={[
           { key: 'copy', name: '复制' },
           { key: 'delete', name: '删除' },
@@ -134,45 +134,75 @@ const columns: ProColumns<GithubIssueItem>[] = [
   },
 ];
 
-export default () => (
-  <ProTable<GithubIssueItem>
-    columns={columns}
-    request={async (params = {}) => {
-      const data = await request<GithubIssueItem[]>(
-        'https://api.github.com/repos/ant-design/ant-design-pro/issues',
-        {
-          params: {
-            ...params,
+export default () => {
+  const actionRef = useRef<ActionType>();
+  const [visible, setVisible] = useState(false);
+  return (
+    <>
+      <Drawer onClose={() => setVisible(false)} visible={visible}>
+        <Button
+          style={{
+            margin: 8,
+          }}
+          onClick={() => {
+            if (actionRef.current) {
+              actionRef.current.reload();
+            }
+          }}
+        >
+          刷新
+        </Button>
+        <Button
+          onClick={() => {
+            if (actionRef.current) {
+              actionRef.current.reset();
+            }
+          }}
+        >
+          重置
+        </Button>
+      </Drawer>
+      <ProTable<GithubIssueItem>
+        columns={columns}
+        actionRef={actionRef}
+        request={async (params = {}) => {
+          const data = await request<GithubIssueItem[]>(
+            'https://api.github.com/repos/ant-design/ant-design-pro/issues',
+            {
+              params: {
+                ...params,
+                page: params.current,
+                per_page: params.pageSize,
+              },
+            },
+          );
+          const totalObj = await request(
+            'https://api.github.com/repos/ant-design/ant-design-pro/issues?per_page=1',
+            {
+              params,
+            },
+          );
+          return {
+            data,
             page: params.current,
-            per_page: params.pageSize,
-          },
-        },
-      );
-      const totalObj = await request(
-        'https://api.github.com/repos/ant-design/ant-design-pro/issues?per_page=1',
-        {
-          params,
-        },
-      );
-      return {
-        data,
-        page: params.current,
-        success: true,
-        total: ((totalObj[0] || { number: 0 }).number - 56) as number,
-      };
-    }}
-    rowKey="id"
-    pagination={{
-      showSizeChanger: true,
-    }}
-    dateFormatter="string"
-    headerTitle="基础 Table"
-    params={{ state: 'all' }}
-    toolBarRender={() => [
-      <Button key="3" type="primary">
-        <Icon type="plus" />
-        新建
-      </Button>,
-    ]}
-  />
-);
+            success: true,
+            total: ((totalObj[0] || { number: 0 }).number - 56) as number,
+          };
+        }}
+        rowKey="id"
+        pagination={{
+          showSizeChanger: true,
+        }}
+        dateFormatter="string"
+        headerTitle="基础 Table"
+        params={{ state: 'all' }}
+        toolBarRender={() => [
+          <Button key="3" type="primary" onClick={() => setVisible(true)}>
+            <Icon type="plus" />
+            新建
+          </Button>,
+        ]}
+      />
+    </>
+  );
+};

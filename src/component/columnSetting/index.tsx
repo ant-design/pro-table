@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider/context';
 import { PushpinOutlined, SettingOutlined, VerticalAlignMiddleOutlined } from '@ant-design/icons';
 import { Checkbox, Popover, Tooltip } from 'antd';
@@ -8,6 +8,7 @@ import Container, { ColumnsMapItem } from '../../container';
 import { ProColumns } from '../../Table';
 import DnDItem from './DndItem';
 import './index.less';
+import { useDeepCompareEffect } from '../util';
 
 interface ColumnSettingProps<T = any> {
   columns?: ProColumns<T>[];
@@ -191,7 +192,7 @@ const GroupCheckboxList: React.FC<{
 const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
   const counter = Container.useContainer();
   const localColumns: ProColumns<T>[] = props.columns || counter.columns || [];
-  const { columnsMap, setColumnsMap } = counter;
+  const { columnsMap, setColumnsMap, setColumns, initialColumns } = counter;
   /**
    * 设置全部选中，或全部未选中
    * @param show
@@ -210,18 +211,9 @@ const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
     setColumnsMap(columnKeyMap);
   };
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     setAllSelectAction();
-  }, [JSON.stringify(localColumns)]);
-
-  useEffect(() => {
-    // 将方法赋值
-    if (counter.action) {
-      counter.action.restColumnsConfig = () => {
-        setColumnsMap({});
-      };
-    }
-  }, []);
+  }, localColumns);
 
   const selectKeys = Object.values(columnsMap).filter(value => !value || value.show !== false);
   const indeterminate = selectKeys.length > 0 && selectKeys.length !== localColumns.length;
@@ -258,6 +250,7 @@ const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
                 <a
                   onClick={() => {
                     setColumnsMap({});
+                    setColumns(initialColumns.current || []);
                   }}
                 >
                   重置

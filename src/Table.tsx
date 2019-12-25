@@ -13,7 +13,12 @@ import Toolbar, { OptionsType, ToolBarProps } from './component/toolBar';
 import Alert from './component/alert';
 import FormSearch, { SearchConfig } from './Form';
 import { StatusType } from './component/status';
-import { parsingText, parsingValueEnumToArray, checkUndefinedOrNull } from './component/util';
+import {
+  parsingText,
+  parsingValueEnumToArray,
+  checkUndefinedOrNull,
+  useDeepCompareEffect,
+} from './component/util';
 
 /**
  * money 金额
@@ -31,6 +36,12 @@ export type ProColumnsValueType =
   | 'text'
   | 'index'
   | 'indexBorder';
+
+export interface ActionType {
+  reload: () => void;
+  fetchMore: () => void;
+  reset: () => void;
+}
 
 export interface ProColumns<T = unknown> extends Omit<ColumnProps<T>, 'render' | 'children'> {
   /**
@@ -146,11 +157,7 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSe
   /**
    * 初始化的参数，可以操作 table
    */
-  onPostAction?: (action: {
-    fetch: () => Promise<void>;
-    reload: () => Promise<void>;
-    fetchMore: () => void;
-  }) => void;
+  actionRef?: React.MutableRefObject<ActionType | undefined> | ((actionRef: ActionType) => void);
 
   /**
    * 渲染操作栏
@@ -369,17 +376,17 @@ const ColumRender = <T, U = any>({ item, text, row, index }: ColumRenderInterfac
   const counter = Container.useContainer();
   const { action } = counter;
   const { renderText = (val: any) => val, valueEnum = {} } = item;
-  if (!action) {
+  if (!action.current) {
     return null;
   }
 
-  const renderTextStr = renderText(parsingText(text, valueEnum), row, index, action);
+  const renderTextStr = renderText(parsingText(text, valueEnum), row, index, action.current);
   const textDom = defaultRenderText(renderTextStr, item.valueType || 'text', index);
 
   const dom: React.ReactNode = genEllipsis(genCopyable(textDom, item), item, text);
 
   if (item.render) {
-    const renderDom = item.render(dom, row, index, action);
+    const renderDom = item.render(dom, row, index, action.current);
     if (renderDom && item.valueType === 'option' && Array.isArray(renderDom)) {
       return (
         <div className="ant-pro-table-option-cell">
@@ -399,7 +406,6 @@ const ColumRender = <T, U = any>({ item, text, row, index }: ColumRenderInterfac
 
 const genColumnList = <T, U = {}>(
   columns: ProColumns<T>[],
-  action: UseFetchDataAction<RequestData<T>>,
   map: {
     [key: string]: ColumnsMapItem;
   },
@@ -423,7 +429,7 @@ const genColumnList = <T, U = {}>(
         ...item,
         fixed: config.fixed,
         width: item.width || (item.fixed ? 200 : undefined),
-        children: item.children ? genColumnList(item.children, action, map) : undefined,
+        children: item.children ? genColumnList(item.children, map) : undefined,
         ellipsis: false,
         render: (text: any, row: T, index: number) => (
           <ColumRender<T> item={item} text={text} row={row} index={index} />
@@ -446,7 +452,7 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     headerTitle,
     postData,
     pagination: propsPagination,
-    onPostAction,
+    actionRef,
     columns: propsColumns = [],
     toolBarRender = () => [],
     onLoad,
@@ -505,26 +511,6 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
 
   const rootRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (onPostAction) {
-      onPostAction({
-        reload: action.reload,
-        fetch: action.fetch,
-        fetchMore: action.fetchMore,
-      });
-    }
-  }, [
-    action.pageSize,
-    action.current,
-    action.total,
-    Object.values(params)
-      .filter(item => checkUndefinedOrNull(item))
-      .join('-'),
-    Object.values(formSearch)
-      .filter(item => checkUndefinedOrNull(item))
-      .join('-'),
-  ]);
-
   const fullScreen = useRef<() => void>();
   useEffect(() => {
     fullScreen.current = () => {
@@ -543,27 +529,65 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
 
   const pagination = mergePagination<T[], {}>(propsPagination, action);
 
-  const className = classNames('ant-pro-table', propsClassName);
   const counter = Container.useContainer();
   /**
    *  保存一下 propsColumns
    *  生成 from 需要用
    */
-  useEffect(() => {
-    counter.setAction(action);
+  useDeepCompareEffect(() => {
     counter.setProColumns(propsColumns);
-  }, [JSON.stringify(propsColumns)]);
+  }, propsColumns);
 
-  const tableColumn = genColumnList<T>(propsColumns, action, counter.columnsMap);
+  counter.setAction(action);
+
+  useEffect(() => {
+    const userAction: ActionType = {
+      reload: async () => {
+        const {
+          action: { current },
+        } = counter;
+        if (!current) {
+          return;
+        }
+        await current.reload();
+      },
+      fetchMore: async () => {
+        const {
+          action: { current },
+        } = counter;
+        if (!current) {
+          return;
+        }
+        await current.fetchMore();
+      },
+      reset: () => {
+        const {
+          action: { current },
+        } = counter;
+        if (!current) {
+          return;
+        }
+        current.reset();
+      },
+    };
+    if (actionRef && typeof actionRef === 'function') {
+      actionRef(userAction);
+    }
+    if (actionRef && typeof actionRef !== 'function') {
+      actionRef.current = userAction;
+    }
+  }, []);
 
   /**
    * tableColumn 变化的时候更新一下，这个参数将会用于渲染
    */
-  useEffect(() => {
+  useDeepCompareEffect(() => {
+    const tableColumn = genColumnList<T>(propsColumns, counter.columnsMap);
     if (tableColumn && tableColumn.length > 0) {
       counter.setColumns(tableColumn);
+      counter.setInitialColumns(tableColumn);
     }
-  }, [JSON.stringify(tableColumn)]);
+  }, [propsColumns, counter.columnsMap]);
 
   const [selectedRowKeys, setSelectedRowKeys] = useMergeValue<string[] | number[]>([], {
     value: propsRowSelection ? propsRowSelection.selectedRowKeys : undefined,
@@ -604,6 +628,8 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
   if (counter.columns.length < 1) {
     return <Empty />;
   }
+
+  const className = classNames('ant-pro-table', propsClassName);
 
   return (
     <div className={className} id="ant-design-pro-table" style={style} ref={rootRef}>

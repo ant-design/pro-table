@@ -22,12 +22,11 @@ export interface UseFetchDataAction<T extends RequestData<any>> {
   current: number;
   pageSize: number;
   total: number;
-  fetch: () => Promise<void>;
   reload: () => Promise<void>;
   fetchMore: () => void;
   fullScreen?: () => void;
   resetPageIndex: () => void;
-  restColumnsConfig?: () => void;
+  reset: () => void;
   setPageInfo: (pageInfo: Partial<PageInfo>) => void;
 }
 
@@ -146,13 +145,20 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
   return {
     dataSource: list,
     loading,
-    fetch: fetchList,
     reload: fetchList,
     fetchMore,
     total: pageInfo.total,
     hasMore: pageInfo.hasMore,
     resetPageIndex,
     current: pageInfo.page,
+    reset: () => {
+      setPageInfo({
+        hasMore: false,
+        page: defaultCurrent || 1,
+        total: 0,
+        pageSize: defaultPageSize,
+      });
+    },
     pageSize: pageInfo.pageSize,
     setPageInfo: info =>
       setPageInfo({
