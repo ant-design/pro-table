@@ -3,7 +3,14 @@ import IndexColumn from './component/indexColumn';
 import { RequestData } from './useFetchData';
 import TableDropdown from './component/dropdown';
 import TableStatus from './component/status';
-import { IntlProvider, IntlConsumer, IntlType, zhCNIntl, enUSIntl } from './component/intlContext';
+import {
+  IntlProvider,
+  IntlConsumer,
+  createIntl,
+  IntlType,
+  zhCNIntl,
+  enUSIntl,
+} from './component/intlContext';
 import Search from './Form';
 
 export {
@@ -20,6 +27,7 @@ export {
   IntlConsumer,
   IntlType,
   zhCNIntl,
+  createIntl,
   enUSIntl,
 };
 
