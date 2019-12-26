@@ -9,7 +9,6 @@ import { ProColumns } from '../../Table';
 import DnDItem from './DndItem';
 import { useIntl } from '../intlContext';
 import './index.less';
-import { useDeepCompareEffect } from '../util';
 
 interface ColumnSettingProps<T = any> {
   columns?: ProColumns<T>[];
@@ -114,7 +113,6 @@ const CheckboxList: React.FC<{
 }> = ({ list, className, showTitle = true, title: listTitle }) => {
   const { columnsMap, setColumnsMap, columns, setColumns } = Container.useContainer();
   const show = list && list.length > 0;
-
   if (!show) {
     return null;
   }
@@ -230,10 +228,6 @@ const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
     });
     setColumnsMap(columnKeyMap);
   };
-
-  useDeepCompareEffect(() => {
-    setAllSelectAction();
-  }, localColumns);
 
   const selectKeys = Object.values(columnsMap).filter(value => !value || value.show !== false);
   const indeterminate = selectKeys.length > 0 && selectKeys.length !== localColumns.length;
