@@ -60,9 +60,15 @@ const CheckboxListItem: React.FC<{
         onChange={e => {
           if (columnKey) {
             const tempConfig = columnsMap[columnKey || ''] || {};
+            const newSetting = { ...tempConfig };
+            if (e.target.checked) {
+              delete newSetting.show;
+            } else {
+              newSetting.show = false;
+            }
             const columnKeyMap = {
               ...columnsMap,
-              [columnKey]: { ...tempConfig, show: e.target.checked } as ColumnsMapItem,
+              [columnKey]: newSetting as ColumnsMapItem,
             };
             setColumnsMap(columnKeyMap);
           }
@@ -111,25 +117,24 @@ const CheckboxList: React.FC<{
   title: string;
   showTitle?: boolean;
 }> = ({ list, className, showTitle = true, title: listTitle }) => {
-  const { columnsMap, setColumnsMap, columns, setColumns } = Container.useContainer();
+  const { columnsMap, setColumnsMap, sortKeyColumns, setSortKeyColumns } = Container.useContainer();
   const show = list && list.length > 0;
   if (!show) {
     return null;
   }
   const move = (id: string, targetIndex: number) => {
-    const newColumns = [...columns];
-    const findIndex = newColumns.findIndex(item => {
-      const columnKey = `${item.key || ''}-${item.dataIndex || ''}`;
-      return columnKey === id;
-    });
-    const item = { ...newColumns[findIndex] };
+    const newColumns = [...sortKeyColumns];
+
+    const findIndex = newColumns.findIndex(columnKey => columnKey === id);
+
+    const key = newColumns[findIndex];
     newColumns.splice(findIndex, 1);
     if (targetIndex === 0) {
-      newColumns.unshift(item);
+      newColumns.unshift(key);
     } else {
-      newColumns.splice(targetIndex, 0, item);
+      newColumns.splice(targetIndex, 0, key);
     }
-    setColumns(newColumns);
+    setSortKeyColumns(newColumns);
   };
 
   const listDom = list.map(({ key, dataIndex, title, fixed }, index) => {
@@ -210,7 +215,7 @@ const GroupCheckboxList: React.FC<{
 const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
   const counter = Container.useContainer();
   const localColumns: ProColumns<T>[] = props.columns || counter.columns || [];
-  const { columnsMap, setColumnsMap, setColumns, initialColumns } = counter;
+  const { columnsMap, setColumnsMap, setSortKeyColumns } = counter;
   /**
    * 设置全部选中，或全部未选中
    * @param show
@@ -229,11 +234,11 @@ const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
     setColumnsMap(columnKeyMap);
   };
 
-  const selectKeys = Object.values(columnsMap).filter(value => !value || value.show !== false);
+  const selectKeys = Object.values(columnsMap).filter(value => !value || value.show === false);
+
   const indeterminate = selectKeys.length > 0 && selectKeys.length !== localColumns.length;
 
   const intl = useIntl();
-
   return (
     <ConfigConsumer>
       {({ getPrefixCls }: ConfigConsumerProps) => {
@@ -250,10 +255,7 @@ const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
               <div className={`${className}-title`}>
                 <Checkbox
                   indeterminate={indeterminate}
-                  checked={
-                    selectKeys.length === localColumns.length ||
-                    Object.values(columnsMap).length === 0
-                  }
+                  checked={selectKeys.length === 0 && selectKeys.length !== localColumns.length}
                   onChange={e => {
                     if (e.target.checked) {
                       setAllSelectAction();
@@ -267,7 +269,7 @@ const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
                 <a
                   onClick={() => {
                     setColumnsMap({});
-                    setColumns(initialColumns.current || []);
+                    setSortKeyColumns([]);
                   }}
                 >
                   {intl.getMessage('tableToolBar.reset', '重置')}

@@ -11,9 +11,9 @@ export interface ColumnsMapItem {
 
 function useCounter<T = any>() {
   const actionRef = useRef<UseFetchDataAction<RequestData<T>>>();
-  // 保存初始化的 columns，用于重置
-  const columnsRef = useRef<ColumnProps<T>[]>();
   const [columns, setColumns] = useState<ColumnProps<T>[]>([]);
+  // 用于排序的数组
+  const [sortKeyColumns, setSortKeyColumns] = useState<string[]>([]);
   const [proColumns, setProColumns] = useState<ProColumns<T>[]>([]);
   const [columnsMap, setColumnsMap] = useState<{
     [key: string]: ColumnsMapItem;
@@ -23,10 +23,8 @@ function useCounter<T = any>() {
     setAction: (newAction: UseFetchDataAction<RequestData<T>>) => {
       actionRef.current = newAction;
     },
-    initialColumns: columnsRef,
-    setInitialColumns: (initial: ColumnProps<T>[]) => {
-      columnsRef.current = initial;
-    },
+    sortKeyColumns,
+    setSortKeyColumns,
     columns,
     setColumns,
     columnsMap,

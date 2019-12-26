@@ -589,12 +589,25 @@ const ProTable = <T, U = {}>(
    * tableColumn 变化的时候更新一下，这个参数将会用于渲染
    */
   useDeepCompareEffect(() => {
-    const tableColumn = genColumnList<T>(propsColumns, counter.columnsMap);
+    const keys = counter.sortKeyColumns.join('-');
+    let tableColumn = genColumnList<T>(propsColumns, counter.columnsMap);
+
+    if (keys.length > 0) {
+      tableColumn = tableColumn.sort((a, b) => {
+        const aKey = `${a.key || ''}-${a.dataIndex || ''}`;
+        const bKey = `${b.key || ''}-${b.dataIndex || ''}`;
+        return keys.indexOf(aKey) - keys.indexOf(bKey);
+      });
+    }
     if (tableColumn && tableColumn.length > 0) {
       counter.setColumns(tableColumn);
-      counter.setInitialColumns(tableColumn);
+      if (keys.length < 1) {
+        counter.setSortKeyColumns(
+          tableColumn.map(item => `${item.key || ''}-${item.dataIndex || ''}`),
+        );
+      }
     }
-  }, [propsColumns, counter.columnsMap]);
+  }, [propsColumns, counter.columnsMap, counter.sortKeyColumns.join('-')]);
 
   const [selectedRowKeys, setSelectedRowKeys] = useMergeValue<string[] | number[]>([], {
     value: propsRowSelection ? propsRowSelection.selectedRowKeys : undefined,
