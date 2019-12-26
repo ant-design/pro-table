@@ -1,5 +1,6 @@
 ---
 title: Table 自动生成 From
+order: 8
 ---
 
 # Table 搜索
