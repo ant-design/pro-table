@@ -3,7 +3,7 @@ import { ReloadOutlined, SettingOutlined } from '@ant-design/icons';
 import { Divider, Tooltip } from 'antd';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider/context';
 import ColumnSetting from '../columnSetting';
-
+import { useIntl, IntlType } from '../intlContext';
 import { UseFetchDataAction, RequestData } from '../../useFetchData';
 
 import './index.less';
@@ -33,20 +33,20 @@ export interface ToolBarProps<T = unknown> {
   className?: string;
 }
 
-const buttonText = {
+const getButtonText = (intl: IntlType) => ({
   fullScreen: {
-    text: '全屏',
+    text: intl.getMessage('tableToolBar.fullScreen', '全屏'),
     icon: <FullScreenIcon />,
   },
   reload: {
-    text: '刷新',
+    text: intl.getMessage('tableToolBar.reload', '刷新'),
     icon: <ReloadOutlined />,
   },
   setting: {
-    text: '列设置',
+    text: intl.getMessage('tableToolBar.columnSetting', '列设置'),
     icon: <SettingOutlined />,
   },
-};
+});
 
 /**
  * 渲染默认的 工具栏
@@ -60,6 +60,7 @@ const renderDefaultOption = <T, U = {}>(
     fullScreen: OptionsType<T>;
     reload: OptionsType<T>;
     setting: OptionsType<T>;
+    intl: IntlType;
   },
 ) =>
   options &&
@@ -87,7 +88,7 @@ const renderDefaultOption = <T, U = {}>(
           </span>
         );
       }
-      const optionItem = buttonText[key];
+      const optionItem = getButtonText(defaultOptions.intl)[key];
       if (optionItem) {
         return (
           <span
@@ -127,11 +128,13 @@ const ToolBar = <T, U = {}>({
   selectedRows,
   className,
 }: ToolBarProps<T>) => {
+  const intl = useIntl();
   const optionDom =
     renderDefaultOption<T>(options, `${className}-item-icon`, {
       fullScreen: () => action.fullScreen && action.fullScreen(),
       reload: () => action.reload(),
       setting: true,
+      intl,
     }) || [];
   // 操作列表
   const actions = toolBarRender ? toolBarRender(action, { selectedRowKeys, selectedRows }) : [];

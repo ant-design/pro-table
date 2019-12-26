@@ -6,6 +6,7 @@ import RcResizeObserver from 'rc-resize-observer';
 import { FormComponentProps } from 'antd/lib/form';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
 import { parsingValueEnumToArray, useDeepCompareEffect, useMedia } from '../component/util';
+import { useIntl, IntlType } from '../component/intlContext';
 import Container from '../container';
 import { ProColumns } from '../index';
 import './index.less';
@@ -50,6 +51,7 @@ const FromInputRender: React.FC<{
   value?: any;
   onChange?: (value: any) => void;
 }> = React.forwardRef(({ item, ...rest }, ref: any) => {
+  const intl = useIntl();
   /**
    * 自定义 render
    */
@@ -60,7 +62,12 @@ const FromInputRender: React.FC<{
     const { valueEnum } = item;
     if (valueEnum) {
       return (
-        <Select placeholder="请选择" ref={ref} {...rest} {...item.formItemProps}>
+        <Select
+          placeholder={intl.getMessage('tableFrom.selectPlaceholder', '请选择')}
+          ref={ref}
+          {...rest}
+          {...item.formItemProps}
+        >
           {parsingValueEnumToArray(valueEnum).map(({ value, text }) => (
             <Select.Option key={value} value={value}>
               {text}
@@ -69,13 +76,19 @@ const FromInputRender: React.FC<{
         </Select>
       );
     }
-    return <Input placeholder="请输入" {...rest} {...item.formItemProps} />;
+    return (
+      <Input
+        placeholder={intl.getMessage('tableFrom.inputPlaceholder', '请输入')}
+        {...rest}
+        {...item.formItemProps}
+      />
+    );
   }
   if (item.valueType === 'date') {
     return (
       <DatePicker
         ref={ref}
-        placeholder="请选择"
+        placeholder={intl.getMessage('tableFrom.selectPlaceholder', '请选择')}
         style={{
           width: '100%',
         }}
@@ -89,7 +102,7 @@ const FromInputRender: React.FC<{
       <DatePicker
         showTime
         ref={ref}
-        placeholder="请选择"
+        placeholder={intl.getMessage('tableFrom.selectPlaceholder', '请选择')}
         style={{
           width: '100%',
         }}
@@ -102,7 +115,7 @@ const FromInputRender: React.FC<{
     return (
       <TimePicker
         ref={ref}
-        placeholder="请选择"
+        placeholder={intl.getMessage('tableFrom.selectPlaceholder', '请选择')}
         style={{
           width: '100%',
         }}
@@ -123,7 +136,7 @@ const FromInputRender: React.FC<{
           return '';
         }}
         parser={value => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
-        placeholder="请输入"
+        placeholder={intl.getMessage('tableFrom.selectPlaceholder', '请选择')}
         precision={2}
         style={{
           width: '100%',
@@ -166,11 +179,26 @@ const genValue = (value: any, dateFormatter?: string | boolean, proColumnsMap?: 
   return tmpValue;
 };
 
-const getDefaultSearch = (search?: boolean | SearchConfig): Required<SearchConfig> => {
+const getDefaultSearch = (
+  search: boolean | SearchConfig | undefined,
+  intl: IntlType,
+): Required<SearchConfig> => {
+  const config = {
+    collapseRender: (collapsed: boolean) => {
+      if (collapsed) {
+        return intl.getMessage('tableFrom.collapsed', '展开');
+      }
+      return intl.getMessage('tableFrom.expand', '收起');
+    },
+    searchText: intl.getMessage('tableFrom.search', defaultSearch.searchText),
+    resetText: intl.getMessage('tableFrom.reset', defaultSearch.resetText),
+    span: defaultColConfig,
+  };
+
   if (search === undefined || search === true) {
-    return defaultSearch;
+    return config;
   }
-  return { ...defaultSearch, ...search } as Required<SearchConfig>;
+  return { ...config, ...search } as Required<SearchConfig>;
 };
 
 const getSpanConfig = (
@@ -193,7 +221,8 @@ const FormSearch = <T, U = {}>({
   dateFormatter = 'string',
   search: propsSearch,
 }: FormItem<T>) => {
-  const searchConfig = getDefaultSearch(propsSearch);
+  const intl = useIntl();
+  const searchConfig = getDefaultSearch(propsSearch, intl);
   const { span, searchText, resetText, collapseRender } = searchConfig;
 
   const counter = Container.useContainer();

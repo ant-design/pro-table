@@ -6,6 +6,8 @@ import classNames from 'classnames';
 import useMergeValue from 'use-merge-value';
 import moment from 'moment';
 import { ColumnProps, PaginationConfig, TableProps, TableRowSelection } from 'antd/es/table';
+import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
+import { IntlProvider, IntlConsumer } from './component/intlContext';
 import useFetchData, { UseFetchDataAction, RequestData } from './useFetchData';
 import Container, { ColumnsMapItem } from './container';
 import IndexColumn from './component/indexColumn';
@@ -443,7 +445,11 @@ const genColumnList = <T, U = {}>(
  * 更快 更好 更方便
  * @param props
  */
-const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
+const ProTable = <T, U = {}>(
+  props: ProTableProps<T> & {
+    defaultClassName: string;
+  },
+) => {
   const {
     request,
     className: propsClassName,
@@ -465,6 +471,7 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     rowSelection: propsRowSelection = false,
     beforeSearchSubmit = (searchParams: any) => searchParams,
     tableAlertRender,
+    defaultClassName,
     ...reset
   } = props;
 
@@ -629,7 +636,7 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     return <Empty />;
   }
 
-  const className = classNames('ant-pro-table', propsClassName);
+  const className = classNames(defaultClassName, propsClassName);
 
   return (
     <div className={className} id="ant-design-pro-table" style={style} ref={rootRef}>
@@ -711,7 +718,17 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
  */
 const ProviderWarp = <T, U = {}>(props: ProTableProps<T>) => (
   <Container.Provider>
-    <ProTable {...props} />
+    <ConfigConsumer>
+      {({ getPrefixCls }: ConfigConsumerProps) => (
+        <IntlConsumer>
+          {value => (
+            <IntlProvider value={value}>
+              <ProTable defaultClassName={getPrefixCls('pro-table')} {...props} />
+            </IntlProvider>
+          )}
+        </IntlConsumer>
+      )}
+    </ConfigConsumer>
   </Container.Provider>
 );
 

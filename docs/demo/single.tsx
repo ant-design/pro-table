@@ -1,7 +1,13 @@
 import React, { useRef, useState } from 'react';
 import { Button, Drawer, Icon, Tag } from 'antd';
 // eslint-disable-next-line import/no-unresolved
-import ProTable, { ProColumns, TableDropdown, ActionType } from '@ant-design/pro-table';
+import ProTable, {
+  ProColumns,
+  TableDropdown,
+  IntlProvider,
+  enUSIntl,
+  ActionType,
+} from '@ant-design/pro-table';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import request from 'umi-request';
 
@@ -162,47 +168,49 @@ export default () => {
           重置
         </Button>
       </Drawer>
-      <ProTable<GithubIssueItem>
-        columns={columns}
-        actionRef={actionRef}
-        request={async (params = {}) => {
-          const data = await request<GithubIssueItem[]>(
-            'https://api.github.com/repos/ant-design/ant-design-pro/issues',
-            {
-              params: {
-                ...params,
-                page: params.current,
-                per_page: params.pageSize,
+      <IntlProvider value={enUSIntl}>
+        <ProTable<GithubIssueItem>
+          columns={columns}
+          actionRef={actionRef}
+          request={async (params = {}) => {
+            const data = await request<GithubIssueItem[]>(
+              'https://api.github.com/repos/ant-design/ant-design-pro/issues',
+              {
+                params: {
+                  ...params,
+                  page: params.current,
+                  per_page: params.pageSize,
+                },
               },
-            },
-          );
-          const totalObj = await request(
-            'https://api.github.com/repos/ant-design/ant-design-pro/issues?per_page=1',
-            {
-              params,
-            },
-          );
-          return {
-            data,
-            page: params.current,
-            success: true,
-            total: ((totalObj[0] || { number: 0 }).number - 56) as number,
-          };
-        }}
-        rowKey="id"
-        pagination={{
-          showSizeChanger: true,
-        }}
-        dateFormatter="string"
-        headerTitle="基础 Table"
-        params={{ state: 'all' }}
-        toolBarRender={() => [
-          <Button key="3" type="primary" onClick={() => setVisible(true)}>
-            <Icon type="plus" />
-            新建
-          </Button>,
-        ]}
-      />
+            );
+            const totalObj = await request(
+              'https://api.github.com/repos/ant-design/ant-design-pro/issues?per_page=1',
+              {
+                params,
+              },
+            );
+            return {
+              data,
+              page: params.current,
+              success: true,
+              total: ((totalObj[0] || { number: 0 }).number - 56) as number,
+            };
+          }}
+          rowKey="id"
+          pagination={{
+            showSizeChanger: true,
+          }}
+          dateFormatter="string"
+          headerTitle="基础 Table"
+          params={{ state: 'all' }}
+          toolBarRender={() => [
+            <Button key="3" type="primary" onClick={() => setVisible(true)}>
+              <Icon type="plus" />
+              新建
+            </Button>,
+          ]}
+        />
+      </IntlProvider>
     </>
   );
 };
