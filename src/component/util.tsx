@@ -1,5 +1,6 @@
-import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import isEqual from 'lodash.isequal';
+import { useMediaQuery } from 'react-responsive';
 import TableStatus, { StatusType } from './status';
 
 /**
@@ -152,18 +153,41 @@ const getScreenClassName = () => {
 };
 
 export const useMedia = () => {
+  const isMd = useMediaQuery(MediaQueryEnum.md);
+  const isLg = useMediaQuery(MediaQueryEnum.lg);
+  const isXxl = useMediaQuery(MediaQueryEnum.xxl);
+  const isXl = useMediaQuery(MediaQueryEnum.xl);
+  const isSm = useMediaQuery(MediaQueryEnum.sm);
+  const isXs = useMediaQuery(MediaQueryEnum.xs);
   const [colSpan, setColSpan] = useState<keyof typeof MediaQueryEnum>(getScreenClassName());
-  const resizeSetColSpan = useCallback(() => {
-    const newColSpan = getScreenClassName();
-    if (colSpan !== newColSpan) {
-      setColSpan(newColSpan);
-    }
-  }, []);
+
   useEffect(() => {
-    window.addEventListener('resize', resizeSetColSpan, {
-      passive: true,
-    });
-    return () => window.removeEventListener('resize', resizeSetColSpan);
-  }, []);
+    if (isXxl) {
+      setColSpan('xxl');
+      return;
+    }
+    if (isXl) {
+      setColSpan('xl');
+      return;
+    }
+    if (isLg) {
+      setColSpan('lg');
+      return;
+    }
+    if (isMd) {
+      setColSpan('md');
+      return;
+    }
+    if (isSm) {
+      setColSpan('sm');
+      return;
+    }
+    if (isXs) {
+      setColSpan('xs');
+      return;
+    }
+    setColSpan('md');
+  }, [isMd, isLg, isXxl, isXl, isSm, isXs]);
+
   return colSpan;
 };

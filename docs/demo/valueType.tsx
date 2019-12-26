@@ -1,6 +1,5 @@
 import React from 'react';
 import { Button, Icon } from 'antd';
-// eslint-disable-next-line import/no-unresolved
 import ProTable, { ProColumns } from '@ant-design/pro-table';
 
 export interface TableListItem {
