@@ -20,5 +20,9 @@ export default {
     fullScreen: 'Full Screen',
     exitFullScreen: 'Exit Full Screen',
     reload: 'Refresh',
+    density: 'Density',
+    densityLarger: 'Default',
+    densityMiddle: 'Middle',
+    densitySmall: 'Compact',
   },
 };

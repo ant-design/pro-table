@@ -8,6 +8,14 @@ import { UseFetchDataAction, RequestData } from '../../useFetchData';
 
 import './index.less';
 import FullScreenIcon from './FullscreenIcon';
+import DensityIcon from './DensityIcon';
+
+export interface OptionConfig<T> {
+  density: boolean;
+  fullScreen: OptionsType<T>;
+  reload: OptionsType<T>;
+  setting: boolean;
+}
 
 export type OptionsType<T = unknown> =
   | ((e: React.MouseEvent<HTMLSpanElement>, action: UseFetchDataAction<RequestData<T>>) => void)
@@ -23,17 +31,17 @@ export interface ToolBarProps<T = unknown> {
     },
   ) => React.ReactNode[];
   action: UseFetchDataAction<RequestData<T>>;
-  options?: {
-    fullScreen: OptionsType<T>;
-    reload: OptionsType<T>;
-    setting: boolean;
-  };
+  options?: OptionConfig<T>;
   selectedRowKeys?: (string | number)[];
   selectedRows?: T[];
   className?: string;
 }
 
-const getButtonText = (intl: IntlType) => ({
+const getButtonText = <T, U = {}>({
+  intl,
+}: OptionConfig<T> & {
+  intl: IntlType;
+}) => ({
   fullScreen: {
     text: intl.getMessage('tableToolBar.fullScreen', '全屏'),
     icon: <FullScreenIcon />,
@@ -46,6 +54,10 @@ const getButtonText = (intl: IntlType) => ({
     text: intl.getMessage('tableToolBar.columnSetting', '列设置'),
     icon: <SettingOutlined />,
   },
+  density: {
+    text: intl.getMessage('tableToolBar.density', '表格密度'),
+    icon: <DensityIcon />,
+  },
 });
 
 /**
@@ -56,10 +68,7 @@ const getButtonText = (intl: IntlType) => ({
 const renderDefaultOption = <T, U = {}>(
   options: ToolBarProps<T>['options'],
   className: string,
-  defaultOptions: {
-    fullScreen: OptionsType<T>;
-    reload: OptionsType<T>;
-    setting: OptionsType<T>;
+  defaultOptions: OptionConfig<T> & {
     intl: IntlType;
   },
 ) =>
@@ -88,7 +97,7 @@ const renderDefaultOption = <T, U = {}>(
           </span>
         );
       }
-      const optionItem = getButtonText(defaultOptions.intl)[key];
+      const optionItem = getButtonText<T>(defaultOptions)[key];
       if (optionItem) {
         return (
           <span
@@ -97,7 +106,11 @@ const renderDefaultOption = <T, U = {}>(
               marginLeft: index === 0 ? 8 : 16,
             }}
             className={className}
-            onClick={value === true ? defaultOptions[key] : value}
+            onClick={() => {
+              if (value && defaultOptions[key] !== true) {
+                defaultOptions[key]();
+              }
+            }}
           >
             <Tooltip title={optionItem.text}>{optionItem.icon}</Tooltip>
           </span>
@@ -112,6 +125,7 @@ const ToolBar = <T, U = {}>({
   toolBarRender,
   action,
   options = {
+    density: true,
     fullScreen: () => action.fullScreen && action.fullScreen(),
     reload: () => action.reload(),
     setting: true,
@@ -125,6 +139,7 @@ const ToolBar = <T, U = {}>({
     renderDefaultOption<T>(options, `${className}-item-icon`, {
       fullScreen: () => action.fullScreen && action.fullScreen(),
       reload: () => action.reload(),
+      density: true,
       setting: true,
       intl,
     }) || [];

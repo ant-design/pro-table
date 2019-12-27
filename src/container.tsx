@@ -3,6 +3,7 @@ import { useState, useRef } from 'react';
 import { ColumnProps } from 'antd/es/table';
 import { RequestData, ProColumns } from './index';
 import { UseFetchDataAction } from './useFetchData';
+import { DensitySize } from './component/toolBar/DensityIcon';
 
 export interface ColumnsMapItem {
   fixed: 'right' | 'left' | undefined;
@@ -15,6 +16,7 @@ function useCounter<T = any>() {
   // 用于排序的数组
   const [sortKeyColumns, setSortKeyColumns] = useState<string[]>([]);
   const [proColumns, setProColumns] = useState<ProColumns<T>[]>([]);
+  const [tableSize, setTableSize] = useState<DensitySize>('default');
   const [columnsMap, setColumnsMap] = useState<{
     [key: string]: ColumnsMapItem;
   }>({});
@@ -28,6 +30,8 @@ function useCounter<T = any>() {
     columns,
     setColumns,
     columnsMap,
+    setTableSize,
+    tableSize,
     setColumnsMap,
     proColumns,
     setProColumns,

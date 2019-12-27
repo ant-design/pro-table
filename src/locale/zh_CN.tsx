@@ -20,5 +20,9 @@ export default {
     fullScreen: '全屏',
     exitFullScreen: '退出全屏',
     reload: '刷新',
+    density: '密度',
+    densityLarger: '正常',
+    densityMiddle: '中等',
+    densitySmall: '紧凑',
   },
 };

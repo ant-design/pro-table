@@ -11,7 +11,7 @@ import { IntlProvider, IntlConsumer } from './component/intlContext';
 import useFetchData, { UseFetchDataAction, RequestData } from './useFetchData';
 import Container, { ColumnsMapItem } from './container';
 import IndexColumn from './component/indexColumn';
-import Toolbar, { OptionsType, ToolBarProps } from './component/toolBar';
+import Toolbar, { OptionConfig, ToolBarProps } from './component/toolBar';
 import Alert from './component/alert';
 import FormSearch, { SearchConfig } from './Form';
 import { StatusType } from './component/status';
@@ -189,11 +189,7 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSe
   /**
    * 默认的操作栏配置
    */
-  options?: {
-    fullScreen: OptionsType<T>;
-    reload: OptionsType<T>;
-    setting: boolean;
-  };
+  options?: OptionConfig<T>;
   /**
    * 是否显示搜索表单
    */
@@ -528,6 +524,7 @@ const ProTable = <T, U = {}>(
   const pagination = mergePagination<T[], {}>(propsPagination, action);
 
   const counter = Container.useContainer();
+
   /**
    *  保存一下 propsColumns
    *  生成 from 需要用
@@ -694,6 +691,7 @@ const ProTable = <T, U = {}>(
           />
         )}
         <Table
+          size={counter.tableSize}
           {...reset}
           rowSelection={propsRowSelection === false ? undefined : rowSelection}
           className={tableClassName}
