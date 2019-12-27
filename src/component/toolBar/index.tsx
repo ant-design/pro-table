@@ -99,15 +99,7 @@ const renderDefaultOption = <T, U = {}>(
             className={className}
             onClick={value === true ? defaultOptions[key] : value}
           >
-            <Tooltip
-              getPopupContainer={() =>
-                ((document.getElementById('ant-design-pro-table') ||
-                  document.body) as any) as HTMLElement
-              }
-              title={optionItem.text}
-            >
-              {optionItem.icon}
-            </Tooltip>
+            <Tooltip title={optionItem.text}>{optionItem.icon}</Tooltip>
           </span>
         );
       }

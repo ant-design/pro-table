@@ -12,21 +12,11 @@ const FullScreenIcon = () => {
     };
   }, []);
   return fullscreen ? (
-    <Tooltip
-      title={intl.getMessage('tableToolBar.exitFullScreen', '全屏')}
-      getPopupContainer={() =>
-        ((document.getElementById('ant-design-pro-table') || document.body) as any) as HTMLElement
-      }
-    >
+    <Tooltip title={intl.getMessage('tableToolBar.exitFullScreen', '全屏')}>
       <FullscreenExitOutlined />
     </Tooltip>
   ) : (
-    <Tooltip
-      title={intl.getMessage('tableToolBar.fullScreen', '全屏')}
-      getPopupContainer={() =>
-        ((document.getElementById('ant-design-pro-table') || document.body) as any) as HTMLElement
-      }
-    >
+    <Tooltip title={intl.getMessage('tableToolBar.fullScreen', '全屏')}>
       <FullscreenOutlined />
     </Tooltip>
   );

@@ -1,7 +1,7 @@
 import './index.less';
 
 import React, { useEffect, CSSProperties, useRef, useState, ReactNode } from 'react';
-import { Table, Card, Typography, Empty, Tooltip } from 'antd';
+import { Table, ConfigProvider, Card, Typography, Empty, Tooltip } from 'antd';
 import classNames from 'classnames';
 import useMergeValue from 'use-merge-value';
 import moment from 'moment';
@@ -345,16 +345,7 @@ const genEllipsis = (dom: React.ReactNode, item: ProColumns<any>, text: string) 
   if (!item.ellipsis) {
     return dom;
   }
-  return (
-    <Tooltip
-      getPopupContainer={() =>
-        ((document.getElementById('ant-design-pro-table') || document.body) as any) as HTMLElement
-      }
-      title={text}
-    >
-      {dom}
-    </Tooltip>
-  );
+  return <Tooltip title={text}>{dom}</Tooltip>;
 };
 
 const genCopyable = (dom: React.ReactNode, item: ProColumns<any>) => {
@@ -732,19 +723,25 @@ const ProTable = <T, U = {}>(
  * @param props
  */
 const ProviderWarp = <T, U = {}>(props: ProTableProps<T>) => (
-  <Container.Provider>
-    <ConfigConsumer>
-      {({ getPrefixCls }: ConfigConsumerProps) => (
-        <IntlConsumer>
-          {value => (
-            <IntlProvider value={value}>
-              <ProTable defaultClassName={getPrefixCls('pro-table')} {...props} />
-            </IntlProvider>
-          )}
-        </IntlConsumer>
-      )}
-    </ConfigConsumer>
-  </Container.Provider>
+  <ConfigProvider
+    getPopupContainer={() =>
+      ((document.getElementById('ant-design-pro-table') || document.body) as any) as HTMLElement
+    }
+  >
+    <Container.Provider>
+      <ConfigConsumer>
+        {({ getPrefixCls }: ConfigConsumerProps) => (
+          <IntlConsumer>
+            {value => (
+              <IntlProvider value={value}>
+                <ProTable defaultClassName={getPrefixCls('pro-table')} {...props} />
+              </IntlProvider>
+            )}
+          </IntlConsumer>
+        )}
+      </ConfigConsumer>
+    </Container.Provider>
+  </ConfigProvider>
 );
 
 export default ProviderWarp;

@@ -247,10 +247,6 @@ const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
         return (
           <Popover
             arrowPointAtCenter
-            getPopupContainer={() =>
-              ((document.getElementById('ant-design-pro-table') ||
-                document.body) as any) as HTMLElement
-            }
             title={
               <div className={`${className}-title`}>
                 <Checkbox
@@ -280,13 +276,7 @@ const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
             placement="bottomRight"
             content={<GroupCheckboxList className={className} localColumns={localColumns} />}
           >
-            <Tooltip
-              title={intl.getMessage('tableToolBar.columnSetting', '列设置')}
-              getPopupContainer={() =>
-                ((document.getElementById('ant-design-pro-table') ||
-                  document.body) as any) as HTMLElement
-              }
-            >
+            <Tooltip title={intl.getMessage('tableToolBar.columnSetting', '列设置')}>
               <SettingOutlined
                 className={`${toolBarClassName}-item-icon`}
                 style={{
