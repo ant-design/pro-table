@@ -164,7 +164,7 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSe
   /**
    * 渲染操作栏
    */
-  toolBarRender?: ToolBarProps<T>['toolBarRender'];
+  toolBarRender?: ToolBarProps<T>['toolBarRender'] | false;
 
   /**
    * 数据加载完成后触发
@@ -678,14 +678,16 @@ const ProTable = <T, U = {}>(
           padding: 0,
         }}
       >
-        <Toolbar<T>
-          options={options}
-          headerTitle={headerTitle}
-          action={action}
-          selectedRows={selectedRows}
-          selectedRowKeys={selectedRowKeys}
-          toolBarRender={toolBarRender}
-        />
+        {toolBarRender !== false && (
+          <Toolbar<T>
+            options={options}
+            headerTitle={headerTitle}
+            action={action}
+            selectedRows={selectedRows}
+            selectedRowKeys={selectedRowKeys}
+            toolBarRender={toolBarRender}
+          />
+        )}
         {propsRowSelection !== false && (
           <Alert<T>
             selectedRowKeys={selectedRowKeys}
