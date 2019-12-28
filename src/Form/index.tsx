@@ -3,9 +3,10 @@ import { DownOutlined } from '@ant-design/icons';
 import { Input, Form, Row, Col, TimePicker, InputNumber, DatePicker, Select, Button } from 'antd';
 import moment, { Moment } from 'moment';
 import RcResizeObserver from 'rc-resize-observer';
+import useMediaQuery from 'use-media-antd-query';
 import { FormComponentProps } from 'antd/lib/form';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
-import { parsingValueEnumToArray, useDeepCompareEffect, useMedia } from '../component/util';
+import { parsingValueEnumToArray, useDeepCompareEffect } from '../component/util';
 import { useIntl, IntlType } from '../component/intlContext';
 import Container from '../container';
 import { ProColumns } from '../index';
@@ -231,7 +232,7 @@ const FormSearch = <T, U = {}>({
     [key: string]: ProColumns<any>;
   }>({});
 
-  const windowSize = useMedia();
+  const windowSize = useMediaQuery();
   const [colSize, setColSize] = useState(getSpanConfig(span, windowSize));
   const [formHeight, setFormHeight] = useState<number>(88);
   const rowNumber = 24 / colSize || 3;
@@ -266,10 +267,10 @@ const FormSearch = <T, U = {}>({
   );
 
   const domList = columnsList
-    .filter((_, index) => (collapse ? index < rowNumber - 1 : true))
+    .filter((_, index) => (collapse ? index < (rowNumber - 1 || 1) : true))
     .map(item => (
       <Col {...span} key={item.key || item.dataIndex}>
-        <Form.Item label={item.title}>
+        <Form.Item labelAlign="right" label={item.title}>
           {form.getFieldDecorator((item.key || item.dataIndex) as string, {
             initialValue: item.initialValue,
           })(<FromInputRender item={item} />)}
@@ -289,7 +290,7 @@ const FormSearch = <T, U = {}>({
             }}
           >
             <RcResizeObserver onResize={({ height }) => setFormHeight(height + 32)}>
-              <Form layout="inline">
+              <Form>
                 <Row gutter={16} justify="end">
                   {domList}
                   <Col
