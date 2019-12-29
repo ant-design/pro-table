@@ -153,9 +153,9 @@ const FromInputRender: React.FC<{
 });
 
 const dateFormatterMap = {
-  time: 'HH:mm:SS',
+  time: 'HH:mm:ss',
   date: 'YYYY-MM-DD',
-  dateTime: 'YYYY-MM-DD HH:mm:SS',
+  dateTime: 'YYYY-MM-DD HH:mm:ss',
 };
 
 const genValue = (value: any, dateFormatter?: string | boolean, proColumnsMap?: any) => {
@@ -167,7 +167,7 @@ const genValue = (value: any, dateFormatter?: string | boolean, proColumnsMap?: 
         if (dateFormatter === 'string') {
           const formatString =
             dateFormatterMap[(proColumnsMap[key || 'null'] || {}).valueType || 'dateTime'];
-          tmpValue[key] = (itemValue as Moment).format(formatString || 'YYYY-MM-DD HH:mm:SS');
+          tmpValue[key] = (itemValue as Moment).format(formatString || 'YYYY-MM-DD HH:mm:ss');
           return;
         }
         if (dateFormatter === 'number') {
