@@ -10,3 +10,7 @@ order: 0
 ## English
 
 <code src="./example/english.tsx" />
+
+## toolbar 搜索
+
+<code src="./example/search.tsx" />
