@@ -2,23 +2,23 @@ import React from 'react';
 import { Button, Icon } from 'antd';
 import ProTable, { ProColumns } from '@ant-design/pro-table';
 
-export interface TableListItem {
-  key: number;
-  name: string;
-  status: number;
-  updatedAt: number;
-  createdAt: number;
-  progress: number;
-  money: number;
-}
-const tableListDataSource: TableListItem[] = [];
-
 const valueEnum = {
   0: 'close',
   1: 'running',
   2: 'online',
   3: 'error',
 };
+
+export interface TableListItem {
+  key: number;
+  name: string;
+  status: string;
+  updatedAt: number;
+  createdAt: number;
+  progress: number;
+  money: number;
+}
+const tableListDataSource: TableListItem[] = [];
 
 for (let i = 0; i < 10; i += 1) {
   tableListDataSource.push({
@@ -28,7 +28,7 @@ for (let i = 0; i < 10; i += 1) {
     updatedAt: Date.now() - Math.floor(Math.random() * 1000),
     createdAt: Date.now() - Math.floor(Math.random() * 2000),
     money: Math.floor(Math.random() * 2000) * i,
-    progress: Math.ceil(Math.random() * 100),
+    progress: Math.ceil(Math.random() * 100) + 1,
   });
 }
 
@@ -37,22 +37,26 @@ const columns: ProColumns<TableListItem>[] = [
     title: '序号',
     dataIndex: 'index',
     valueType: 'index',
+    width: 80,
   },
   {
     title: 'border 序号',
     dataIndex: 'index',
     key: 'indexBorder',
     valueType: 'indexBorder',
+    width: 80,
   },
   {
     title: '金额',
     dataIndex: 'money',
     valueType: 'money',
+    width: 100,
   },
   {
     title: '状态',
     dataIndex: 'status',
     initialValue: 'all',
+    width: 100,
     valueEnum: {
       all: { text: '全部', status: 'Default' },
       close: { text: '关闭', status: 'Default' },
@@ -65,23 +69,37 @@ const columns: ProColumns<TableListItem>[] = [
     title: '创建时间',
     key: 'since',
     dataIndex: 'createdAt',
+    width: 200,
     valueType: 'dateTime',
+  },
+  {
+    title: '进度',
+    key: 'progress',
+    dataIndex: 'progress',
+    valueType: item => ({
+      type: 'progress',
+      status: item.status !== 'error' ? 'active' : 'exception',
+    }),
+    width: 200,
   },
   {
     title: '更新时间',
     key: 'since2',
+    width: 120,
     dataIndex: 'createdAt',
     valueType: 'date',
   },
   {
     title: '关闭时间',
     key: 'since2',
+    width: 120,
     dataIndex: 'updatedAt',
     valueType: 'time',
   },
   {
     title: '操作',
     key: 'option',
+    width: 120,
     valueType: 'option',
     render: () => [<a>操作</a>, <a>删除</a>],
   },
@@ -99,6 +117,9 @@ export default () => (
     rowKey="id"
     pagination={{
       showSizeChanger: true,
+    }}
+    scroll={{
+      x: columns.length * 120,
     }}
     dateFormatter="string"
     headerTitle="valueType 设置"

@@ -98,6 +98,7 @@ const FromInputRender: React.FC<{
       />
     );
   }
+
   if (item.valueType === 'dateTime') {
     return (
       <DatePicker

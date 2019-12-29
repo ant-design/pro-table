@@ -97,3 +97,21 @@ function useDeepCompareMemoize(value: any) {
 export function useDeepCompareEffect(effect: React.EffectCallback, dependencies?: Object) {
   useEffect(effect, useDeepCompareMemoize(dependencies));
 }
+
+export function getProgressStatus(text: number): 'success' | 'exception' | 'normal' | 'active' {
+  if (typeof text !== 'number') {
+    return 'exception';
+  }
+  if (text === 100) {
+    return 'success';
+  }
+  if (text < 100) {
+    return 'active';
+  }
+
+  // magic
+  if (text < 0) {
+    return 'exception';
+  }
+  return 'normal';
+}
