@@ -8,8 +8,8 @@ import { getProgressStatus } from './component/util';
  * money 金额
  * option 操作 需要返回一个数组
  * date 日期 YYYY-MM-DD
- * dateTime 日期和时间 YYYY-MM-DD HH:mm:SS
- * time: 时间 HH:mm:SS
+ * dateTime 日期和时间 YYYY-MM-DD HH:mm:ss
+ * time: 时间 HH:mm:ss
  * index：序列
  * progress: 进度条
  */
@@ -117,14 +117,14 @@ const defaultRenderText = <T, U>(
    *如果是日期加时间类型的值
    */
   if (valueType === 'dateTime' && text) {
-    return moment(text).format('YYYY-MM-DD HH:mm:SS');
+    return moment(text).format('YYYY-MM-DD HH:mm:ss');
   }
 
   /**
    *如果是时间类型的值
    */
   if (valueType === 'time' && text) {
-    return moment(text).format('HH:mm:SS');
+    return moment(text).format('HH:mm:ss');
   }
 
   if (valueType === 'index') {
