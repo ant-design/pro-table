@@ -11,7 +11,7 @@ import useFetchData, { UseFetchDataAction, RequestData } from './useFetchData';
 import Container, { ColumnsMapItem } from './container';
 import Toolbar, { OptionConfig, ToolBarProps } from './component/toolBar';
 import Alert from './component/alert';
-import FormSearch, { SearchConfig } from './Form';
+import FormSearch, { SearchConfig, TableFormItem } from './Form';
 import { StatusType } from './component/status';
 import {
   parsingText,
@@ -146,7 +146,7 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSe
    * 初始化的参数，可以操作 table
    */
   actionRef?: React.MutableRefObject<ActionType | undefined> | ((actionRef: ActionType) => void);
-
+  formRef?: TableFormItem<T>['formRef'];
   /**
    * 渲染操作栏
    */
@@ -385,6 +385,7 @@ const ProTable = <T, U = {}>(
     beforeSearchSubmit = (searchParams: any) => searchParams,
     tableAlertRender,
     defaultClassName,
+    formRef,
     ...reset
   } = props;
 
@@ -562,82 +563,86 @@ const ProTable = <T, U = {}>(
   if (counter.columns.length < 1) {
     return <Empty />;
   }
-
   const className = classNames(defaultClassName, propsClassName);
 
   return (
-    <div className={className} id="ant-design-pro-table" style={style} ref={rootRef}>
-      {search && (
-        <FormSearch
-          onSubmit={value => {
-            setFormSearch(beforeSearchSubmit(value));
-            // back first page
-            action.resetPageIndex();
-          }}
-          onReset={() => {
-            setFormSearch(beforeSearchSubmit({}));
-            // back first page
-            action.resetPageIndex();
-          }}
-          dateFormatter={reset.dateFormatter}
-          search={search}
-        />
-      )}
-      <Card
-        bordered={false}
-        style={{
-          height: '100%',
-        }}
-        bodyStyle={{
-          padding: 0,
-        }}
-      >
-        {toolBarRender !== false && (
-          <Toolbar<T>
-            options={options}
-            headerTitle={headerTitle}
-            action={action}
-            selectedRows={selectedRows}
-            selectedRowKeys={selectedRowKeys}
-            toolBarRender={toolBarRender}
-          />
-        )}
-        {propsRowSelection !== false && (
-          <Alert<T>
-            selectedRowKeys={selectedRowKeys}
-            selectedRows={selectedRows}
-            onCleanSelected={() => {
-              if (propsRowSelection && propsRowSelection.onChange) {
-                propsRowSelection.onChange([], []);
-              }
-              setSelectedRowKeys([]);
-              setSelectedRows([]);
+    <ConfigProvider
+      getPopupContainer={() => ((rootRef.current || document.body) as any) as HTMLElement}
+    >
+      <div className={className} id="ant-design-pro-table" style={style} ref={rootRef}>
+        {search && (
+          <FormSearch
+            formRef={formRef}
+            onSubmit={value => {
+              setFormSearch(beforeSearchSubmit(value));
+              // back first page
+              action.resetPageIndex();
             }}
-            renderInfo={tableAlertRender}
+            onReset={() => {
+              setFormSearch(beforeSearchSubmit({}));
+              // back first page
+              action.resetPageIndex();
+            }}
+            dateFormatter={reset.dateFormatter}
+            search={search}
           />
         )}
-        <Table
-          size={counter.tableSize}
-          {...reset}
-          rowSelection={propsRowSelection === false ? undefined : rowSelection}
-          className={tableClassName}
-          style={tableStyle}
-          columns={counter.columns.filter(item => {
-            // 删掉不应该显示的
-            const { key, dataIndex } = item;
-            const columnKey = `${key || ''}-${dataIndex || ''}`;
-            const config = counter.columnsMap[columnKey];
-            if (config && config.show === false) {
-              return false;
-            }
-            return true;
-          })}
-          loading={action.loading}
-          dataSource={action.dataSource as T[]}
-          pagination={pagination}
-        />
-      </Card>
-    </div>
+        <Card
+          bordered={false}
+          style={{
+            height: '100%',
+          }}
+          bodyStyle={{
+            padding: 0,
+          }}
+        >
+          {toolBarRender !== false && (
+            <Toolbar<T>
+              options={options}
+              headerTitle={headerTitle}
+              action={action}
+              selectedRows={selectedRows}
+              selectedRowKeys={selectedRowKeys}
+              toolBarRender={toolBarRender}
+            />
+          )}
+          {propsRowSelection !== false && (
+            <Alert<T>
+              selectedRowKeys={selectedRowKeys}
+              selectedRows={selectedRows}
+              onCleanSelected={() => {
+                if (propsRowSelection && propsRowSelection.onChange) {
+                  propsRowSelection.onChange([], []);
+                }
+                setSelectedRowKeys([]);
+                setSelectedRows([]);
+              }}
+              renderInfo={tableAlertRender}
+            />
+          )}
+          <Table
+            size={counter.tableSize}
+            {...reset}
+            rowSelection={propsRowSelection === false ? undefined : rowSelection}
+            className={tableClassName}
+            style={tableStyle}
+            columns={counter.columns.filter(item => {
+              // 删掉不应该显示的
+              const { key, dataIndex } = item;
+              const columnKey = `${key || ''}-${dataIndex || ''}`;
+              const config = counter.columnsMap[columnKey];
+              if (config && config.show === false) {
+                return false;
+              }
+              return true;
+            })}
+            loading={action.loading}
+            dataSource={action.dataSource as T[]}
+            pagination={pagination}
+          />
+        </Card>
+      </div>
+    </ConfigProvider>
   );
 };
 
@@ -647,25 +652,19 @@ const ProTable = <T, U = {}>(
  * @param props
  */
 const ProviderWarp = <T, U = {}>(props: ProTableProps<T>) => (
-  <ConfigProvider
-    getPopupContainer={() =>
-      ((document.getElementById('ant-design-pro-table') || document.body) as any) as HTMLElement
-    }
-  >
-    <Container.Provider>
-      <ConfigConsumer>
-        {({ getPrefixCls }: ConfigConsumerProps) => (
-          <IntlConsumer>
-            {value => (
-              <IntlProvider value={value}>
-                <ProTable defaultClassName={getPrefixCls('pro-table')} {...props} />
-              </IntlProvider>
-            )}
-          </IntlConsumer>
-        )}
-      </ConfigConsumer>
-    </Container.Provider>
-  </ConfigProvider>
+  <Container.Provider>
+    <ConfigConsumer>
+      {({ getPrefixCls }: ConfigConsumerProps) => (
+        <IntlConsumer>
+          {value => (
+            <IntlProvider value={value}>
+              <ProTable defaultClassName={getPrefixCls('pro-table')} {...props} />
+            </IntlProvider>
+          )}
+        </IntlConsumer>
+      )}
+    </ConfigConsumer>
+  </Container.Provider>
 );
 
 export default ProviderWarp;

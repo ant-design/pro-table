@@ -50,7 +50,7 @@ const columns: ProColumns<TableListItem>[] = [
     title: '金额',
     dataIndex: 'money',
     valueType: 'money',
-    width: 100,
+    width: 150,
   },
   {
     title: '状态',

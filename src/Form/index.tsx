@@ -4,6 +4,7 @@ import { Input, Form, Row, Col, TimePicker, InputNumber, DatePicker, Select, But
 import moment, { Moment } from 'moment';
 import RcResizeObserver from 'rc-resize-observer';
 import useMediaQuery from 'use-media-antd-query';
+import { WrappedFormUtils } from 'antd/lib/form/Form';
 import { FormComponentProps } from 'antd/lib/form';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
 import { parsingValueEnumToArray, useDeepCompareEffect } from '../component/util';
@@ -40,11 +41,14 @@ const defaultSearch: Required<SearchConfig> = {
   collapseRender: (collapsed: boolean) => (collapsed ? '展开' : '收起'),
 };
 
-interface FormItem<T> extends FormComponentProps {
+export interface TableFormItem<T> extends FormComponentProps {
   onSubmit?: (value: T) => void;
   onReset?: () => void;
   dateFormatter?: 'string' | 'number' | false;
   search?: boolean | SearchConfig;
+  formRef?:
+    | React.MutableRefObject<WrappedFormUtils | undefined>
+    | ((actionRef: WrappedFormUtils) => void);
 }
 
 const FromInputRender: React.FC<{
@@ -220,9 +224,10 @@ const getSpanConfig = (
 const FormSearch = <T, U = {}>({
   form,
   onSubmit,
+  formRef,
   dateFormatter = 'string',
   search: propsSearch,
-}: FormItem<T>) => {
+}: TableFormItem<T>) => {
   const intl = useIntl();
   const searchConfig = getDefaultSearch(propsSearch, intl);
   const { span, searchText, resetText, collapseRender } = searchConfig;
@@ -237,6 +242,19 @@ const FormSearch = <T, U = {}>({
   const [colSize, setColSize] = useState(getSpanConfig(span, windowSize));
   const [formHeight, setFormHeight] = useState<number>(88);
   const rowNumber = 24 / colSize || 3;
+
+  useEffect(() => {
+    if (!formRef) {
+      return;
+    }
+    if (typeof formRef === 'function') {
+      formRef(form);
+    }
+    if (formRef && typeof formRef !== 'function') {
+      // eslint-disable-next-line no-param-reassign
+      formRef.current = form;
+    }
+  }, []);
 
   useEffect(() => {
     setColSize(getSpanConfig(span, windowSize));
@@ -342,4 +360,4 @@ const FormSearch = <T, U = {}>({
   );
 };
 
-export default Form.create<FormItem<any>>()(FormSearch);
+export default Form.create<TableFormItem<any>>()(FormSearch);
