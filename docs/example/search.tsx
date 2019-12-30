@@ -1,5 +1,5 @@
-import React from 'react';
-import { Button, Icon } from 'antd';
+import React, { useState } from 'react';
+import { Input } from 'antd';
 import ProTable, { ProColumns } from '@ant-design/pro-table';
 
 const valueEnum = {
@@ -20,7 +20,7 @@ export interface TableListItem {
 }
 const tableListDataSource: TableListItem[] = [];
 
-for (let i = 0; i < 10; i += 1) {
+for (let i = 0; i < 100; i += 1) {
   tableListDataSource.push({
     key: i,
     name: `TradeCode ${i}`,
@@ -34,23 +34,8 @@ for (let i = 0; i < 10; i += 1) {
 
 const columns: ProColumns<TableListItem>[] = [
   {
-    title: '序号',
-    dataIndex: 'index',
-    valueType: 'index',
-    width: 80,
-  },
-  {
-    title: 'border 序号',
-    dataIndex: 'index',
-    key: 'indexBorder',
-    valueType: 'indexBorder',
-    width: 80,
-  },
-  {
-    title: '金额',
-    dataIndex: 'money',
-    valueType: 'money',
-    width: 100,
+    title: '标题',
+    dataIndex: 'name',
   },
   {
     title: '状态',
@@ -73,29 +58,13 @@ const columns: ProColumns<TableListItem>[] = [
     valueType: 'dateTime',
   },
   {
-    title: '进度',
-    key: 'progress',
-    dataIndex: 'progress',
-    valueType: item => ({
-      type: 'progress',
-      status: item.status !== 'error' ? 'active' : 'exception',
-    }),
-    width: 200,
-  },
-  {
     title: '更新时间',
     key: 'since2',
     width: 120,
     dataIndex: 'createdAt',
     valueType: 'date',
   },
-  {
-    title: '关闭时间',
-    key: 'since2',
-    width: 120,
-    dataIndex: 'updatedAt',
-    valueType: 'time',
-  },
+
   {
     title: '操作',
     key: 'option',
@@ -105,30 +74,36 @@ const columns: ProColumns<TableListItem>[] = [
   },
 ];
 
-export default () => (
-  <ProTable<TableListItem>
-    columns={columns}
-    request={() =>
-      Promise.resolve({
-        data: tableListDataSource,
-        success: true,
-      })
-    }
-    rowKey="id"
-    pagination={{
-      showSizeChanger: true,
-    }}
-    scroll={{
-      x: columns.length * 120,
-    }}
-    dateFormatter="string"
-    headerTitle="valueType 设置"
-    params={{ state: 'all' }}
-    toolBarRender={() => [
-      <Button key="3" type="primary">
-        <Icon type="plus" />
-        新建
-      </Button>,
-    ]}
-  />
-);
+export default () => {
+  const [keyWord, setKeyWord] = useState();
+  return (
+    <ProTable<TableListItem>
+      columns={columns}
+      request={(params = {}) =>
+        Promise.resolve({
+          data: tableListDataSource.filter(item => {
+            if (!params.keyWord) {
+              return true;
+            }
+            if (item.name.includes(params.keyWord) || item.status.includes(params.keyWord)) {
+              return true;
+            }
+            return false;
+          }),
+          success: true,
+        })
+      }
+      rowKey="id"
+      pagination={{
+        showSizeChanger: true,
+      }}
+      params={{ keyWord }}
+      search={false}
+      dateFormatter="string"
+      headerTitle="简单搜索"
+      toolBarRender={() => [
+        <Input.Search placeholder="请输入" onSearch={value => setKeyWord(value)} />,
+      ]}
+    />
+  );
+};

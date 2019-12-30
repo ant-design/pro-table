@@ -4,13 +4,11 @@ import React, { useEffect, CSSProperties, useRef, useState, ReactNode } from 're
 import { Table, ConfigProvider, Card, Typography, Empty, Tooltip } from 'antd';
 import classNames from 'classnames';
 import useMergeValue from 'use-merge-value';
-import moment from 'moment';
 import { ColumnProps, PaginationConfig, TableProps, TableRowSelection } from 'antd/es/table';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
 import { IntlProvider, IntlConsumer } from './component/intlContext';
 import useFetchData, { UseFetchDataAction, RequestData } from './useFetchData';
 import Container, { ColumnsMapItem } from './container';
-import IndexColumn from './component/indexColumn';
 import Toolbar, { OptionConfig, ToolBarProps } from './component/toolBar';
 import Alert from './component/alert';
 import FormSearch, { SearchConfig } from './Form';
@@ -22,22 +20,10 @@ import {
   useDeepCompareEffect,
 } from './component/util';
 
-/**
- * money 金额
- * option 操作 需要返回一个数组
- * date 日期 YYYY-MM-DD
- * dateTime 日期和时间 YYYY-MM-DD HH:mm:SS
- * time: 时间 HH:mm:SS
- */
-export type ProColumnsValueType =
-  | 'money'
-  | 'option'
-  | 'date'
-  | 'dateTime'
-  | 'time'
-  | 'text'
-  | 'index'
-  | 'indexBorder';
+import defaultRenderText, {
+  ProColumnsValueType,
+  ProColumnsValueTypeFunction,
+} from './defaultRender';
 
 export interface ActionType {
   reload: () => void;
@@ -96,7 +82,7 @@ export interface ProColumns<T = unknown> extends Omit<ColumnProps<T>, 'render' |
   /**
    * 值的类型
    */
-  valueType?: ProColumnsValueType;
+  valueType?: ProColumnsValueType | ProColumnsValueTypeFunction<T>;
 
   children?: ProColumns<T>[];
 
@@ -264,66 +250,6 @@ const mergePagination = <T extends any[], U>(
   };
 };
 
-const moneyIntl = new Intl.NumberFormat('zh-Hans-CN', {
-  currency: 'CNY',
-  style: 'currency',
-  minimumFractionDigits: 2,
-});
-/**
- * 根据不同的类型来转化数值
- * @param text
- * @param valueType
- */
-const defaultRenderText = (
-  text: string | number,
-  valueType: ProColumnsValueType,
-  index: number,
-) => {
-  /**
-   * 如果是金额的值
-   */
-  if (valueType === 'money' && (text || text === 0)) {
-    /**
-     * 这个 api 支持三星和华为的手机
-     */
-    if (typeof text === 'string') {
-      return moneyIntl.format(parseFloat(text));
-    }
-    return moneyIntl.format(text);
-  }
-
-  /**
-   *如果是日期的值
-   */
-  if (valueType === 'date' && text) {
-    return moment(text).format('YYYY-MM-DD');
-  }
-
-  /**
-   *如果是日期加时间类型的值
-   */
-  if (valueType === 'dateTime' && text) {
-    return moment(text).format('YYYY-MM-DD HH:mm:SS');
-  }
-
-  /**
-   *如果是时间类型的值
-   */
-  if (valueType === 'time' && text) {
-    return moment(text).format('HH:mm:SS');
-  }
-
-  if (valueType === 'index') {
-    return <IndexColumn>{index + 1}</IndexColumn>;
-  }
-
-  if (valueType === 'indexBorder') {
-    return <IndexColumn border>{index + 1}</IndexColumn>;
-  }
-
-  return text;
-};
-
 interface ColumRenderInterface<T> {
   item: ProColumns<T>;
   text: any;
@@ -370,7 +296,7 @@ const ColumRender = <T, U = any>({ item, text, row, index }: ColumRenderInterfac
   }
 
   const renderTextStr = renderText(parsingText(text, valueEnum), row, index, action.current);
-  const textDom = defaultRenderText(renderTextStr, item.valueType || 'text', index);
+  const textDom = defaultRenderText<T, {}>(renderTextStr, item.valueType || 'text', index, row);
 
   const dom: React.ReactNode = genEllipsis(genCopyable(textDom, item), item, text);
 
