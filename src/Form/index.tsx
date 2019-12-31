@@ -204,6 +204,7 @@ const getDefaultSearch = (
   if (search === undefined || search === true) {
     return config;
   }
+
   return { ...config, ...search } as Required<SearchConfig>;
 };
 
@@ -285,10 +286,12 @@ const FormSearch = <T, U = {}>({
       (item.key || item.dataIndex),
   );
 
+  const colConfig = typeof span === 'number' ? { span } : span;
+
   const domList = columnsList
     .filter((_, index) => (collapse ? index < (rowNumber - 1 || 1) : true))
     .map(item => (
-      <Col {...span} key={item.key || item.dataIndex}>
+      <Col {...colConfig} key={item.key || item.dataIndex}>
         <Form.Item labelAlign="right" label={item.title}>
           {form.getFieldDecorator((item.key || item.dataIndex) as string, {
             initialValue: item.initialValue,
@@ -313,7 +316,7 @@ const FormSearch = <T, U = {}>({
                 <Row gutter={16} justify="end">
                   {domList}
                   <Col
-                    {...span}
+                    {...colConfig}
                     offset={getOffset(domList.length, colSize)}
                     key="option"
                     className={`${className}-option`}
