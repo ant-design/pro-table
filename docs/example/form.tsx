@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Input, Button } from 'antd';
+import React, { useRef } from 'react';
+import { Button } from 'antd';
 import ProTable, { ProColumns } from '@ant-design/pro-table';
 import { WrappedFormUtils } from 'antd/lib/form/Form';
 

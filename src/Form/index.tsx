@@ -153,7 +153,13 @@ const FromInputRender: React.FC<{
     );
   }
 
-  return undefined;
+  return (
+    <Input
+      placeholder={intl.getMessage('tableFrom.inputPlaceholder', '请输入')}
+      {...rest}
+      {...item.formItemProps}
+    />
+  );
 });
 
 const dateFormatterMap = {
