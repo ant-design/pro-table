@@ -6,6 +6,7 @@ import classNames from 'classnames';
 import useMergeValue from 'use-merge-value';
 import { ColumnProps, PaginationConfig, TableProps, TableRowSelection } from 'antd/es/table';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
+import { ValidationRule } from 'antd/lib/form';
 import { IntlProvider, IntlConsumer } from './component/intlContext';
 import useFetchData, { UseFetchDataAction, RequestData } from './useFetchData';
 import Container, { ColumnsMapItem } from './container';
@@ -69,6 +70,11 @@ export interface ProColumns<T = unknown> extends Omit<ColumnProps<T>, 'render' |
    * 搜索表单的默认值
    */
   initialValue?: any;
+
+  /**
+   * 校验规则，参见 [async-validator](https://github.com/yiminghe/async-validator)
+   */
+  rules?: ValidationRule[];
 
   /**
    * 是否缩略

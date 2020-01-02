@@ -268,10 +268,11 @@ const FormSearch = <T, U = {}>({
   }, [windowSize]);
 
   const submit = () => {
-    const value = form.getFieldsValue();
-    if (onSubmit) {
-      onSubmit(genValue(value, dateFormatter, proColumnsMap) as T);
-    }
+    form.validateFields((err, value) => {
+      if (!err && onSubmit) {
+        onSubmit(genValue(value, dateFormatter, proColumnsMap) as T);
+      }
+    });
   };
 
   useDeepCompareEffect(() => {
@@ -301,6 +302,7 @@ const FormSearch = <T, U = {}>({
         <Form.Item labelAlign="right" label={item.title}>
           {form.getFieldDecorator((item.key || item.dataIndex) as string, {
             initialValue: item.initialValue,
+            rules: item.rules,
           })(<FromInputRender item={item} />)}
         </Form.Item>
       </Col>

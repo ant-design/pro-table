@@ -106,6 +106,7 @@ const columns: ProColumns<GithubIssueItem>[] = [
           {name}
         </Tag>
       )),
+    rules: [{ required: true }],
   },
   {
     title: '创建时间',
