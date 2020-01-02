@@ -3,11 +3,19 @@ import { ReloadOutlined, SettingOutlined } from '@ant-design/icons';
 import { Divider, Tooltip } from 'antd';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider/context';
 import ColumnSetting from '../columnSetting';
-
+import { useIntl, IntlType } from '../intlContext';
 import { UseFetchDataAction, RequestData } from '../../useFetchData';
 
 import './index.less';
 import FullScreenIcon from './FullscreenIcon';
+import DensityIcon from './DensityIcon';
+
+export interface OptionConfig<T> {
+  density: boolean;
+  fullScreen: OptionsType<T>;
+  reload: OptionsType<T>;
+  setting: boolean;
+}
 
 export type OptionsType<T = unknown> =
   | ((e: React.MouseEvent<HTMLSpanElement>, action: UseFetchDataAction<RequestData<T>>) => void)
@@ -23,30 +31,34 @@ export interface ToolBarProps<T = unknown> {
     },
   ) => React.ReactNode[];
   action: UseFetchDataAction<RequestData<T>>;
-  options?: {
-    fullScreen: OptionsType<T>;
-    reload: OptionsType<T>;
-    setting: boolean;
-  };
+  options?: OptionConfig<T>;
   selectedRowKeys?: (string | number)[];
   selectedRows?: T[];
   className?: string;
 }
 
-const buttonText = {
+const getButtonText = <T, U = {}>({
+  intl,
+}: OptionConfig<T> & {
+  intl: IntlType;
+}) => ({
   fullScreen: {
-    text: '全屏',
+    text: intl.getMessage('tableToolBar.fullScreen', '全屏'),
     icon: <FullScreenIcon />,
   },
   reload: {
-    text: '刷新',
+    text: intl.getMessage('tableToolBar.reload', '刷新'),
     icon: <ReloadOutlined />,
   },
   setting: {
-    text: '列设置',
+    text: intl.getMessage('tableToolBar.columnSetting', '列设置'),
     icon: <SettingOutlined />,
   },
-};
+  density: {
+    text: intl.getMessage('tableToolBar.density', '表格密度'),
+    icon: <DensityIcon />,
+  },
+});
 
 /**
  * 渲染默认的 工具栏
@@ -56,10 +68,8 @@ const buttonText = {
 const renderDefaultOption = <T, U = {}>(
   options: ToolBarProps<T>['options'],
   className: string,
-  defaultOptions: {
-    fullScreen: OptionsType<T>;
-    reload: OptionsType<T>;
-    setting: OptionsType<T>;
+  defaultOptions: OptionConfig<T> & {
+    intl: IntlType;
   },
 ) =>
   options &&
@@ -87,7 +97,7 @@ const renderDefaultOption = <T, U = {}>(
           </span>
         );
       }
-      const optionItem = buttonText[key];
+      const optionItem = getButtonText<T>(defaultOptions)[key];
       if (optionItem) {
         return (
           <span
@@ -96,17 +106,13 @@ const renderDefaultOption = <T, U = {}>(
               marginLeft: index === 0 ? 8 : 16,
             }}
             className={className}
-            onClick={value === true ? defaultOptions[key] : value}
-          >
-            <Tooltip
-              getPopupContainer={() =>
-                ((document.getElementById('ant-design-pro-table') ||
-                  document.body) as any) as HTMLElement
+            onClick={() => {
+              if (value && defaultOptions[key] !== true) {
+                defaultOptions[key]();
               }
-              title={optionItem.text}
-            >
-              {optionItem.icon}
-            </Tooltip>
+            }}
+          >
+            <Tooltip title={optionItem.text}>{optionItem.icon}</Tooltip>
           </span>
         );
       }
@@ -119,6 +125,7 @@ const ToolBar = <T, U = {}>({
   toolBarRender,
   action,
   options = {
+    density: true,
     fullScreen: () => action.fullScreen && action.fullScreen(),
     reload: () => action.reload(),
     setting: true,
@@ -127,11 +134,14 @@ const ToolBar = <T, U = {}>({
   selectedRows,
   className,
 }: ToolBarProps<T>) => {
+  const intl = useIntl();
   const optionDom =
     renderDefaultOption<T>(options, `${className}-item-icon`, {
       fullScreen: () => action.fullScreen && action.fullScreen(),
       reload: () => action.reload(),
+      density: true,
       setting: true,
+      intl,
     }) || [];
   // 操作列表
   const actions = toolBarRender ? toolBarRender(action, { selectedRowKeys, selectedRows }) : [];

@@ -3,25 +3,52 @@ import { DownOutlined } from '@ant-design/icons';
 import { Input, Form, Row, Col, TimePicker, InputNumber, DatePicker, Select, Button } from 'antd';
 import moment, { Moment } from 'moment';
 import RcResizeObserver from 'rc-resize-observer';
+import useMediaQuery from 'use-media-antd-query';
+import { WrappedFormUtils } from 'antd/lib/form/Form';
 import { FormComponentProps } from 'antd/lib/form';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
-import get from 'lodash/get';
-import { parsingValueEnumToArray } from '../component/util';
+import { parsingValueEnumToArray, useDeepCompareEffect } from '../component/util';
+import { useIntl, IntlType } from '../component/intlContext';
 import Container from '../container';
 import { ProColumns } from '../index';
 import './index.less';
 
+const defaultColConfig = {
+  lg: 8,
+  md: 12,
+  xxl: 6,
+  xl: 8,
+  sm: 12,
+  xs: 24,
+};
+
 export interface SearchConfig {
   searchText?: string;
   resetText?: string;
+  span?: number | typeof defaultColConfig;
   collapseRender?: (collapsed: boolean) => React.ReactNode;
 }
 
-interface FormItem<T> extends FormComponentProps {
+const getOffset = (length: number, span: number = 8) => {
+  const cols = 24 / span;
+  return (cols - 1 - (length % cols)) * span;
+};
+
+const defaultSearch: Required<SearchConfig> = {
+  searchText: '查询',
+  resetText: '重置',
+  span: defaultColConfig,
+  collapseRender: (collapsed: boolean) => (collapsed ? '展开' : '收起'),
+};
+
+export interface TableFormItem<T> extends FormComponentProps {
   onSubmit?: (value: T) => void;
   onReset?: () => void;
   dateFormatter?: 'string' | 'number' | false;
   search?: boolean | SearchConfig;
+  formRef?:
+    | React.MutableRefObject<WrappedFormUtils | undefined>
+    | ((actionRef: WrappedFormUtils) => void);
 }
 
 const FromInputRender: React.FC<{
@@ -29,6 +56,7 @@ const FromInputRender: React.FC<{
   value?: any;
   onChange?: (value: any) => void;
 }> = React.forwardRef(({ item, ...rest }, ref: any) => {
+  const intl = useIntl();
   /**
    * 自定义 render
    */
@@ -39,7 +67,12 @@ const FromInputRender: React.FC<{
     const { valueEnum } = item;
     if (valueEnum) {
       return (
-        <Select placeholder="请选择" ref={ref} {...rest} {...item.formItemProps}>
+        <Select
+          placeholder={intl.getMessage('tableFrom.selectPlaceholder', '请选择')}
+          ref={ref}
+          {...rest}
+          {...item.formItemProps}
+        >
           {parsingValueEnumToArray(valueEnum).map(({ value, text }) => (
             <Select.Option key={value} value={value}>
               {text}
@@ -48,13 +81,19 @@ const FromInputRender: React.FC<{
         </Select>
       );
     }
-    return <Input placeholder="请输入" {...rest} {...item.formItemProps} />;
+    return (
+      <Input
+        placeholder={intl.getMessage('tableFrom.inputPlaceholder', '请输入')}
+        {...rest}
+        {...item.formItemProps}
+      />
+    );
   }
   if (item.valueType === 'date') {
     return (
       <DatePicker
         ref={ref}
-        placeholder="请选择"
+        placeholder={intl.getMessage('tableFrom.selectPlaceholder', '请选择')}
         style={{
           width: '100%',
         }}
@@ -63,12 +102,13 @@ const FromInputRender: React.FC<{
       />
     );
   }
+
   if (item.valueType === 'dateTime') {
     return (
       <DatePicker
         showTime
         ref={ref}
-        placeholder="请选择"
+        placeholder={intl.getMessage('tableFrom.selectPlaceholder', '请选择')}
         style={{
           width: '100%',
         }}
@@ -81,7 +121,7 @@ const FromInputRender: React.FC<{
     return (
       <TimePicker
         ref={ref}
-        placeholder="请选择"
+        placeholder={intl.getMessage('tableFrom.selectPlaceholder', '请选择')}
         style={{
           width: '100%',
         }}
@@ -102,7 +142,7 @@ const FromInputRender: React.FC<{
           return '';
         }}
         parser={value => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
-        placeholder="请输入"
+        placeholder={intl.getMessage('tableFrom.selectPlaceholder', '请选择')}
         precision={2}
         style={{
           width: '100%',
@@ -113,13 +153,19 @@ const FromInputRender: React.FC<{
     );
   }
 
-  return undefined;
+  return (
+    <Input
+      placeholder={intl.getMessage('tableFrom.inputPlaceholder', '请输入')}
+      {...rest}
+      {...item.formItemProps}
+    />
+  );
 });
 
 const dateFormatterMap = {
-  time: 'HH:mm:SS',
+  time: 'HH:mm:ss',
   date: 'YYYY-MM-DD',
-  dateTime: 'YYYY-MM-DD HH:mm:SS',
+  dateTime: 'YYYY-MM-DD HH:mm:ss',
 };
 
 const genValue = (value: any, dateFormatter?: string | boolean, proColumnsMap?: any) => {
@@ -131,7 +177,7 @@ const genValue = (value: any, dateFormatter?: string | boolean, proColumnsMap?: 
         if (dateFormatter === 'string') {
           const formatString =
             dateFormatterMap[(proColumnsMap[key || 'null'] || {}).valueType || 'dateTime'];
-          tmpValue[key] = (itemValue as Moment).format(formatString || 'YYYY-MM-DD HH:mm:SS');
+          tmpValue[key] = (itemValue as Moment).format(formatString || 'YYYY-MM-DD HH:mm:ss');
           return;
         }
         if (dateFormatter === 'number') {
@@ -145,18 +191,81 @@ const genValue = (value: any, dateFormatter?: string | boolean, proColumnsMap?: 
   return tmpValue;
 };
 
+const getDefaultSearch = (
+  search: boolean | SearchConfig | undefined,
+  intl: IntlType,
+): Required<SearchConfig> => {
+  const config = {
+    collapseRender: (collapsed: boolean) => {
+      if (collapsed) {
+        return intl.getMessage('tableFrom.collapsed', '展开');
+      }
+      return intl.getMessage('tableFrom.expand', '收起');
+    },
+    searchText: intl.getMessage('tableFrom.search', defaultSearch.searchText),
+    resetText: intl.getMessage('tableFrom.reset', defaultSearch.resetText),
+    span: defaultColConfig,
+  };
+
+  if (search === undefined || search === true) {
+    return config;
+  }
+
+  return { ...config, ...search } as Required<SearchConfig>;
+};
+
+const getSpanConfig = (
+  span: number | typeof defaultColConfig,
+  size: keyof typeof defaultColConfig,
+): number => {
+  if (typeof span === 'number') {
+    return span;
+  }
+  const config = {
+    ...defaultColConfig,
+    ...span,
+  };
+  return config[size];
+};
+
 const FormSearch = <T, U = {}>({
   form,
   onSubmit,
+  formRef,
   dateFormatter = 'string',
-  search,
-}: FormItem<T>) => {
+  search: propsSearch,
+}: TableFormItem<T>) => {
+  const intl = useIntl();
+  const searchConfig = getDefaultSearch(propsSearch, intl);
+  const { span, searchText, resetText, collapseRender } = searchConfig;
+
   const counter = Container.useContainer();
   const [collapse, setCollapse] = useState<boolean>(true);
   const [proColumnsMap, setProColumnsMap] = useState<{
     [key: string]: ProColumns<any>;
   }>({});
+
+  const windowSize = useMediaQuery();
+  const [colSize, setColSize] = useState(getSpanConfig(span, windowSize));
   const [formHeight, setFormHeight] = useState<number>(88);
+  const rowNumber = 24 / colSize || 3;
+
+  useEffect(() => {
+    if (!formRef) {
+      return;
+    }
+    if (typeof formRef === 'function') {
+      formRef(form);
+    }
+    if (formRef && typeof formRef !== 'function') {
+      // eslint-disable-next-line no-param-reassign
+      formRef.current = form;
+    }
+  }, []);
+
+  useEffect(() => {
+    setColSize(getSpanConfig(span, windowSize));
+  }, [windowSize]);
 
   const submit = () => {
     const value = form.getFieldsValue();
@@ -165,14 +274,14 @@ const FormSearch = <T, U = {}>({
     }
   };
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     const tempMap = {};
     counter.proColumns.forEach(item => {
       const columnsKey = item.key || item.dataIndex || 'null';
       tempMap[columnsKey] = item;
     });
     setProColumnsMap(tempMap);
-  }, [JSON.stringify(counter.proColumns)]);
+  }, counter.proColumns);
 
   const columnsList = counter.proColumns.filter(
     item =>
@@ -183,20 +292,19 @@ const FormSearch = <T, U = {}>({
       (item.key || item.dataIndex),
   );
 
+  const colConfig = typeof span === 'number' ? { span } : span;
+
   const domList = columnsList
-    .filter((_, index) => (collapse ? index < 2 : true))
+    .filter((_, index) => (collapse ? index < (rowNumber - 1 || 1) : true))
     .map(item => (
-      <Col span={8} key={item.key || item.dataIndex}>
-        <Form.Item label={item.title}>
+      <Col {...colConfig} key={item.key || item.dataIndex}>
+        <Form.Item labelAlign="right" label={item.title}>
           {form.getFieldDecorator((item.key || item.dataIndex) as string, {
             initialValue: item.initialValue,
           })(<FromInputRender item={item} />)}
         </Form.Item>
       </Col>
     ));
-
-  const defaultCollapseRender = (collapsed: boolean) => (collapsed ? '展开' : '收起');
-  const collapseRender = get(search, 'collapseRender', defaultCollapseRender);
 
   return (
     <ConfigConsumer>
@@ -210,18 +318,18 @@ const FormSearch = <T, U = {}>({
             }}
           >
             <RcResizeObserver onResize={({ height }) => setFormHeight(height + 32)}>
-              <Form layout="inline">
+              <Form>
                 <Row gutter={16} justify="end">
                   {domList}
                   <Col
-                    span={8}
-                    offset={(2 - (domList.length % 3)) * 8}
+                    {...colConfig}
+                    offset={getOffset(domList.length, colSize)}
                     key="option"
                     className={`${className}-option`}
                   >
                     <Form.Item>
                       <Button type="primary" htmlType="submit" onClick={() => submit()}>
-                        {get(search, 'searchText', '搜索')}
+                        {searchText}
                       </Button>
                       <Button
                         style={{ marginLeft: 8 }}
@@ -230,16 +338,16 @@ const FormSearch = <T, U = {}>({
                           submit();
                         }}
                       >
-                        {get(search, 'resetText', '重置')}
+                        {resetText}
                       </Button>
-                      {columnsList.length > 2 && (
+                      {columnsList.length > rowNumber - 1 && (
                         <a
                           style={{ marginLeft: 8 }}
                           onClick={() => {
                             setCollapse(!collapse);
                           }}
                         >
-                          {collapseRender(collapse)}
+                          {collapseRender && collapseRender(collapse)}
                           <DownOutlined
                             style={{
                               marginLeft: '0.5em',
@@ -261,4 +369,4 @@ const FormSearch = <T, U = {}>({
   );
 };
 
-export default Form.create<FormItem<any>>()(FormSearch);
+export default Form.create<TableFormItem<any>>()(FormSearch);

@@ -1,10 +1,11 @@
 ---
-title: Table 自动生成 From
+title: Table 自动生成 Form
+order: 8
 ---
 
 # Table 搜索
 
-Pro-Table 会根据列来生成一个 From，用于筛选列表数据，最后的值会根据通过 `request` 的第一个参数返回，看起来就像。
+Pro-Table 会根据列来生成一个 Form，用于筛选列表数据，最后的值会根据通过 `request` 的第一个参数返回，看起来就像。
 
 ```jsx | pure
 <ProTable request={(params)=>{ all params}}>
@@ -12,7 +13,7 @@ Pro-Table 会根据列来生成一个 From，用于筛选列表数据，最后�
 
 按照规范，table 的表单不需要任何的必选参数，所有点击搜索和重置都会触发 `request`来发起一次查询。
 
-From 的列是根据 `valueType` 来生成不同的类型。
+Form 的列是根据 `valueType` 来生成不同的类型。
 
 > valueType 为 index indexBorder option 和没有 dataIndex 和 key 的列将会忽略。
 

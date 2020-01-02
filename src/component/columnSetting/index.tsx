@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider/context';
 import { PushpinOutlined, SettingOutlined, VerticalAlignMiddleOutlined } from '@ant-design/icons';
 import { Checkbox, Popover, Tooltip } from 'antd';
@@ -7,6 +7,7 @@ import Backend from 'react-dnd-html5-backend';
 import Container, { ColumnsMapItem } from '../../container';
 import { ProColumns } from '../../Table';
 import DnDItem from './DndItem';
+import { useIntl } from '../intlContext';
 import './index.less';
 
 interface ColumnSettingProps<T = any> {
@@ -51,6 +52,7 @@ const CheckboxListItem: React.FC<{
   fixed?: boolean | 'left' | 'right';
   setColumnsMap: (map: { [key: string]: ColumnsMapItem }) => void;
 }> = ({ columnKey, className, columnsMap, title, setColumnsMap, fixed }) => {
+  const intl = useIntl();
   const config = columnsMap[columnKey || 'null'] || { show: true };
   return (
     <span className={`${className}-list-item`} key={columnKey}>
@@ -58,9 +60,15 @@ const CheckboxListItem: React.FC<{
         onChange={e => {
           if (columnKey) {
             const tempConfig = columnsMap[columnKey || ''] || {};
+            const newSetting = { ...tempConfig };
+            if (e.target.checked) {
+              delete newSetting.show;
+            } else {
+              newSetting.show = false;
+            }
             const columnKeyMap = {
               ...columnsMap,
-              [columnKey]: { ...tempConfig, show: e.target.checked } as ColumnsMapItem,
+              [columnKey]: newSetting as ColumnsMapItem,
             };
             setColumnsMap(columnKeyMap);
           }
@@ -70,20 +78,30 @@ const CheckboxListItem: React.FC<{
         {title}
       </Checkbox>
       <span className={`${className}-list-item-option`}>
-        <ToolTipIcon columnKey={columnKey} fixed="left" title="固定到左边" show={fixed !== 'left'}>
+        <ToolTipIcon
+          columnKey={columnKey}
+          fixed="left"
+          title={intl.getMessage('tableToolBar.leftPin', '固定到左边')}
+          show={fixed !== 'left'}
+        >
           <PushpinOutlined
             style={{
               transform: 'rotate(-90deg)',
             }}
           />
         </ToolTipIcon>
-        <ToolTipIcon columnKey={columnKey} fixed={undefined} title="取消固定" show={!!fixed}>
+        <ToolTipIcon
+          columnKey={columnKey}
+          fixed={undefined}
+          title={intl.getMessage('tableToolBar.noPin', '取消固定')}
+          show={!!fixed}
+        >
           <VerticalAlignMiddleOutlined />
         </ToolTipIcon>
         <ToolTipIcon
           columnKey={columnKey}
           fixed="right"
-          title="固定到右边"
+          title={intl.getMessage('tableToolBar.rightPin', '固定到右边')}
           show={fixed !== 'right'}
         >
           <PushpinOutlined />
@@ -99,26 +117,24 @@ const CheckboxList: React.FC<{
   title: string;
   showTitle?: boolean;
 }> = ({ list, className, showTitle = true, title: listTitle }) => {
-  const { columnsMap, setColumnsMap, columns, setColumns } = Container.useContainer();
+  const { columnsMap, setColumnsMap, sortKeyColumns, setSortKeyColumns } = Container.useContainer();
   const show = list && list.length > 0;
-
   if (!show) {
     return null;
   }
   const move = (id: string, targetIndex: number) => {
-    const newColumns = [...columns];
-    const findIndex = newColumns.findIndex(item => {
-      const columnKey = `${item.key || ''}-${item.dataIndex || ''}`;
-      return columnKey === id;
-    });
-    const item = { ...newColumns[findIndex] };
+    const newColumns = [...sortKeyColumns];
+
+    const findIndex = newColumns.findIndex(columnKey => columnKey === id);
+
+    const key = newColumns[findIndex];
     newColumns.splice(findIndex, 1);
     if (targetIndex === 0) {
-      newColumns.unshift(item);
+      newColumns.unshift(key);
     } else {
-      newColumns.splice(targetIndex, 0, item);
+      newColumns.splice(targetIndex, 0, key);
     }
-    setColumns(newColumns);
+    setSortKeyColumns(newColumns);
   };
 
   const listDom = list.map(({ key, dataIndex, title, fixed }, index) => {
@@ -158,7 +174,7 @@ const GroupCheckboxList: React.FC<{
   const rightList: ProColumns<any>[] = [];
   const leftList: ProColumns<any>[] = [];
   const list: ProColumns<any>[] = [];
-
+  const intl = useIntl();
   localColumns.forEach(item => {
     const { fixed } = item;
     if (fixed === 'left') {
@@ -175,15 +191,23 @@ const GroupCheckboxList: React.FC<{
   const showLeft = leftList && leftList.length > 0;
   return (
     <div className={`${className}-list`}>
-      <CheckboxList title="固定在左侧" list={leftList} className={className} />
+      <CheckboxList
+        title={intl.getMessage('tableToolBar.leftFixedTitle', '固定在左侧')}
+        list={leftList}
+        className={className}
+      />
       {/* 如果没有任何固定，不需要显示title */}
       <CheckboxList
-        title="不固定"
         list={list}
+        title={intl.getMessage('tableToolBar.noFixedTitle', '不固定')}
         showTitle={showLeft || showRight}
         className={className}
       />
-      <CheckboxList title="固定在右侧" list={rightList} className={className} />
+      <CheckboxList
+        title={intl.getMessage('tableToolBar.rightFixedTitle', '固定在右侧')}
+        list={rightList}
+        className={className}
+      />
     </div>
   );
 };
@@ -191,7 +215,7 @@ const GroupCheckboxList: React.FC<{
 const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
   const counter = Container.useContainer();
   const localColumns: ProColumns<T>[] = props.columns || counter.columns || [];
-  const { columnsMap, setColumnsMap } = counter;
+  const { columnsMap, setColumnsMap, setSortKeyColumns } = counter;
   /**
    * 设置全部选中，或全部未选中
    * @param show
@@ -210,21 +234,11 @@ const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
     setColumnsMap(columnKeyMap);
   };
 
-  useEffect(() => {
-    setAllSelectAction();
-  }, [JSON.stringify(localColumns)]);
+  const selectKeys = Object.values(columnsMap).filter(value => !value || value.show === false);
 
-  useEffect(() => {
-    // 将方法赋值
-    if (counter.action) {
-      counter.action.restColumnsConfig = () => {
-        setColumnsMap({});
-      };
-    }
-  }, []);
-
-  const selectKeys = Object.values(columnsMap).filter(value => !value || value.show !== false);
   const indeterminate = selectKeys.length > 0 && selectKeys.length !== localColumns.length;
+
+  const intl = useIntl();
   return (
     <ConfigConsumer>
       {({ getPrefixCls }: ConfigConsumerProps) => {
@@ -233,18 +247,11 @@ const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
         return (
           <Popover
             arrowPointAtCenter
-            getPopupContainer={() =>
-              ((document.getElementById('ant-design-pro-table') ||
-                document.body) as any) as HTMLElement
-            }
             title={
               <div className={`${className}-title`}>
                 <Checkbox
                   indeterminate={indeterminate}
-                  checked={
-                    selectKeys.length === localColumns.length ||
-                    Object.values(columnsMap).length === 0
-                  }
+                  checked={selectKeys.length === 0 && selectKeys.length !== localColumns.length}
                   onChange={e => {
                     if (e.target.checked) {
                       setAllSelectAction();
@@ -253,14 +260,15 @@ const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
                     }
                   }}
                 >
-                  列展示
+                  {intl.getMessage('tableToolBar.columnDisplay', '列展示')}
                 </Checkbox>
                 <a
                   onClick={() => {
                     setColumnsMap({});
+                    setSortKeyColumns([]);
                   }}
                 >
-                  重置
+                  {intl.getMessage('tableToolBar.reset', '重置')}
                 </a>
               </div>
             }
@@ -268,13 +276,7 @@ const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
             placement="bottomRight"
             content={<GroupCheckboxList className={className} localColumns={localColumns} />}
           >
-            <Tooltip
-              title="列设置"
-              getPopupContainer={() =>
-                ((document.getElementById('ant-design-pro-table') ||
-                  document.body) as any) as HTMLElement
-              }
-            >
+            <Tooltip title={intl.getMessage('tableToolBar.columnSetting', '列设置')}>
               <SettingOutlined
                 className={`${toolBarClassName}-item-icon`}
                 style={{

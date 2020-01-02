@@ -1,36 +1,35 @@
 import './index.less';
 
 import React, { useEffect, CSSProperties, useRef, useState, ReactNode } from 'react';
-import { Table, Card, Typography, Empty, Tooltip } from 'antd';
+import { Table, ConfigProvider, Card, Typography, Empty, Tooltip } from 'antd';
 import classNames from 'classnames';
 import useMergeValue from 'use-merge-value';
-import moment from 'moment';
 import { ColumnProps, PaginationConfig, TableProps, TableRowSelection } from 'antd/es/table';
+import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
+import { IntlProvider, IntlConsumer } from './component/intlContext';
 import useFetchData, { UseFetchDataAction, RequestData } from './useFetchData';
 import Container, { ColumnsMapItem } from './container';
-import IndexColumn from './component/indexColumn';
-import Toolbar, { OptionsType, ToolBarProps } from './component/toolBar';
+import Toolbar, { OptionConfig, ToolBarProps } from './component/toolBar';
 import Alert from './component/alert';
-import FormSearch, { SearchConfig } from './Form';
+import FormSearch, { SearchConfig, TableFormItem } from './Form';
 import { StatusType } from './component/status';
-import { parsingText, parsingValueEnumToArray, checkUndefinedOrNull } from './component/util';
+import {
+  parsingText,
+  parsingValueEnumToArray,
+  checkUndefinedOrNull,
+  useDeepCompareEffect,
+} from './component/util';
 
-/**
- * money 金额
- * option 操作 需要返回一个数组
- * date 日期 YYYY-MM-DD
- * dateTime 日期和时间 YYYY-MM-DD HH:mm:SS
- * time: 时间 HH:mm:SS
- */
-export type ProColumnsValueType =
-  | 'money'
-  | 'option'
-  | 'date'
-  | 'dateTime'
-  | 'time'
-  | 'text'
-  | 'index'
-  | 'indexBorder';
+import defaultRenderText, {
+  ProColumnsValueType,
+  ProColumnsValueTypeFunction,
+} from './defaultRender';
+
+export interface ActionType {
+  reload: () => void;
+  fetchMore: () => void;
+  reset: () => void;
+}
 
 export interface ProColumns<T = unknown> extends Omit<ColumnProps<T>, 'render' | 'children'> {
   /**
@@ -83,7 +82,7 @@ export interface ProColumns<T = unknown> extends Omit<ColumnProps<T>, 'render' |
   /**
    * 值的类型
    */
-  valueType?: ProColumnsValueType;
+  valueType?: ProColumnsValueType | ProColumnsValueTypeFunction<T>;
 
   children?: ProColumns<T>[];
 
@@ -146,16 +145,12 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSe
   /**
    * 初始化的参数，可以操作 table
    */
-  onPostAction?: (action: {
-    fetch: () => Promise<void>;
-    reload: () => Promise<void>;
-    fetchMore: () => void;
-  }) => void;
-
+  actionRef?: React.MutableRefObject<ActionType | undefined> | ((actionRef: ActionType) => void);
+  formRef?: TableFormItem<T>['formRef'];
   /**
    * 渲染操作栏
    */
-  toolBarRender?: ToolBarProps<T>['toolBarRender'];
+  toolBarRender?: ToolBarProps<T>['toolBarRender'] | false;
 
   /**
    * 数据加载完成后触发
@@ -180,11 +175,7 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSe
   /**
    * 默认的操作栏配置
    */
-  options?: {
-    fullScreen: OptionsType<T>;
-    reload: OptionsType<T>;
-    setting: boolean;
-  };
+  options?: OptionConfig<T>;
   /**
    * 是否显示搜索表单
    */
@@ -259,66 +250,6 @@ const mergePagination = <T extends any[], U>(
   };
 };
 
-const moneyIntl = new Intl.NumberFormat('zh-Hans-CN', {
-  currency: 'CNY',
-  style: 'currency',
-  minimumFractionDigits: 2,
-});
-/**
- * 根据不同的类型来转化数值
- * @param text
- * @param valueType
- */
-const defaultRenderText = (
-  text: string | number,
-  valueType: ProColumnsValueType,
-  index: number,
-) => {
-  /**
-   * 如果是金额的值
-   */
-  if (valueType === 'money' && (text || text === 0)) {
-    /**
-     * 这个 api 支持三星和华为的手机
-     */
-    if (typeof text === 'string') {
-      return moneyIntl.format(parseFloat(text));
-    }
-    return moneyIntl.format(text);
-  }
-
-  /**
-   *如果是日期的值
-   */
-  if (valueType === 'date' && text) {
-    return moment(text).format('YYYY-MM-DD');
-  }
-
-  /**
-   *如果是日期加时间类型的值
-   */
-  if (valueType === 'dateTime' && text) {
-    return moment(text).format('YYYY-MM-DD HH:mm:SS');
-  }
-
-  /**
-   *如果是时间类型的值
-   */
-  if (valueType === 'time' && text) {
-    return moment(text).format('HH:mm:SS');
-  }
-
-  if (valueType === 'index') {
-    return <IndexColumn>{index + 1}</IndexColumn>;
-  }
-
-  if (valueType === 'indexBorder') {
-    return <IndexColumn border>{index + 1}</IndexColumn>;
-  }
-
-  return text;
-};
-
 interface ColumRenderInterface<T> {
   item: ProColumns<T>;
   text: any;
@@ -336,16 +267,7 @@ const genEllipsis = (dom: React.ReactNode, item: ProColumns<any>, text: string) 
   if (!item.ellipsis) {
     return dom;
   }
-  return (
-    <Tooltip
-      getPopupContainer={() =>
-        ((document.getElementById('ant-design-pro-table') || document.body) as any) as HTMLElement
-      }
-      title={text}
-    >
-      {dom}
-    </Tooltip>
-  );
+  return <Tooltip title={text}>{dom}</Tooltip>;
 };
 
 const genCopyable = (dom: React.ReactNode, item: ProColumns<any>) => {
@@ -369,17 +291,17 @@ const ColumRender = <T, U = any>({ item, text, row, index }: ColumRenderInterfac
   const counter = Container.useContainer();
   const { action } = counter;
   const { renderText = (val: any) => val, valueEnum = {} } = item;
-  if (!action) {
+  if (!action.current) {
     return null;
   }
 
-  const renderTextStr = renderText(parsingText(text, valueEnum), row, index, action);
-  const textDom = defaultRenderText(renderTextStr, item.valueType || 'text', index);
+  const renderTextStr = renderText(parsingText(text, valueEnum), row, index, action.current);
+  const textDom = defaultRenderText<T, {}>(renderTextStr, item.valueType || 'text', index, row);
 
   const dom: React.ReactNode = genEllipsis(genCopyable(textDom, item), item, text);
 
   if (item.render) {
-    const renderDom = item.render(dom, row, index, action);
+    const renderDom = item.render(dom, row, index, action.current);
     if (renderDom && item.valueType === 'option' && Array.isArray(renderDom)) {
       return (
         <div className="ant-pro-table-option-cell">
@@ -399,7 +321,6 @@ const ColumRender = <T, U = any>({ item, text, row, index }: ColumRenderInterfac
 
 const genColumnList = <T, U = {}>(
   columns: ProColumns<T>[],
-  action: UseFetchDataAction<RequestData<T>>,
   map: {
     [key: string]: ColumnsMapItem;
   },
@@ -423,7 +344,7 @@ const genColumnList = <T, U = {}>(
         ...item,
         fixed: config.fixed,
         width: item.width || (item.fixed ? 200 : undefined),
-        children: item.children ? genColumnList(item.children, action, map) : undefined,
+        children: item.children ? genColumnList(item.children, map) : undefined,
         ellipsis: false,
         render: (text: any, row: T, index: number) => (
           <ColumRender<T> item={item} text={text} row={row} index={index} />
@@ -437,7 +358,11 @@ const genColumnList = <T, U = {}>(
  * 更快 更好 更方便
  * @param props
  */
-const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
+const ProTable = <T, U = {}>(
+  props: ProTableProps<T> & {
+    defaultClassName: string;
+  },
+) => {
   const {
     request,
     className: propsClassName,
@@ -446,7 +371,7 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     headerTitle,
     postData,
     pagination: propsPagination,
-    onPostAction,
+    actionRef,
     columns: propsColumns = [],
     toolBarRender = () => [],
     onLoad,
@@ -459,6 +384,8 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
     rowSelection: propsRowSelection = false,
     beforeSearchSubmit = (searchParams: any) => searchParams,
     tableAlertRender,
+    defaultClassName,
+    formRef,
     ...reset
   } = props;
 
@@ -505,26 +432,6 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
 
   const rootRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (onPostAction) {
-      onPostAction({
-        reload: action.reload,
-        fetch: action.fetch,
-        fetchMore: action.fetchMore,
-      });
-    }
-  }, [
-    action.pageSize,
-    action.current,
-    action.total,
-    Object.values(params)
-      .filter(item => checkUndefinedOrNull(item))
-      .join('-'),
-    Object.values(formSearch)
-      .filter(item => checkUndefinedOrNull(item))
-      .join('-'),
-  ]);
-
   const fullScreen = useRef<() => void>();
   useEffect(() => {
     fullScreen.current = () => {
@@ -543,27 +450,79 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
 
   const pagination = mergePagination<T[], {}>(propsPagination, action);
 
-  const className = classNames('ant-pro-table', propsClassName);
   const counter = Container.useContainer();
+
   /**
    *  保存一下 propsColumns
    *  生成 from 需要用
    */
-  useEffect(() => {
-    counter.setAction(action);
+  useDeepCompareEffect(() => {
     counter.setProColumns(propsColumns);
-  }, [JSON.stringify(propsColumns)]);
+  }, propsColumns);
 
-  const tableColumn = genColumnList<T>(propsColumns, action, counter.columnsMap);
+  counter.setAction(action);
+
+  useEffect(() => {
+    const userAction: ActionType = {
+      reload: async () => {
+        const {
+          action: { current },
+        } = counter;
+        if (!current) {
+          return;
+        }
+        await current.reload();
+      },
+      fetchMore: async () => {
+        const {
+          action: { current },
+        } = counter;
+        if (!current) {
+          return;
+        }
+        await current.fetchMore();
+      },
+      reset: () => {
+        const {
+          action: { current },
+        } = counter;
+        if (!current) {
+          return;
+        }
+        current.reset();
+      },
+    };
+    if (actionRef && typeof actionRef === 'function') {
+      actionRef(userAction);
+    }
+    if (actionRef && typeof actionRef !== 'function') {
+      actionRef.current = userAction;
+    }
+  }, []);
 
   /**
    * tableColumn 变化的时候更新一下，这个参数将会用于渲染
    */
-  useEffect(() => {
+  useDeepCompareEffect(() => {
+    const keys = counter.sortKeyColumns.join('-');
+    let tableColumn = genColumnList<T>(propsColumns, counter.columnsMap);
+
+    if (keys.length > 0) {
+      tableColumn = tableColumn.sort((a, b) => {
+        const aKey = `${a.key || ''}-${a.dataIndex || ''}`;
+        const bKey = `${b.key || ''}-${b.dataIndex || ''}`;
+        return keys.indexOf(aKey) - keys.indexOf(bKey);
+      });
+    }
     if (tableColumn && tableColumn.length > 0) {
       counter.setColumns(tableColumn);
+      if (keys.length < 1) {
+        counter.setSortKeyColumns(
+          tableColumn.map(item => `${item.key || ''}-${item.dataIndex || ''}`),
+        );
+      }
     }
-  }, [JSON.stringify(tableColumn)]);
+  }, [propsColumns, counter.columnsMap, counter.sortKeyColumns.join('-')]);
 
   const [selectedRowKeys, setSelectedRowKeys] = useMergeValue<string[] | number[]>([], {
     value: propsRowSelection ? propsRowSelection.selectedRowKeys : undefined,
@@ -604,77 +563,86 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
   if (counter.columns.length < 1) {
     return <Empty />;
   }
+  const className = classNames(defaultClassName, propsClassName);
 
   return (
-    <div className={className} id="ant-design-pro-table" style={style} ref={rootRef}>
-      {search && (
-        <FormSearch
-          onSubmit={value => {
-            setFormSearch(beforeSearchSubmit(value));
-            // back first page
-            action.resetPageIndex();
-          }}
-          onReset={() => {
-            setFormSearch(beforeSearchSubmit({}));
-            // back first page
-            action.resetPageIndex();
-          }}
-          dateFormatter={reset.dateFormatter}
-          search={search}
-        />
-      )}
-      <Card
-        bordered={false}
-        style={{
-          height: '100%',
-        }}
-        bodyStyle={{
-          padding: 0,
-        }}
-      >
-        <Toolbar<T>
-          options={options}
-          headerTitle={headerTitle}
-          action={action}
-          selectedRows={selectedRows}
-          selectedRowKeys={selectedRowKeys}
-          toolBarRender={toolBarRender}
-        />
-        {propsRowSelection !== false && (
-          <Alert<T>
-            selectedRowKeys={selectedRowKeys}
-            selectedRows={selectedRows}
-            onCleanSelected={() => {
-              if (propsRowSelection && propsRowSelection.onChange) {
-                propsRowSelection.onChange([], []);
-              }
-              setSelectedRowKeys([]);
-              setSelectedRows([]);
+    <ConfigProvider
+      getPopupContainer={() => ((rootRef.current || document.body) as any) as HTMLElement}
+    >
+      <div className={className} id="ant-design-pro-table" style={style} ref={rootRef}>
+        {search && (
+          <FormSearch
+            formRef={formRef}
+            onSubmit={value => {
+              setFormSearch(beforeSearchSubmit(value));
+              // back first page
+              action.resetPageIndex();
             }}
-            renderInfo={tableAlertRender}
+            onReset={() => {
+              setFormSearch(beforeSearchSubmit({}));
+              // back first page
+              action.resetPageIndex();
+            }}
+            dateFormatter={reset.dateFormatter}
+            search={search}
           />
         )}
-        <Table
-          {...reset}
-          rowSelection={propsRowSelection === false ? undefined : rowSelection}
-          className={tableClassName}
-          style={tableStyle}
-          columns={counter.columns.filter(item => {
-            // 删掉不应该显示的
-            const { key, dataIndex } = item;
-            const columnKey = `${key || ''}-${dataIndex || ''}`;
-            const config = counter.columnsMap[columnKey];
-            if (config && config.show === false) {
-              return false;
-            }
-            return true;
-          })}
-          loading={action.loading}
-          dataSource={action.dataSource as T[]}
-          pagination={pagination}
-        />
-      </Card>
-    </div>
+        <Card
+          bordered={false}
+          style={{
+            height: '100%',
+          }}
+          bodyStyle={{
+            padding: 0,
+          }}
+        >
+          {toolBarRender !== false && (
+            <Toolbar<T>
+              options={options}
+              headerTitle={headerTitle}
+              action={action}
+              selectedRows={selectedRows}
+              selectedRowKeys={selectedRowKeys}
+              toolBarRender={toolBarRender}
+            />
+          )}
+          {propsRowSelection !== false && (
+            <Alert<T>
+              selectedRowKeys={selectedRowKeys}
+              selectedRows={selectedRows}
+              onCleanSelected={() => {
+                if (propsRowSelection && propsRowSelection.onChange) {
+                  propsRowSelection.onChange([], []);
+                }
+                setSelectedRowKeys([]);
+                setSelectedRows([]);
+              }}
+              renderInfo={tableAlertRender}
+            />
+          )}
+          <Table
+            size={counter.tableSize}
+            {...reset}
+            rowSelection={propsRowSelection === false ? undefined : rowSelection}
+            className={tableClassName}
+            style={tableStyle}
+            columns={counter.columns.filter(item => {
+              // 删掉不应该显示的
+              const { key, dataIndex } = item;
+              const columnKey = `${key || ''}-${dataIndex || ''}`;
+              const config = counter.columnsMap[columnKey];
+              if (config && config.show === false) {
+                return false;
+              }
+              return true;
+            })}
+            loading={action.loading}
+            dataSource={action.dataSource as T[]}
+            pagination={pagination}
+          />
+        </Card>
+      </div>
+    </ConfigProvider>
   );
 };
 
@@ -685,7 +653,17 @@ const ProTable = <T, U = {}>(props: ProTableProps<T>) => {
  */
 const ProviderWarp = <T, U = {}>(props: ProTableProps<T>) => (
   <Container.Provider>
-    <ProTable {...props} />
+    <ConfigConsumer>
+      {({ getPrefixCls }: ConfigConsumerProps) => (
+        <IntlConsumer>
+          {value => (
+            <IntlProvider value={value}>
+              <ProTable defaultClassName={getPrefixCls('pro-table')} {...props} />
+            </IntlProvider>
+          )}
+        </IntlConsumer>
+      )}
+    </ConfigConsumer>
   </Container.Provider>
 );
 

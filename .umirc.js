@@ -15,4 +15,5 @@ export default {
   ],
   plugins: [['umi-plugin-githubpages', {}]],
   disableCSSModules: true,
+  hash: true,
 };

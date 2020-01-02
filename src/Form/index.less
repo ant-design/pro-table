@@ -7,23 +7,25 @@
   padding: 16px;
   overflow: hidden;
   background: @component-background;
-  .ant-form-item-label {
+  .@{ant-prefix}-form-item-label {
     min-width: 80px;
     text-align: right;
   }
-  .ant-col.ant-col-8 {
-    padding: 8px;
+  .@{ant-prefix}-row:not(.ant-form-item) {
+    > .ant-col {
+      padding: 8px 0;
+    }
   }
 
-  .ant-row.ant-form-item {
+  .@{ant-prefix}-row.@{ant-prefix}-form-item {
     margin: 0;
   }
 
-  .ant-form-item {
+  .@{ant-prefix}-form-item {
     display: flex;
   }
 
-  .ant-form-item-control-wrapper {
+  .@{ant-prefix}-form-item-control-wrapper {
     flex: 1;
   }
 
@@ -32,5 +34,17 @@
     align-items: center;
     justify-content: flex-end;
     text-align: right;
+  }
+}
+
+@media (max-width: 575px) {
+  .@{form-search-prefix-cls} {
+    .@{ant-prefix}-form-item {
+      display: inline;
+    }
+    .@{ant-prefix}-form-item-label {
+      min-width: 80px;
+      text-align: left;
+    }
   }
 }

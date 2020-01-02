@@ -1,10 +1,13 @@
 ---
 title: 值类型
+order: 7
 ---
 
 # 值类型
 
 Pro-Table 封装了一些常用的值类型来减少重复的 `render` 操作，配置一个`valueType` 即可展示格式化响应的数据。
+
+## valueType
 
 现在支持的值如下
 
@@ -18,6 +21,39 @@ Pro-Table 封装了一些常用的值类型来减少重复的 `render` 操作，
 | text | 默认值，不做任何处理 | - |
 | index | 序号列 | - |
 | indexBorder | 带 border 的序号列 | - |
+| progress | 进度条 | - |
+
+## 传入 function
+
+只有一个值并不能表现很多类型，`progress` 就是一个很好的例子。所以我们支持传入一个 function。你可以这样使用：
+
+```tsx |pure
+const columns = {
+  title: '进度',
+  key: 'progress',
+  dataIndex: 'progress',
+  valueType: (item: T) => ({
+    type: 'progress',
+    status: item.status !== 'error' ? 'active' : 'exception',
+  }),
+};
+```
+
+### 支持的返回值
+
+#### progress
+
+```js
+return { type: 'progress', status: 'success' | 'exception' | 'normal' | 'active' };
+```
+
+### money
+
+```js
+return { type: 'money', locale: 'en-Us' };
+```
+
+## valueEnum
 
 valueEnum 需要传入一个枚举，Pro-Table 会自动根据值获取响应的枚举，并且在 from 中生成一个下拉框。看起来是这样的：
 

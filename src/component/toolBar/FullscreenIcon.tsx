@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
+import { useIntl } from '../intlContext';
 
 const FullScreenIcon = () => {
+  const intl = useIntl();
   const [fullscreen, setFullscreen] = useState<boolean>(false);
   useEffect(() => {
     document.onfullscreenchange = () => {
@@ -10,21 +12,11 @@ const FullScreenIcon = () => {
     };
   }, []);
   return fullscreen ? (
-    <Tooltip
-      title="退出全屏"
-      getPopupContainer={() =>
-        ((document.getElementById('ant-design-pro-table') || document.body) as any) as HTMLElement
-      }
-    >
+    <Tooltip title={intl.getMessage('tableToolBar.exitFullScreen', '全屏')}>
       <FullscreenExitOutlined />
     </Tooltip>
   ) : (
-    <Tooltip
-      title="全屏"
-      getPopupContainer={() =>
-        ((document.getElementById('ant-design-pro-table') || document.body) as any) as HTMLElement
-      }
-    >
+    <Tooltip title={intl.getMessage('tableToolBar.fullScreen', '全屏')}>
       <FullscreenOutlined />
     </Tooltip>
   );

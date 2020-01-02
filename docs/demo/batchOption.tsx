@@ -1,8 +1,6 @@
 import React from 'react';
 import { Button, Icon, Tag } from 'antd';
-// eslint-disable-next-line import/no-unresolved
 import ProTable, { ProColumns, TableDropdown } from '@ant-design/pro-table';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import request from 'umi-request';
 
 interface GithubIssueItem {
@@ -64,12 +62,6 @@ interface User {
 
 const columns: ProColumns<GithubIssueItem>[] = [
   {
-    title: '序号',
-    dataIndex: 'index',
-    valueType: 'indexBorder',
-    width: 80,
-  },
-  {
     title: '标题',
     dataIndex: 'title',
     copyable: true,
@@ -82,6 +74,7 @@ const columns: ProColumns<GithubIssueItem>[] = [
     dataIndex: 'state',
     initialValue: 'all',
     valueEnum: {
+      all: { text: '全部', status: 'Default' },
       open: {
         text: '未解决',
         status: 'Error',

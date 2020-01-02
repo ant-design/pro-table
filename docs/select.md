@@ -1,5 +1,6 @@
 ---
 title: 批量操作 Table
+order: 6
 ---
 
 # 批量操作

@@ -64,14 +64,7 @@ const TableDropdown: React.FC<DropdownProps> & { Button: typeof DropdownButton }
         </Menu>
       );
       return (
-        <Dropdown
-          getPopupContainer={() =>
-            ((document.getElementById('ant-design-pro-table') ||
-              document.body) as any) as HTMLElement
-          }
-          overlay={menu}
-          className={classnames(className, propsClassName)}
-        >
+        <Dropdown overlay={menu} className={classnames(className, propsClassName)}>
           <a style={style}>
             <EllipsisOutlined />
           </a>

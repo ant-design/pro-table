@@ -1,5 +1,6 @@
-import React, { ReactNode } from 'react';
-import TableStaus, { StatusType } from './status';
+import React, { ReactNode, useEffect, useRef } from 'react';
+import isEqual from 'lodash.isequal';
+import TableStatus, { StatusType } from './status';
 
 /**
  * 转化 text 和 valueEnum
@@ -36,7 +37,7 @@ export const parsingText = (
       return domText.text;
     }
     const { status } = domText;
-    const Status = TableStaus[status || 'Init'];
+    const Status = TableStatus[status || 'Init'];
     return <Status>{domText.text}</Status>;
   }
   return domText.text || domText;
@@ -77,3 +78,40 @@ export const parsingValueEnumToArray = (
  * @param value
  */
 export const checkUndefinedOrNull = (value: any) => value !== undefined && value !== null;
+
+function deepCompareEquals(a: any, b: any) {
+  return isEqual(a, b);
+}
+
+function useDeepCompareMemoize(value: any) {
+  const ref = useRef();
+  // it can be done by using useMemo as well
+  // but useRef is rather cleaner and easier
+  if (!deepCompareEquals(value, ref.current)) {
+    ref.current = value;
+  }
+
+  return ref.current;
+}
+
+export function useDeepCompareEffect(effect: React.EffectCallback, dependencies?: Object) {
+  useEffect(effect, useDeepCompareMemoize(dependencies));
+}
+
+export function getProgressStatus(text: number): 'success' | 'exception' | 'normal' | 'active' {
+  if (typeof text !== 'number') {
+    return 'exception';
+  }
+  if (text === 100) {
+    return 'success';
+  }
+  if (text < 100) {
+    return 'active';
+  }
+
+  // magic
+  if (text < 0) {
+    return 'exception';
+  }
+  return 'normal';
+}
