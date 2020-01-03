@@ -38,8 +38,8 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 | hideInSearch | 在查询表单中不展示此项 | boolean | - |
 | hideInTable | 在 Table 中不展示此列 | boolean | - |
 | formItemProps | 查询表单的 props，会透传给表单项 | `{ [prop: string]: any }` | - |
-
-# <<<<<<< HEAD
+| initialValue | 查询表单的默认值 | any | - |
+| rules | 查询表单的[校验规则](https://ant.design/components/form-cn/#%E6%A0%A1%E9%AA%8C%E8%A7%84%E5%88%99) | object[] | - |
 
 ### ActionType
 
@@ -65,8 +65,6 @@ ref.fetchMore();
 // 重置到默认值
 ref.reset();
 ```
-
-> > > > > > > upstream/master
 
 ## valueType
 

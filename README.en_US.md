@@ -47,8 +47,8 @@ pro-table is encapsulated in an antd table, supports some presets, and encapsula
 | hideInSearch | Do not show this in the query form | boolean | - |
 | hideInTable | Do not show this column in Table | boolean | - |
 | formItemProps | Props passed into query form item | `{ [prop: string]: any }` | - |
-
-# <<<<<<< HEAD
+| initialValue | Default value for the query form | any | - |
+| rules | [Validation rules](https://ant.design/components/form/#Validation-Rules) for the query form | object[] | - |
 
 ### ActionType
 
@@ -74,8 +74,6 @@ ref.fetchMore();
 // Reset to reset value
 ref.reset();
 ```
-
-> > > > > > > upstream/master
 
 ### valueType
 
