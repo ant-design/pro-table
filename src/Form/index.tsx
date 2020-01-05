@@ -8,6 +8,7 @@ import RcResizeObserver from 'rc-resize-observer';
 import useMediaQuery from 'use-media-antd-query';
 import { WrappedFormUtils } from 'antd/lib/form/Form';
 import { FormComponentProps } from 'antd/lib/form';
+import useMergeValue from 'use-merge-value';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
 import { parsingValueEnumToArray, useDeepCompareEffect } from '../component/util';
 import { useIntl, IntlType } from '../component/intlContext';
@@ -29,6 +30,8 @@ export interface SearchConfig {
   resetText?: string;
   span?: number | typeof defaultColConfig;
   collapseRender?: (collapsed: boolean) => React.ReactNode;
+  collapsed?: boolean;
+  onCollapse?: (collapsed: boolean) => void;
 }
 
 const getOffset = (length: number, span: number = 8) => {
@@ -36,7 +39,7 @@ const getOffset = (length: number, span: number = 8) => {
   return (cols - 1 - (length % cols)) * span;
 };
 
-const defaultSearch: Required<SearchConfig> = {
+const defaultSearch: SearchConfig = {
   searchText: '查询',
   resetText: '重置',
   span: defaultColConfig,
@@ -196,7 +199,7 @@ const genValue = (value: any, dateFormatter?: string | boolean, proColumnsMap?: 
 const getDefaultSearch = (
   search: boolean | SearchConfig | undefined,
   intl: IntlType,
-): Required<SearchConfig> => {
+): SearchConfig => {
   const config = {
     collapseRender: (collapsed: boolean) => {
       if (collapsed) {
@@ -204,8 +207,8 @@ const getDefaultSearch = (
       }
       return intl.getMessage('tableFrom.expand', '收起');
     },
-    searchText: intl.getMessage('tableFrom.search', defaultSearch.searchText),
-    resetText: intl.getMessage('tableFrom.reset', defaultSearch.resetText),
+    searchText: intl.getMessage('tableFrom.search', defaultSearch.searchText || '查询'),
+    resetText: intl.getMessage('tableFrom.reset', defaultSearch.resetText || '重置'),
     span: defaultColConfig,
   };
 
@@ -242,13 +245,16 @@ const FormSearch = <T, U = {}>({
   const { span, searchText, resetText, collapseRender } = searchConfig;
 
   const counter = Container.useContainer();
-  const [collapse, setCollapse] = useState<boolean>(true);
+  const [collapse, setCollapse] = useMergeValue<boolean>(true, {
+    value: searchConfig.collapsed,
+    onChange: searchConfig.onCollapse,
+  });
   const [proColumnsMap, setProColumnsMap] = useState<{
     [key: string]: ProColumns<any>;
   }>({});
 
   const windowSize = useMediaQuery();
-  const [colSize, setColSize] = useState(getSpanConfig(span, windowSize));
+  const [colSize, setColSize] = useState(getSpanConfig(span || 8, windowSize));
   const [formHeight, setFormHeight] = useState<number>(88);
   const rowNumber = 24 / colSize || 3;
 
@@ -266,7 +272,7 @@ const FormSearch = <T, U = {}>({
   }, []);
 
   useEffect(() => {
-    setColSize(getSpanConfig(span, windowSize));
+    setColSize(getSpanConfig(span || 8, windowSize));
   }, [windowSize]);
 
   const submit = () => {

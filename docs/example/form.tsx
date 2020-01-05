@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Button } from 'antd';
 import ProTable, { ProColumns } from '@ant-design/pro-table';
 import { WrappedFormUtils } from 'antd/lib/form/Form';
@@ -67,6 +67,7 @@ const columns: ProColumns<TableListItem>[] = [
 
 export default () => {
   const ref = useRef<WrappedFormUtils<any>>();
+  const [collapsed, setCollapsed] = useState(false);
 
   return (
     <ProTable<TableListItem>
@@ -80,6 +81,10 @@ export default () => {
       rowKey="id"
       pagination={{
         showSizeChanger: true,
+      }}
+      search={{
+        collapsed,
+        onCollapse: setCollapsed,
       }}
       formRef={ref}
       toolBarRender={() => [
