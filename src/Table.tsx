@@ -619,7 +619,7 @@ const ProTable = <T, U = {}>(
                 setSelectedRowKeys([]);
                 setSelectedRows([]);
               }}
-              renderInfo={tableAlertRender}
+              alertIInfoRender={tableAlertRender}
             />
           )}
           <Table

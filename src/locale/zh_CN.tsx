@@ -7,6 +7,9 @@ export default {
     inputPlaceholder: '请输入',
     selectPlaceholder: '请选择',
   },
+  alert: {
+    clear: '清空',
+  },
   tableToolBar: {
     leftPin: '固定到左边',
     rightPin: '固定到右边',

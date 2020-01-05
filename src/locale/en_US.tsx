@@ -7,6 +7,9 @@ export default {
     inputPlaceholder: 'Please enter',
     selectPlaceholder: 'Please select',
   },
+  alert: {
+    clear: 'Clear',
+  },
   tableToolBar: {
     leftPin: 'Pin to left',
     rightPin: 'Pin to right',

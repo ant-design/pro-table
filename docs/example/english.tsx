@@ -195,9 +195,11 @@ export default () => {
             };
           }}
           rowKey="id"
+          rowSelection={{}}
           pagination={{
             showSizeChanger: true,
           }}
+          tableAlertRender={keys => `selected ${keys.length} rows`}
           dateFormatter="string"
           headerTitle="Basic Table"
           params={{ state: 'all' }}
