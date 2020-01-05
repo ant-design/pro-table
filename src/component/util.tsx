@@ -60,18 +60,16 @@ export const parsingValueEnumToArray = (
   value: string;
   text: string;
 }[] =>
-  Object.keys(valueEnum)
-    .map(key => {
-      const value =
-        (valueEnum[key] as {
-          text: string;
-        }) || '';
-      return {
-        text: ((value.text || value || '') as unknown) as string,
-        value: key,
-      };
-    })
-    .filter(item => item && item.value !== 'all');
+  Object.keys(valueEnum).map(key => {
+    const value =
+      (valueEnum[key] as {
+        text: string;
+      }) || '';
+    return {
+      text: ((value.text || value || '') as unknown) as string,
+      value: key,
+    };
+  });
 
 /**
  * 检查值是否存在

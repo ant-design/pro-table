@@ -13,7 +13,7 @@
   }
   .@{ant-prefix}-row:not(.ant-form-item) {
     > .ant-col {
-      padding: 8px 0;
+      padding: 4px 0;
     }
   }
 
@@ -26,6 +26,19 @@
   }
 
   .@{ant-prefix}-form-item-control-wrapper {
+    flex: 1;
+  }
+
+  .@{ant-prefix}-legacy-row.@{ant-prefix}-form-item {
+    margin: 0;
+  }
+
+  .@{ant-prefix}-legacy-form-item {
+    display: flex;
+    margin: 0;
+  }
+
+  .@{ant-prefix}-legacy-form-item-control-wrapper {
     flex: 1;
   }
 
@@ -42,7 +55,14 @@
     .@{ant-prefix}-form-item {
       display: inline;
     }
+    .@{ant-prefix}-legacy-form-item {
+      display: inline;
+    }
     .@{ant-prefix}-form-item-label {
+      min-width: 80px;
+      text-align: left;
+    }
+    .@{ant-prefix}-legacy-form-item-label {
       min-width: 80px;
       text-align: left;
     }

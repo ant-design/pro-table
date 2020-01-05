@@ -340,7 +340,9 @@ const genColumnList = <T, U = {}>(
           return String(itemValue) === String(value);
         },
         index: columnsIndex,
-        filters: parsingValueEnumToArray(item.valueEnum),
+        filters: parsingValueEnumToArray(item.valueEnum).filter(
+          valueItem => valueItem && valueItem.value !== 'all',
+        ),
         ...item,
         fixed: config.fixed,
         width: item.width || (item.fixed ? 200 : undefined),
