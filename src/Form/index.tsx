@@ -283,15 +283,27 @@ const FormSearch = <T, U = {}>({
     setProColumnsMap(tempMap);
   }, counter.proColumns);
 
-  const columnsList = counter.proColumns.filter(
-    item =>
-      item.valueType !== 'index' &&
-      item.valueType !== 'indexBorder' &&
-      item.valueType !== 'option' &&
-      !item.hideInSearch &&
-      (item.key || item.dataIndex),
-  );
-
+  const columnsList = counter.proColumns
+    .filter(
+      item =>
+        item.valueType !== 'index' &&
+        item.valueType !== 'indexBorder' &&
+        item.valueType !== 'option' &&
+        !item.hideInSearch &&
+        (item.key || item.dataIndex),
+    )
+    .sort((a, b) => {
+      if (a && b) {
+        return (b.order || 0) - (a.order || 0);
+      }
+      if (a && a.order) {
+        return -1;
+      }
+      if (b && b.order) {
+        return 1;
+      }
+      return 0;
+    });
   const colConfig = typeof span === 'number' ? { span } : span;
 
   const domList = columnsList
