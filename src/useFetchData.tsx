@@ -45,9 +45,10 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
     defaultPageSize?: number;
     effects?: any[];
     onLoad?: (dataSource: T['data']) => void;
+    onError?: (e: Error) => void
   },
 ): UseFetchDataAction<T> => {
-  const { defaultPageSize = 10, defaultCurrent = 1, onLoad = () => null } = options || {};
+  const { defaultPageSize = 10, defaultCurrent = 1, onLoad = () => null, onError = () => null } = options || {};
 
   const [list, setList] = useState<T['data']>(defaultData as any);
   const [loading, setLoading] = useState<boolean | undefined>(undefined);
@@ -75,23 +76,29 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
     }
     setLoading(true);
     const { pageSize, page } = pageInfo;
-    const { data, success, total: dataTotal = 0 } =
-      (await getData({
-        current: page,
-        pageSize,
-      })) || {};
-    if (success !== false) {
-      if (isAppend && list) {
-        setList([...list, ...data]);
-      } else {
-        setList(data);
-      }
-      // 判断是否可以继续翻页
-      setPageInfo({ ...pageInfo, total: dataTotal, hasMore: dataTotal > pageSize * page });
-    }
-    setLoading(false);
-    if (onLoad) {
-      onLoad(data);
+
+    try {
+      const { data, success, total: dataTotal = 0 } =
+        (await getData({
+          current: page,
+          pageSize,
+        })) || {};
+        if (success !== false) {
+          if (isAppend && list) {
+            setList([...list, ...data]);
+          } else {
+            setList(data);
+          }
+          // 判断是否可以继续翻页
+          setPageInfo({ ...pageInfo, total: dataTotal, hasMore: dataTotal > pageSize * page });
+        }
+        if (onLoad) {
+          onLoad(data);
+        }
+    } catch (e) {
+      onError(e)
+    } finally {
+      setLoading(false);
     }
   };
 
