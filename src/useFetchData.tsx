@@ -45,10 +45,10 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
     defaultPageSize?: number;
     effects?: any[];
     onLoad?: (dataSource: T['data']) => void;
-    onError?: (e: Error) => void;
+    onRequestError?: (e: Error) => void;
   },
 ): UseFetchDataAction<T> => {
-  const { defaultPageSize = 10, defaultCurrent = 1, onLoad = () => null, onError = () => null } =
+  const { defaultPageSize = 10, defaultCurrent = 1, onLoad = () => null, onRequestError = () => null } =
     options || {};
 
   const [list, setList] = useState<T['data']>(defaultData as any);
@@ -97,7 +97,7 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
         onLoad(data);
       }
     } catch (e) {
-      onError(e);
+      onRequestError(e);
     } finally {
       setLoading(false);
     }
