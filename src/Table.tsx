@@ -158,6 +158,11 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSe
   onLoad?: (dataSource: T[]) => void;
 
   /**
+   * 数据加载失败时触发
+   */
+  onRequestError?: (e: Error) => void;
+
+  /**
    * 给封装的 table 的 className
    */
   tableClassName?: string;
@@ -377,6 +382,7 @@ const ProTable = <T, U = {}>(
     columns: propsColumns = [],
     toolBarRender = () => [],
     onLoad,
+    onRequestError,
     style,
     tableStyle,
     tableClassName,
@@ -421,6 +427,7 @@ const ProTable = <T, U = {}>(
       defaultCurrent,
       defaultPageSize,
       onLoad,
+      onRequestError,
       effects: [
         Object.values(params)
           .filter(item => checkUndefinedOrNull(item))

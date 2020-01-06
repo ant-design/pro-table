@@ -34,6 +34,7 @@ Form 的列是根据 `valueType` 来生成不同的类型。
 | 属性 | 描述 | 类型 | 默认值 |
 | --- | --- | --- | --- |
 | onLoad | 数据加载完成后触发,会多次触发 | `(dataSource: T[]) => void` | - |
+| onRequestError | 数据加载失败时触发 | `(e: Error) => void` | - |
 | beforeSearchSubmit | 搜索之前进行一些修改 | `(params:T)=>T` | - |
 | search | 是否显示搜索表单 | boolean | true |
 | dateFormatter | moment 的格式化方式,默认会转化成 string | `"string" \| "number" \| false` | string |

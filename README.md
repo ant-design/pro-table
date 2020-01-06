@@ -26,6 +26,7 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 | actionRef | get table action | `React.MutableRefObject<ActionType> | ((actionRef: ActionType) => void)` | - |
 | toolBarRender | 渲染工具栏，支持返回一个 dom 数组，会自动增加 margin-right | `(action: UseFetchDataAction<RequestData<T>>) => React.ReactNode[]` | - |
 | onLoad | 数据加载完成后触发,会多次触发 | `(dataSource: T[]) => void` | - |
+| onRequestError | 数据加载失败时触发 | `(e: Error) => void` | - |
 | tableClassName | 封装的 table 的 className | string | - |
 | tableStyle | 封装的 table 的 style | CSSProperties | - |
 | options | table 的默认操作，设置为 false 可以关闭它 | `{{ fullScreen: boolean \| function, reload: boolean \| function,setting: true }}` | `{ fullScreen: true, reload:true , setting: true }` |
