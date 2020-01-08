@@ -10,6 +10,7 @@ import {
   IntlType,
   zhCNIntl,
   enUSIntl,
+  viVNIntl,
 } from './component/intlContext';
 import Search from './Form';
 import { ProColumnsValueType } from './defaultRender';
@@ -30,6 +31,7 @@ export {
   zhCNIntl,
   createIntl,
   enUSIntl,
+  viVNIntl,
 };
 
 export default ProTable;
