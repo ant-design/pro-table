@@ -335,7 +335,7 @@ const genColumnList = <T, U = {}>(
       const { key, dataIndex } = item;
       const columnKey = `${key || ''}-${dataIndex || ''}`;
       const config = map[columnKey] || { fixed: item.fixed };
-      return {
+      const tempColumns = {
         onFilter: (value: string, record: T) => {
           let recordElement = record[item.dataIndex || ''];
           if (typeof recordElement === 'number') {
@@ -357,6 +357,13 @@ const genColumnList = <T, U = {}>(
           <ColumRender<T> item={item} text={text} row={row} index={index} />
         ),
       };
+      if (!tempColumns.children || !tempColumns.children.length) {
+        delete tempColumns.children;
+      }
+      if (!tempColumns.filters || !tempColumns.filters.length) {
+        delete tempColumns.filters;
+      }
+      return tempColumns;
     })
     .filter(item => !item.hideInTable);
 
@@ -573,7 +580,6 @@ const ProTable = <T, U = {}>(
     return <Empty />;
   }
   const className = classNames(defaultClassName, propsClassName);
-
   return (
     <ConfigProvider
       getPopupContainer={() => ((rootRef.current || document.body) as any) as HTMLElement}
