@@ -97,6 +97,7 @@ export default () => {
       pagination={{
         showSizeChanger: true,
       }}
+      size="middle"
       params={{ keyWord }}
       search={false}
       dateFormatter="string"

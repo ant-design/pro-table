@@ -576,9 +576,14 @@ const ProTable = <T, U = {}>(
     },
   };
 
+  useEffect(() => {
+    counter.setTableSize(reset.size || 'default');
+  }, [reset.size]);
+
   if (counter.columns.length < 1) {
     return <Empty />;
   }
+
   const className = classNames(defaultClassName, propsClassName);
   return (
     <ConfigProvider
@@ -636,8 +641,8 @@ const ProTable = <T, U = {}>(
             />
           )}
           <Table
-            size={counter.tableSize}
             {...reset}
+            size={counter.tableSize}
             rowSelection={propsRowSelection === false ? undefined : rowSelection}
             className={tableClassName}
             style={tableStyle}
