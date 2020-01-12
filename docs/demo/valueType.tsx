@@ -17,6 +17,7 @@ export interface TableListItem {
   createdAt: number;
   progress: number;
   money: number;
+  percent: number | string;
 }
 const tableListDataSource: TableListItem[] = [];
 
@@ -29,6 +30,10 @@ for (let i = 0; i < 10; i += 1) {
     createdAt: Date.now() - Math.floor(Math.random() * 2000),
     money: Math.floor(Math.random() * 2000) * i,
     progress: Math.ceil(Math.random() * 100) + 1,
+    percent:
+      Math.random() > 0.5
+        ? ((i + 1) * 10 + Math.random()).toFixed(2)
+        : -((i + 1) * 10 + Math.random()).toFixed(2),
   });
 }
 
@@ -84,17 +89,24 @@ const columns: ProColumns<TableListItem>[] = [
   },
   {
     title: '更新时间',
-    key: 'since2',
+    key: 'createdAt',
     width: 120,
     dataIndex: 'createdAt',
     valueType: 'date',
   },
   {
     title: '关闭时间',
-    key: 'since2',
+    key: 'updatedAt',
     width: 120,
     dataIndex: 'updatedAt',
     valueType: 'time',
+  },
+  {
+    title: '百分比',
+    key: 'percent',
+    width: 120,
+    dataIndex: 'percent',
+    valueType: item => ({ type: 'percent', showSymbol: true, precision: item.key % 3 }),
   },
   {
     title: '操作',
@@ -114,7 +126,7 @@ export default () => (
         success: true,
       })
     }
-    rowKey="id"
+    rowKey="key"
     pagination={{
       showSizeChanger: true,
     }}
