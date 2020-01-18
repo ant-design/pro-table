@@ -6,7 +6,8 @@
   "license": "MIT",
   "files": [
     "/lib",
-    "/es"
+    "/es",
+    "/dist"
   ],
   "main": "lib/index.js",
   "module": "es/index.js",
