@@ -42,6 +42,20 @@ export default () => (
       >
         Star
       </GitHubButton>
+      <div
+        style={{
+          margin: '0 8px',
+        }}
+      />
+      <GitHubButton
+        href="https://github.com/ant-design/pro-table/issues"
+        data-color-scheme="no-preference: light; light: light; dark: light;"
+        data-size="large"
+        data-show-count="true"
+        aria-label="Issue ant-design/pro-table on GitHub"
+      >
+        Issue
+      </GitHubButton>
     </div>
     <div align="center">🏆 Use Ant Design Table like a Pro!</div>
   </div>
