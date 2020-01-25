@@ -656,8 +656,8 @@ const ProTable = <T, U = {}>(
               }
               return true;
             })}
-            loading={action.loading}
-            dataSource={action.dataSource as T[]}
+            loading={action.loading || props.loading}
+            dataSource={request || url ? (action.dataSource as T[]) : reset.dataSource}
             pagination={pagination}
           />
         </Card>
