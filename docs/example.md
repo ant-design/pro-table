@@ -26,3 +26,7 @@ order: 0
 ## 使用 dataSource 和 loading
 
 <code src="./example/dataSource.tsx" />
+
+## 受控模式
+
+<code src="./example/columnsStateMap.tsx" />

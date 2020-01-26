@@ -135,6 +135,7 @@ const columns: ProColumns<GithubIssueItem>[] = [
 export default () => {
   const actionRef = useRef<ActionType>();
   const [visible, setVisible] = useState(false);
+
   return (
     <>
       <Drawer onClose={() => setVisible(false)} visible={visible}>

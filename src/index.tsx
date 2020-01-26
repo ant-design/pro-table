@@ -1,4 +1,4 @@
-import ProTable, { ProColumns, ActionType, ProTableProps } from './Table';
+import ProTable, { ProColumns, ActionType, ProTableProps, ColumnsState } from './Table';
 import IndexColumn from './component/indexColumn';
 import { RequestData } from './useFetchData';
 import TableDropdown from './component/dropdown';
@@ -32,6 +32,7 @@ export {
   createIntl,
   enUSIntl,
   viVNIntl,
+  ColumnsState,
 };
 
 export default ProTable;
