@@ -114,3 +114,18 @@ export function getProgressStatus(text: number): 'success' | 'exception' | 'norm
   }
   return 'normal';
 }
+
+/**
+ *  根据 key 和 dataIndex 生成唯一 id
+ * @param key
+ * @param dataIndex
+ */
+export const genColumnKey = (key?: string | number | undefined, dataIndex?: string) => {
+  if (key) {
+    return key;
+  }
+  if (!key && dataIndex) {
+    return dataIndex;
+  }
+  return undefined;
+};

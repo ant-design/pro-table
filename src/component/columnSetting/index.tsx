@@ -9,6 +9,7 @@ import { ProColumns } from '../../Table';
 import DnDItem from './DndItem';
 import { useIntl } from '../intlContext';
 import './index.less';
+import { genColumnKey } from '../util';
 
 interface ColumnSettingProps<T = any> {
   columns?: ProColumns<T>[];
@@ -16,7 +17,7 @@ interface ColumnSettingProps<T = any> {
 
 const ToolTipIcon: React.FC<{
   title: string;
-  columnKey: string;
+  columnKey: string | number;
   show: boolean;
   fixed: 'left' | 'right' | undefined;
 }> = ({ title, show, children, columnKey, fixed }) => {
@@ -43,7 +44,7 @@ const ToolTipIcon: React.FC<{
 };
 
 const CheckboxListItem: React.FC<{
-  columnKey: string;
+  columnKey: string | number;
   className?: string;
   title?: React.ReactNode;
   columnsMap: {
@@ -138,7 +139,7 @@ const CheckboxList: React.FC<{
   };
 
   const listDom = list.map(({ key, dataIndex, title, fixed }, index) => {
-    const columnKey = `${key || ''}-${dataIndex || ''}`;
+    const columnKey = genColumnKey(key, dataIndex);
     return (
       <DnDItem
         index={index}
@@ -150,7 +151,7 @@ const CheckboxList: React.FC<{
       >
         <CheckboxListItem
           setColumnsMap={setColumnsMap}
-          columnKey={columnKey}
+          columnKey={columnKey || `${index}`}
           columnsMap={columnsMap}
           title={title}
           fixed={fixed}
@@ -223,7 +224,7 @@ const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
   const setAllSelectAction = (show: boolean = true) => {
     const columnKeyMap = {};
     localColumns.forEach(({ key, fixed, dataIndex }) => {
-      const columnKey = `${key || ''}-${dataIndex || ''}`;
+      const columnKey = genColumnKey(key, dataIndex);
       if (columnKey) {
         columnKeyMap[columnKey] = {
           show,

@@ -18,6 +18,7 @@ import {
   parsingValueEnumToArray,
   checkUndefinedOrNull,
   useDeepCompareEffect,
+  genColumnKey,
 } from './component/util';
 
 import defaultRenderText, {
@@ -333,7 +334,7 @@ const genColumnList = <T, U = {}>(
   columns
     .map((item, columnsIndex) => {
       const { key, dataIndex } = item;
-      const columnKey = `${key || ''}-${dataIndex || ''}`;
+      const columnKey = genColumnKey(key, dataIndex);
       const config = map[columnKey] || { fixed: item.fixed };
       const tempColumns = {
         onFilter: (value: string, record: T) => {
@@ -584,6 +585,8 @@ const ProTable = <T, U = {}>(
     return <Empty />;
   }
 
+  console.log(counter);
+
   const className = classNames(defaultClassName, propsClassName);
   return (
     <ConfigProvider
@@ -649,7 +652,10 @@ const ProTable = <T, U = {}>(
             columns={counter.columns.filter(item => {
               // 删掉不应该显示的
               const { key, dataIndex } = item;
-              const columnKey = `${key || ''}-${dataIndex || ''}`;
+              const columnKey = genColumnKey(key, dataIndex);
+              if (!columnKey) {
+                return true;
+              }
               const config = counter.columnsMap[columnKey];
               if (config && config.show === false) {
                 return false;
