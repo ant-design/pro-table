@@ -33,6 +33,9 @@ pro-table is encapsulated in an antd table, supports some presets, and encapsula
 | search | Whether to search the form. It can also be a query form config when passing an object. | `boolean \| { span?: number \| DefaultColConfig,searchText?: string, resetText?: string, collapseRender?: (collapsed: boolean) => React.ReactNode, collapsed:boolean, onCollapse: (collapsed:boolean)=> void }` | true |
 | dateFormatter | formatting moment type | `"string" \| "number" \| false` | string |
 | beforeSearchSubmit | Make some changes before searching | `(params:T)=>T` | - |
+| onSizeChange | table size changes | `(size: 'default' | 'middle' | 'small' | undefined) => void` | - |
+| columnsStateMap | columns status | `{[key: string]: { show:boolean, fixed: "right"|"left"} }` | - |
+| onColumnsStateChange | columns status changed | `(props: {[key: string]: { show:boolean, fixed: "right"|"left"} }) => void` | - |
 
 ### Columns
 
