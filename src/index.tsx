@@ -11,6 +11,7 @@ import {
   zhCNIntl,
   enUSIntl,
   viVNIntl,
+  itITIntl,
 } from './component/intlContext';
 import Search from './Form';
 import { ProColumnsValueType } from './defaultRender';
@@ -32,6 +33,7 @@ export {
   createIntl,
   enUSIntl,
   viVNIntl,
+  itITIntl,
   ColumnsState,
 };
 

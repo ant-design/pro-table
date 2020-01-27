@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import zhCN from '../../locale/zh_CN';
 import enUS from '../../locale/en_US';
 import viVN from '../../locale/vi_VN';
+import itIT from '../../locale/it_IT';
 
 export interface IntlType {
   locale: string;
@@ -38,8 +39,9 @@ const createIntl = (locale: string, localeMap: { [key: string]: any }): IntlType
 const zhCNIntl = createIntl('zh_CN', zhCN);
 const enUSIntl = createIntl('en_US', enUS);
 const viVNIntl = createIntl('vi_VN', viVN);
+const itITIntl = createIntl('it_IT', itIT);
 
-export { enUSIntl, zhCNIntl, viVNIntl };
+export { enUSIntl, zhCNIntl, viVNIntl, itITIntl };
 
 const IntlContext = React.createContext<IntlType>(zhCNIntl);
 
