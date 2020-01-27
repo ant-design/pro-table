@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { DownOutlined } from '@ant-design/icons';
-import { Form } from '@ant-design/compatible';
-import '@ant-design/compatible/assets/index.css';
-import { Input, Row, Col, TimePicker, InputNumber, DatePicker, Select, Button } from 'antd';
+import { FormInstance, FormItemProps } from 'antd/es/form';
+import { Input, Form, Row, Col, TimePicker, InputNumber, DatePicker, Select, Button } from 'antd';
 import moment, { Moment } from 'moment';
 import RcResizeObserver from 'rc-resize-observer';
 import useMediaQuery from 'use-media-antd-query';
-import { WrappedFormUtils } from 'antd/lib/form/Form';
-import { FormComponentProps } from 'antd/lib/form';
 import useMergeValue from 'use-merge-value';
-import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
-import { parsingValueEnumToArray, useDeepCompareEffect } from '../component/util';
+import { ConfigConsumer, ConfigConsumerProps } from 'antd/es/config-provider';
+import { parsingValueEnumToArray, useDeepCompareEffect, genColumnKey } from '../component/util';
 import { useIntl, IntlType } from '../component/intlContext';
 import Container from '../container';
 import { ProColumns } from '../index';
@@ -46,14 +43,12 @@ const defaultSearch: SearchConfig = {
   collapseRender: (collapsed: boolean) => (collapsed ? '展开' : '收起'),
 };
 
-export interface TableFormItem<T> extends FormComponentProps {
+export interface TableFormItem<T> extends Omit<FormItemProps, 'children'> {
   onSubmit?: (value: T) => void;
   onReset?: () => void;
   dateFormatter?: 'string' | 'number' | false;
   search?: boolean | SearchConfig;
-  formRef?:
-    | React.MutableRefObject<WrappedFormUtils | undefined>
-    | ((actionRef: WrappedFormUtils) => void);
+  formRef?: React.MutableRefObject<FormInstance | undefined> | ((actionRef: FormInstance) => void);
 }
 
 const FromInputRender: React.FC<{
@@ -161,6 +156,7 @@ const FromInputRender: React.FC<{
   return (
     <Input
       placeholder={intl.getMessage('tableFrom.inputPlaceholder', '请输入')}
+      ref={ref}
       {...rest}
       {...item.formItemProps}
     />
@@ -234,12 +230,12 @@ const getSpanConfig = (
 };
 
 const FormSearch = <T, U = {}>({
-  form,
   onSubmit,
   formRef,
   dateFormatter = 'string',
   search: propsSearch,
 }: TableFormItem<T>) => {
+  const [form] = Form.useForm();
   const intl = useIntl();
   const searchConfig = getDefaultSearch(propsSearch, intl);
   const { span, searchText, resetText, collapseRender } = searchConfig;
@@ -285,8 +281,7 @@ const FormSearch = <T, U = {}>({
   useDeepCompareEffect(() => {
     const tempMap = {};
     counter.proColumns.forEach(item => {
-      const columnsKey = item.key || item.dataIndex || 'null';
-      tempMap[columnsKey] = item;
+      tempMap[genColumnKey(item.key, item.dataIndex) || 'null'] = item;
     });
     setProColumnsMap(tempMap);
   }, counter.proColumns);
@@ -316,15 +311,16 @@ const FormSearch = <T, U = {}>({
 
   const domList = columnsList
     .filter((_, index) => (collapse ? index < (rowNumber - 1 || 1) : true))
-    .map(item => (
-      <Col {...colConfig} key={item.key || item.dataIndex}>
-        <Form.Item labelAlign="right" label={item.title}>
-          {form.getFieldDecorator((item.key || item.dataIndex) as string, {
-            initialValue: item.initialValue,
-          })(<FromInputRender item={item} />)}
-        </Form.Item>
-      </Col>
-    ));
+    .map(item => {
+      const key = genColumnKey(item.key, item.dataIndex);
+      return (
+        <Col {...colConfig} key={key}>
+          <Form.Item labelAlign="right" label={item.title} name={key}>
+            <FromInputRender item={item} />
+          </Form.Item>
+        </Col>
+      );
+    });
 
   return (
     <ConfigConsumer>
@@ -338,49 +334,53 @@ const FormSearch = <T, U = {}>({
             }}
           >
             <RcResizeObserver onResize={({ height }) => setFormHeight(height + 32)}>
-              <Form>
-                <Row gutter={16} justify="end">
-                  {domList}
-                  <Col
-                    {...colConfig}
-                    offset={getOffset(domList.length, colSize)}
-                    key="option"
-                    className={`${className}-option`}
-                  >
-                    <Form.Item>
-                      <Button type="primary" htmlType="submit" onClick={() => submit()}>
-                        {searchText}
-                      </Button>
-                      <Button
-                        style={{ marginLeft: 8 }}
-                        onClick={() => {
-                          form.resetFields();
-                          submit();
-                        }}
-                      >
-                        {resetText}
-                      </Button>
-                      {columnsList.length > rowNumber - 1 && (
-                        <a
-                          style={{ marginLeft: 8 }}
-                          onClick={() => {
-                            setCollapse(!collapse);
-                          }}
-                        >
-                          {collapseRender && collapseRender(collapse)}
-                          <DownOutlined
-                            style={{
-                              marginLeft: '0.5em',
-                              transition: '0.3s all',
-                              transform: `rotate(${collapse ? 0 : 0.5}turn)`,
+              <div>
+                <Form>
+                  <Row gutter={16} justify="end">
+                    {domList}
+                    <Col
+                      {...colConfig}
+                      offset={getOffset(domList.length, colSize)}
+                      key="option"
+                      className={`${className}-option`}
+                    >
+                      <Form.Item>
+                        <>
+                          <Button type="primary" htmlType="submit" onClick={() => submit()}>
+                            {searchText}
+                          </Button>
+                          <Button
+                            style={{ marginLeft: 8 }}
+                            onClick={() => {
+                              form.resetFields();
+                              submit();
                             }}
-                          />
-                        </a>
-                      )}
-                    </Form.Item>
-                  </Col>
-                </Row>
-              </Form>
+                          >
+                            {resetText}
+                          </Button>
+                          {columnsList.length > rowNumber - 1 && (
+                            <a
+                              style={{ marginLeft: 8 }}
+                              onClick={() => {
+                                setCollapse(!collapse);
+                              }}
+                            >
+                              {collapseRender && collapseRender(collapse)}
+                              <DownOutlined
+                                style={{
+                                  marginLeft: '0.5em',
+                                  transition: '0.3s all',
+                                  transform: `rotate(${collapse ? 0 : 0.5}turn)`,
+                                }}
+                              />
+                            </a>
+                          )}
+                        </>
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </Form>
+              </div>
             </RcResizeObserver>
           </div>
         );
@@ -389,4 +389,4 @@ const FormSearch = <T, U = {}>({
   );
 };
 
-export default Form.create<TableFormItem<any>>()(FormSearch);
+export default FormSearch;

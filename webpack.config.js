@@ -83,7 +83,6 @@ module.exports = {
       'react-dom': 'ReactDOM',
       antd: 'antd',
       moment: 'moment',
-      '@ant-design/compatible': 'antd',
     },
     /^antd/,
   ],

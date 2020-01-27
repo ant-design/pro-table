@@ -1,5 +1,6 @@
 import React, { ReactNode, useEffect, useRef } from 'react';
 import isEqual from 'lodash.isequal';
+import { DataIndex } from 'rc-table/lib/interface';
 import TableStatus, { StatusType } from './status';
 
 /**
@@ -120,11 +121,14 @@ export function getProgressStatus(text: number): 'success' | 'exception' | 'norm
  * @param key
  * @param dataIndex
  */
-export const genColumnKey = (key?: string | number | undefined, dataIndex?: string) => {
+export const genColumnKey = (key?: React.ReactText | undefined, dataIndex?: DataIndex) => {
   if (key) {
     return key;
   }
   if (!key && dataIndex) {
+    if (Array.isArray(dataIndex)) {
+      return dataIndex.join('-');
+    }
     return dataIndex;
   }
   return undefined;

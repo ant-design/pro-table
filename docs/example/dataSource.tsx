@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Icon } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { Button } from 'antd';
 import ProTable, { ProColumns } from '@ant-design/pro-table';
 
 const valueEnum = {
@@ -85,7 +86,7 @@ export default () => {
   return (
     <ProTable<TableListItem>
       columns={columns}
-      rowKey="id"
+      rowKey="key"
       pagination={{
         showSizeChanger: true,
       }}
@@ -96,7 +97,7 @@ export default () => {
       params={{ state: 'all' }}
       toolBarRender={() => [
         <Button key="3" type="primary">
-          <Icon type="plus" />
+          <PlusOutlined />
           新建
         </Button>,
       ]}

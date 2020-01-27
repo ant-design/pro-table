@@ -1,6 +1,6 @@
 import { createContainer } from 'unstated-next';
 import { useState, useRef } from 'react';
-import { ColumnProps } from 'antd/es/table';
+import { ColumnType } from 'antd/es/table';
 import useMergeValue from 'use-merge-value';
 
 import { RequestData, ProColumns } from './index';
@@ -19,12 +19,12 @@ export interface UseCounterProps {
 
 function useCounter(props: UseCounterProps = {}) {
   const actionRef = useRef<UseFetchDataAction<RequestData<any>>>();
-  const [columns, setColumns] = useState<ColumnProps<any>[]>([]);
+  const [columns, setColumns] = useState<ColumnType<any>[]>([]);
   // 用于排序的数组
   const [sortKeyColumns, setSortKeyColumns] = useState<(string | number)[]>([]);
   const [proColumns, setProColumns] = useState<ProColumns<any>[]>([]);
 
-  const [tableSize, setTableSize] = useMergeValue<DensitySize>(props.size || 'default', {
+  const [tableSize, setTableSize] = useMergeValue<DensitySize>(props.size || 'large', {
     value: props.size,
     onChange: props.onSizeChange,
   });

@@ -46,15 +46,15 @@
     "not ie <= 10"
   ],
   "dependencies": {
-    "@ant-design/compatible": "^0.0.1-alpha.7",
     "@ant-design/icons": "^4.0.0-alpha.11",
     "@types/react-responsive": "^8.0.2",
-    "antd": "^3.25.1",
+    "antd": "^4.0.0-rc.0",
     "classnames": "^2.2.6",
     "dnd-core": "^10.0.2",
     "lodash.isequal": "^4.5.0",
     "moment": "^2.24.0",
     "rc-resize-observer": "^0.1.3",
+    "rc-util": "^4.19.0",
     "react-dnd": "^10.0.2",
     "react-dnd-html5-backend": "^10.0.2",
     "unstated-next": "^1.1.0",

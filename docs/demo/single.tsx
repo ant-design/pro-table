@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
-import { Button, Drawer, Icon, Tag } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { Button, Drawer, Tag } from 'antd';
 import ProTable, { ProColumns, TableDropdown, ActionType } from '@ant-design/pro-table';
 import request from 'umi-request';
 
@@ -197,7 +198,7 @@ export default () => {
         params={{ state: 'all' }}
         toolBarRender={() => [
           <Button key="3" type="primary" onClick={() => setVisible(true)}>
-            <Icon type="plus" />
+            <PlusOutlined />
             新建
           </Button>,
         ]}

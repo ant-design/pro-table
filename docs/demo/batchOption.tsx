@@ -1,5 +1,6 @@
 import React from 'react';
-import { Button, Icon, Tag } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { Button, Tag } from 'antd';
 import ProTable, { ProColumns, TableDropdown } from '@ant-design/pro-table';
 import request from 'umi-request';
 
@@ -170,7 +171,7 @@ export default () => (
     params={{ state: 'all' }}
     toolBarRender={(_, { selectedRowKeys }) => [
       <Button key="3" type="primary">
-        <Icon type="plus" />
+        <PlusOutlined />
         新建
       </Button>,
       selectedRowKeys && selectedRowKeys.length && (
@@ -180,7 +181,6 @@ export default () => (
             window.alert(selectedRowKeys.join('-'));
           }}
         >
-          <Icon type="plus" />
           批量删除
         </Button>
       ),

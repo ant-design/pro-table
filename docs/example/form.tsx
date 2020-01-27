@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { Button } from 'antd';
 import ProTable, { ProColumns } from '@ant-design/pro-table';
-import { WrappedFormUtils } from 'antd/lib/form/Form';
+import { FormInstance } from 'antd/lib/form';
 
 const valueEnum = {
   0: 'close',
@@ -66,7 +66,7 @@ const columns: ProColumns<TableListItem>[] = [
 ];
 
 export default () => {
-  const ref = useRef<WrappedFormUtils<any>>();
+  const ref = useRef<FormInstance>();
   const [collapsed, setCollapsed] = useState(false);
 
   return (
@@ -78,7 +78,7 @@ export default () => {
           success: true,
         })
       }
-      rowKey="id"
+      rowKey="key"
       pagination={{
         showSizeChanger: true,
       }}
