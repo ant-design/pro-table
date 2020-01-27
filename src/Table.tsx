@@ -6,18 +6,21 @@ import classNames from 'classnames';
 import useMergeValue from 'use-merge-value';
 import { ColumnProps, PaginationConfig, TableProps, TableRowSelection } from 'antd/es/table';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
+
 import { IntlProvider, IntlConsumer } from './component/intlContext';
 import useFetchData, { UseFetchDataAction, RequestData } from './useFetchData';
-import Container, { ColumnsMapItem } from './container';
+import Container from './container';
 import Toolbar, { OptionConfig, ToolBarProps } from './component/toolBar';
 import Alert from './component/alert';
 import FormSearch, { SearchConfig, TableFormItem } from './Form';
 import { StatusType } from './component/status';
+
 import {
   parsingText,
   parsingValueEnumToArray,
   checkUndefinedOrNull,
   useDeepCompareEffect,
+  genColumnKey,
 } from './component/util';
 
 import defaultRenderText, {
@@ -29,6 +32,11 @@ export interface ActionType {
   reload: () => void;
   fetchMore: () => void;
   reset: () => void;
+}
+
+export interface ColumnsState {
+  show?: boolean;
+  fixed?: 'right' | 'left' | undefined;
 }
 
 export interface ProColumns<T = unknown> extends Omit<ColumnProps<T>, 'render' | 'children'> {
@@ -116,6 +124,13 @@ export interface ProColumns<T = unknown> extends Omit<ColumnProps<T>, 'render' |
 export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSelection'> {
   columns?: ProColumns<T>[];
   params?: { [key: string]: any };
+
+  columnsStateMap?: {
+    [key: string]: ColumnsState;
+  };
+  onColumnsStateChange?: (map: { [key: string]: ColumnsState }) => void;
+
+  onSizeChange?: (size: 'default' | 'middle' | 'small' | undefined) => void;
 
   /**
    * 一个获得 dataSource 的方法
@@ -327,14 +342,14 @@ const ColumRender = <T, U = any>({ item, text, row, index }: ColumRenderInterfac
 const genColumnList = <T, U = {}>(
   columns: ProColumns<T>[],
   map: {
-    [key: string]: ColumnsMapItem;
+    [key: string]: ColumnsState;
   },
 ): ColumnProps<T>[] =>
   columns
     .map((item, columnsIndex) => {
       const { key, dataIndex } = item;
-      const columnKey = `${key || ''}-${dataIndex || ''}`;
-      const config = map[columnKey] || { fixed: item.fixed };
+      const columnKey = genColumnKey(key, dataIndex);
+      const config = columnKey ? map[columnKey] || { fixed: item.fixed } : { fixed: item.fixed };
       const tempColumns = {
         onFilter: (value: string, record: T) => {
           let recordElement = record[item.dataIndex || ''];
@@ -394,6 +409,8 @@ const ProTable = <T, U = {}>(
     tableStyle,
     tableClassName,
     url,
+    columnsStateMap,
+    onColumnsStateChange,
     options,
     search = true,
     rowSelection: propsRowSelection = false,
@@ -522,7 +539,6 @@ const ProTable = <T, U = {}>(
   useDeepCompareEffect(() => {
     const keys = counter.sortKeyColumns.join('-');
     let tableColumn = genColumnList<T>(propsColumns, counter.columnsMap);
-
     if (keys.length > 0) {
       tableColumn = tableColumn.sort((a, b) => {
         const aKey = `${a.key || ''}-${a.dataIndex || ''}`;
@@ -534,7 +550,7 @@ const ProTable = <T, U = {}>(
       counter.setColumns(tableColumn);
       if (keys.length < 1) {
         counter.setSortKeyColumns(
-          tableColumn.map(item => `${item.key || ''}-${item.dataIndex || ''}`),
+          tableColumn.map((item, index) => genColumnKey(item.key, item.dataIndex) || `${index}`),
         );
       }
     }
@@ -649,15 +665,18 @@ const ProTable = <T, U = {}>(
             columns={counter.columns.filter(item => {
               // 删掉不应该显示的
               const { key, dataIndex } = item;
-              const columnKey = `${key || ''}-${dataIndex || ''}`;
+              const columnKey = genColumnKey(key, dataIndex);
+              if (!columnKey) {
+                return true;
+              }
               const config = counter.columnsMap[columnKey];
               if (config && config.show === false) {
                 return false;
               }
               return true;
             })}
-            loading={action.loading}
-            dataSource={action.dataSource as T[]}
+            loading={action.loading || props.loading}
+            dataSource={request || url ? (action.dataSource as T[]) : reset.dataSource}
             pagination={pagination}
           />
         </Card>
@@ -672,7 +691,7 @@ const ProTable = <T, U = {}>(
  * @param props
  */
 const ProviderWarp = <T, U = {}>(props: ProTableProps<T>) => (
-  <Container.Provider>
+  <Container.Provider initialState={props}>
     <ConfigConsumer>
       {({ getPrefixCls }: ConfigConsumerProps) => (
         <IntlConsumer>
