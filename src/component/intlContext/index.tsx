@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import zhCN from '../../locale/zh_CN';
 import enUS from '../../locale/en_US';
 import viVN from '../../locale/vi_VN';
-import viVN from '../../locale/it_IT';
+import itIT from '../../locale/it_IT';
 
 export interface IntlType {
   locale: string;
