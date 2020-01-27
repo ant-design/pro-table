@@ -4,11 +4,12 @@ import { PushpinOutlined, SettingOutlined, VerticalAlignMiddleOutlined } from '@
 import { Checkbox, Popover, Tooltip } from 'antd';
 import { DndProvider } from 'react-dnd';
 import Backend from 'react-dnd-html5-backend';
-import Container, { ColumnsMapItem } from '../../container';
-import { ProColumns } from '../../Table';
+import Container from '../../container';
+import { ProColumns, ColumnsState } from '../../Table';
 import DnDItem from './DndItem';
 import { useIntl } from '../intlContext';
 import './index.less';
+import { genColumnKey } from '../util';
 
 interface ColumnSettingProps<T = any> {
   columns?: ProColumns<T>[];
@@ -16,7 +17,7 @@ interface ColumnSettingProps<T = any> {
 
 const ToolTipIcon: React.FC<{
   title: string;
-  columnKey: string;
+  columnKey: string | number;
   show: boolean;
   fixed: 'left' | 'right' | undefined;
 }> = ({ title, show, children, columnKey, fixed }) => {
@@ -29,7 +30,7 @@ const ToolTipIcon: React.FC<{
             const config = columnsMap[columnKey || ''] || {};
             const columnKeyMap = {
               ...columnsMap,
-              [columnKey]: { ...config, fixed } as ColumnsMapItem,
+              [columnKey]: { ...config, fixed } as ColumnsState,
             };
             setColumnsMap(columnKeyMap);
           }}
@@ -43,14 +44,14 @@ const ToolTipIcon: React.FC<{
 };
 
 const CheckboxListItem: React.FC<{
-  columnKey: string;
+  columnKey: string | number;
   className?: string;
   title?: React.ReactNode;
   columnsMap: {
-    [key: string]: ColumnsMapItem;
+    [key: string]: ColumnsState;
   };
   fixed?: boolean | 'left' | 'right';
-  setColumnsMap: (map: { [key: string]: ColumnsMapItem }) => void;
+  setColumnsMap: (map: { [key: string]: ColumnsState }) => void;
 }> = ({ columnKey, className, columnsMap, title, setColumnsMap, fixed }) => {
   const intl = useIntl();
   const config = columnsMap[columnKey || 'null'] || { show: true };
@@ -68,7 +69,7 @@ const CheckboxListItem: React.FC<{
             }
             const columnKeyMap = {
               ...columnsMap,
-              [columnKey]: newSetting as ColumnsMapItem,
+              [columnKey]: newSetting as ColumnsState,
             };
             setColumnsMap(columnKeyMap);
           }
@@ -138,7 +139,7 @@ const CheckboxList: React.FC<{
   };
 
   const listDom = list.map(({ key, dataIndex, title, fixed }, index) => {
-    const columnKey = `${key || ''}-${dataIndex || ''}`;
+    const columnKey = genColumnKey(key, dataIndex);
     return (
       <DnDItem
         index={index}
@@ -150,7 +151,7 @@ const CheckboxList: React.FC<{
       >
         <CheckboxListItem
           setColumnsMap={setColumnsMap}
-          columnKey={columnKey}
+          columnKey={columnKey || `${index}`}
           columnsMap={columnsMap}
           title={title}
           fixed={fixed}
@@ -223,7 +224,7 @@ const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
   const setAllSelectAction = (show: boolean = true) => {
     const columnKeyMap = {};
     localColumns.forEach(({ key, fixed, dataIndex }) => {
-      const columnKey = `${key || ''}-${dataIndex || ''}`;
+      const columnKey = genColumnKey(key, dataIndex);
       if (columnKey) {
         columnKeyMap[columnKey] = {
           show,

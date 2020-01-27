@@ -11,6 +11,10 @@ order: 0
 
 <code src="./example/english.tsx" />
 
+## Italiano
+
+<code src="./example/italian.tsx" />
+
 ## Tiếng Việt
 
 <code src="./example/vietnamese.tsx" />
@@ -22,3 +26,11 @@ order: 0
 ## form 操作
 
 <code src="./example/form.tsx" />
+
+## 使用 dataSource 和 loading
+
+<code src="./example/dataSource.tsx" />
+
+## 受控模式
+
+<code src="./example/columnsStateMap.tsx" />

@@ -33,6 +33,9 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 | search | 是否显示搜索表单，传入对象时为搜索表单的配置 | `boolean \| { span?: number \| DefaultColConfig,searchText?: string, resetText?: string, collapseRender?: (collapsed: boolean) => React.ReactNode, collapsed:boolean, onCollapse: (collapsed:boolean)=> void }` | true |
 | dateFormatter | moment 的格式化方式 | `"string" \| "number" \| false` | string |
 | beforeSearchSubmit | 搜索之前进行一些修改 | `(params:T)=>T` | - |
+| onSizeChange | table 尺寸发生改变 | `(size: 'default' | 'middle' | 'small' | undefined) => void` | - |
+| columnsStateMap | columns 的状态枚举 | `{[key: string]: { show:boolean, fixed: "right"|"left"} }` | - |
+| onColumnsStateChange | columns 状态发生改变 | `(props: {[key: string]: { show:boolean, fixed: "right"|"left"} }) => void` | - |
 
 ### Columns
 
