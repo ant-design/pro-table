@@ -11,6 +11,10 @@ order: 0
 
 <code src="./example/english.tsx" />
 
+## Italiano
+
+<code src="./example/italian.tsx" />
+
 ## Tiếng Việt
 
 <code src="./example/vietnamese.tsx" />
