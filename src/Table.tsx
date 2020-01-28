@@ -2,7 +2,6 @@ import './index.less';
 
 import React, { useEffect, CSSProperties, useRef, useState, ReactNode } from 'react';
 import { Table, ConfigProvider, Card, Typography, Empty, Tooltip } from 'antd';
-import get from 'rc-util/es/utils/get';
 import classNames from 'classnames';
 import useMergeValue from 'use-merge-value';
 import { ColumnsType, TablePaginationConfig, TableProps } from 'antd/es/table';
@@ -16,7 +15,7 @@ import Alert from './component/alert';
 import FormSearch, { SearchConfig, TableFormItem } from './Form';
 import { StatusType } from './component/status';
 
-import {
+import get, {
   parsingText,
   parsingValueEnumToArray,
   checkUndefinedOrNull,
@@ -361,12 +360,7 @@ const genColumnList = <T, U = {}>(
       const config = columnKey ? map[columnKey] || { fixed: item.fixed } : { fixed: item.fixed };
       const tempColumns = {
         onFilter: (value: string, record: T) => {
-          let recordElement;
-          if (Array.isArray(item.dataIndex)) {
-            recordElement = get(record, item.dataIndex);
-          } else {
-            recordElement = record[(item.dataIndex as string | number) || ''];
-          }
+          let recordElement = get(record, item.dataIndex || '');
           if (typeof recordElement === 'number') {
             recordElement = recordElement.toString();
           }
