@@ -6,7 +6,7 @@ import moment, { Moment } from 'moment';
 import RcResizeObserver from 'rc-resize-observer';
 import useMediaQuery from 'use-media-antd-query';
 import useMergeValue from 'use-merge-value';
-import { ConfigConsumer, ConfigConsumerProps } from 'antd/es/config-provider';
+import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
 import { parsingValueEnumToArray, useDeepCompareEffect, genColumnKey } from '../component/util';
 import { useIntl, IntlType } from '../component/intlContext';
 import Container from '../container';
