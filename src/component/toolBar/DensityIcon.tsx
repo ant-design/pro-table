@@ -4,16 +4,17 @@ import { Menu, Dropdown, Tooltip } from 'antd';
 import Container from '../../container';
 import { useIntl } from '../intlContext';
 
-export type DensitySize = 'default' | 'middle' | 'small';
+export type DensitySize = 'middle' | 'small' | 'large' | undefined;
 
-const DensityIcon: React.FC<{}> = () => {
+const DensityIcon: React.FC<{}> = (_, ref) => {
   const counter = Container.useContainer();
   const intl = useIntl();
   return (
     <Dropdown
+      ref={ref}
       overlay={
         <Menu
-          selectedKeys={[counter.tableSize]}
+          selectedKeys={[counter.tableSize as string]}
           onClick={({ key }) => {
             if (counter.setTableSize) {
               counter.setTableSize(key as DensitySize);
@@ -23,9 +24,7 @@ const DensityIcon: React.FC<{}> = () => {
             width: 80,
           }}
         >
-          <Menu.Item key="default">
-            {intl.getMessage('tableToolBar.densityLarger', '默认')}
-          </Menu.Item>
+          <Menu.Item key="large">{intl.getMessage('tableToolBar.densityLarger', '默认')}</Menu.Item>
           <Menu.Item key="middle">
             {intl.getMessage('tableToolBar.densityMiddle', '中等')}
           </Menu.Item>
@@ -41,4 +40,4 @@ const DensityIcon: React.FC<{}> = () => {
   );
 };
 
-export default DensityIcon;
+export default React.forwardRef(DensityIcon);

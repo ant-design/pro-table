@@ -101,7 +101,7 @@ export default () => {
             success: true,
           })
         }
-        rowKey="id"
+        rowKey="key"
         pagination={{
           showSizeChanger: true,
         }}

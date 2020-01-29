@@ -4,7 +4,7 @@ import React, { useEffect, CSSProperties, useRef, useState, ReactNode } from 're
 import { Table, ConfigProvider, Card, Typography, Empty, Tooltip } from 'antd';
 import classNames from 'classnames';
 import useMergeValue from 'use-merge-value';
-import { ColumnProps, PaginationConfig, TableProps, TableRowSelection } from 'antd/es/table';
+import { ColumnsType, TablePaginationConfig, TableProps } from 'antd/es/table';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
 
 import { IntlProvider, IntlConsumer } from './component/intlContext';
@@ -15,7 +15,7 @@ import Alert from './component/alert';
 import FormSearch, { SearchConfig, TableFormItem } from './Form';
 import { StatusType } from './component/status';
 
-import {
+import get, {
   parsingText,
   parsingValueEnumToArray,
   checkUndefinedOrNull,
@@ -27,6 +27,9 @@ import defaultRenderText, {
   ProColumnsValueType,
   ProColumnsValueTypeFunction,
 } from './defaultRender';
+import { DensitySize } from './component/toolBar/DensityIcon';
+
+type TableRowSelection = TableProps<any>['rowSelection'];
 
 export interface ActionType {
   reload: () => void;
@@ -39,7 +42,8 @@ export interface ColumnsState {
   fixed?: 'right' | 'left' | undefined;
 }
 
-export interface ProColumns<T = unknown> extends Omit<ColumnProps<T>, 'render' | 'children'> {
+export interface ProColumns<T = unknown>
+  extends Omit<ColumnsType<T>[number], 'render' | 'children'> {
   /**
    * 自定义 render
    */
@@ -130,7 +134,7 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSe
   };
   onColumnsStateChange?: (map: { [key: string]: ColumnsState }) => void;
 
-  onSizeChange?: (size: 'default' | 'middle' | 'small' | undefined) => void;
+  onSizeChange?: (size: DensitySize) => void;
 
   /**
    * 一个获得 dataSource 的方法
@@ -223,20 +227,20 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSe
 }
 
 const mergePagination = <T extends any[], U>(
-  pagination: PaginationConfig | boolean | undefined = {},
+  pagination: TablePaginationConfig | boolean | undefined = {},
   action: UseFetchDataAction<RequestData<T>>,
-): PaginationConfig | false | undefined => {
+): TablePaginationConfig | false | undefined => {
   if (pagination === false) {
     return {};
   }
-  let defaultPagination: PaginationConfig | {} = pagination || {};
+  let defaultPagination: TablePaginationConfig | {} = pagination || {};
   const { current, pageSize } = action;
   if (pagination === true) {
     defaultPagination = {};
   }
   return {
     total: action.total,
-    ...(defaultPagination as PaginationConfig),
+    ...(defaultPagination as TablePaginationConfig),
     current,
     pageSize,
     onChange: (page: number, newPageSize?: number) => {
@@ -252,7 +256,7 @@ const mergePagination = <T extends any[], U>(
         }
       }
 
-      const { onChange } = pagination as PaginationConfig;
+      const { onChange } = pagination as TablePaginationConfig;
       if (onChange) {
         onChange(page, newPageSize || 10);
       }
@@ -262,7 +266,7 @@ const mergePagination = <T extends any[], U>(
         pageSize: showPageSize,
         page,
       });
-      const { onShowSizeChange } = pagination as PaginationConfig;
+      const { onShowSizeChange } = pagination as TablePaginationConfig;
       if (onShowSizeChange) {
         onShowSizeChange(page, showPageSize || 10);
       }
@@ -287,7 +291,11 @@ const genEllipsis = (dom: React.ReactNode, item: ProColumns<any>, text: string) 
   if (!item.ellipsis) {
     return dom;
   }
-  return <Tooltip title={text}>{dom}</Tooltip>;
+  return (
+    <Tooltip title={text}>
+      <span>{dom}</span>
+    </Tooltip>
+  );
 };
 
 const genCopyable = (dom: React.ReactNode, item: ProColumns<any>) => {
@@ -344,7 +352,7 @@ const genColumnList = <T, U = {}>(
   map: {
     [key: string]: ColumnsState;
   },
-): ColumnProps<T>[] =>
+): ColumnsType<T> =>
   columns
     .map((item, columnsIndex) => {
       const { key, dataIndex } = item;
@@ -352,7 +360,7 @@ const genColumnList = <T, U = {}>(
       const config = columnKey ? map[columnKey] || { fixed: item.fixed } : { fixed: item.fixed };
       const tempColumns = {
         onFilter: (value: string, record: T) => {
-          let recordElement = record[item.dataIndex || ''];
+          let recordElement = get(record, item.dataIndex || '');
           if (typeof recordElement === 'number') {
             recordElement = recordElement.toString();
           }
@@ -387,7 +395,7 @@ const genColumnList = <T, U = {}>(
  * 更快 更好 更方便
  * @param props
  */
-const ProTable = <T, U = {}>(
+const ProTable = <T extends {}, U = {}>(
   props: ProTableProps<T> & {
     defaultClassName: string;
   },
@@ -414,7 +422,7 @@ const ProTable = <T, U = {}>(
     options,
     search = true,
     rowSelection: propsRowSelection = false,
-    beforeSearchSubmit = (searchParams: any) => searchParams,
+    beforeSearchSubmit = (searchParams: Partial<U>) => searchParams,
     tableAlertRender,
     defaultClassName,
     formRef,
@@ -428,7 +436,7 @@ const ProTable = <T, U = {}>(
    */
   const { defaultCurrent, defaultPageSize } =
     typeof propsPagination === 'object'
-      ? (propsPagination as PaginationConfig)
+      ? (propsPagination as TablePaginationConfig)
       : { defaultCurrent: 1, defaultPageSize: 10 };
 
   const action = useFetchData(
@@ -556,7 +564,7 @@ const ProTable = <T, U = {}>(
     }
   }, [propsColumns, counter.columnsMap, counter.sortKeyColumns.join('-')]);
 
-  const [selectedRowKeys, setSelectedRowKeys] = useMergeValue<string[] | number[]>([], {
+  const [selectedRowKeys, setSelectedRowKeys] = useMergeValue<React.ReactText[]>([], {
     value: propsRowSelection ? propsRowSelection.selectedRowKeys : undefined,
   });
   const [selectedRows, setSelectedRows] = useState<T[]>([]);
@@ -581,7 +589,7 @@ const ProTable = <T, U = {}>(
     );
   }, [selectedRowKeys.join('-'), action.loading, propsRowSelection === false]);
 
-  const rowSelection: TableRowSelection<T> = {
+  const rowSelection: TableRowSelection = {
     selectedRowKeys,
     ...propsRowSelection,
     onChange: (keys, rows) => {
@@ -593,7 +601,7 @@ const ProTable = <T, U = {}>(
   };
 
   useEffect(() => {
-    counter.setTableSize(reset.size || 'default');
+    counter.setTableSize(reset.size || 'large');
   }, [reset.size]);
 
   if (counter.columns.length < 1) {
@@ -607,7 +615,7 @@ const ProTable = <T, U = {}>(
     >
       <div className={className} id="ant-design-pro-table" style={style} ref={rootRef}>
         {search && (
-          <FormSearch
+          <FormSearch<U>
             formRef={formRef}
             onSubmit={value => {
               setFormSearch(beforeSearchSubmit(value));
@@ -656,7 +664,7 @@ const ProTable = <T, U = {}>(
               alertIInfoRender={tableAlertRender}
             />
           )}
-          <Table
+          <Table<T>
             {...reset}
             size={counter.tableSize}
             rowSelection={propsRowSelection === false ? undefined : rowSelection}
