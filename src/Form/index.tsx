@@ -335,7 +335,16 @@ const FormSearch = <T, U = {}>({
           >
             <RcResizeObserver onResize={({ height }) => setFormHeight(height + 32)}>
               <div>
-                <Form form={form}>
+                <Form
+                  form={form}
+                  initialValues={columnsList.reduce((pre, item) => {
+                    const key = genColumnKey(item.key, item.dataIndex) || '';
+                    return {
+                      ...pre,
+                      [key]: item.initialValue,
+                    };
+                  }, {})}
+                >
                   <Row gutter={16} justify="end">
                     {domList}
                     <Col
