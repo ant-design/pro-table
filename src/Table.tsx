@@ -352,7 +352,7 @@ const genColumnList = <T, U = {}>(
   map: {
     [key: string]: ColumnsState;
   },
-): ColumnsType<T> =>
+): (ColumnsType<T>[number] & { index?: number })[] =>
   columns
     .map((item, columnsIndex) => {
       const { key, dataIndex } = item;
@@ -547,9 +547,11 @@ const ProTable = <T extends {}, U = {}>(
     const keys = counter.sortKeyColumns.join('-');
     let tableColumn = genColumnList<T>(propsColumns, counter.columnsMap);
     if (keys.length > 0) {
+      // 用于可视化的排序
       tableColumn = tableColumn.sort((a, b) => {
-        const aKey = `${a.key || ''}-${a.dataIndex || ''}`;
-        const bKey = `${b.key || ''}-${b.dataIndex || ''}`;
+        // 如果没有index，在 dataIndex 或者 key 不存在的时候他会报错
+        const aKey = `${genColumnKey(a.key, a.dataIndex) || a.index}`;
+        const bKey = `${genColumnKey(b.key, b.dataIndex) || b.index}`;
         return keys.indexOf(aKey) - keys.indexOf(bKey);
       });
     }

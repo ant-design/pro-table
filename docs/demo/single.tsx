@@ -117,7 +117,6 @@ const columns: ProColumns<GithubIssueItem>[] = [
   {
     title: 'option',
     valueType: 'option',
-    dataIndex: 'id',
     render: (text, row, _, action) => [
       <a href={row.html_url} target="_blank" rel="noopener noreferrer">
         查看
