@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
-import { Button, Drawer, Icon, Tag } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { Button, Drawer, Tag } from 'antd';
 import ProTable, {
   ProColumns,
   TableDropdown,
@@ -73,7 +74,7 @@ const columns: ProColumns<GithubIssueItem>[] = [
     valueType: 'indexBorder',
   },
   {
-    title: 'Title',
+    title: 'Titolo',
     dataIndex: 'title',
     copyable: true,
     ellipsis: true,
@@ -81,23 +82,23 @@ const columns: ProColumns<GithubIssueItem>[] = [
     hideInSearch: true,
   },
   {
-    title: 'Status',
+    title: 'Stato',
     dataIndex: 'state',
     initialValue: 'all',
     valueEnum: {
-      all: { text: 'ALL', status: 'Default' },
+      all: { text: 'Tutti', status: 'Default' },
       open: {
-        text: 'Error',
+        text: 'In errore',
         status: 'Error',
       },
       closed: {
-        text: 'Success',
+        text: 'Completato',
         status: 'Success',
       },
     },
   },
   {
-    title: 'Labels',
+    title: 'Etichette',
     dataIndex: 'labels',
     width: 80,
     render: (_, row) =>
@@ -114,24 +115,24 @@ const columns: ProColumns<GithubIssueItem>[] = [
       )),
   },
   {
-    title: 'Created Time',
+    title: 'Data e ora creazione',
     key: 'since',
     dataIndex: 'created_at',
     valueType: 'dateTime',
   },
   {
-    title: 'option',
+    title: 'Azioni',
     valueType: 'option',
     dataIndex: 'id',
     render: (text, row, _, action) => [
       <a href={row.html_url} target="_blank" rel="noopener noreferrer">
-        show
+        Mostra
       </a>,
       <TableDropdown
         onSelect={() => action.reload()}
         menus={[
-          { key: 'copy', name: 'copy' },
-          { key: 'delete', name: 'delete' },
+          { key: 'copy', name: 'Copia' },
+          { key: 'delete', name: 'Elimina' },
         ]}
       />,
     ],
@@ -199,14 +200,14 @@ export default () => {
           pagination={{
             showSizeChanger: true,
           }}
-          tableAlertRender={keys => `selected ${keys.length} rows`}
+          tableAlertRender={keys => `Selezionate ${keys.length} righe`}
           dateFormatter="string"
-          headerTitle="Basic Table"
+          headerTitle="Tabella semplice"
           params={{ state: 'all' }}
           toolBarRender={() => [
             <Button key="3" type="primary" onClick={() => setVisible(true)}>
-              <Icon type="plus" />
-              New
+              <PlusOutlined />
+              Nuovo
             </Button>,
           ]}
         />
