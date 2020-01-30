@@ -335,7 +335,7 @@ const FormSearch = <T, U = {}>({
           >
             <RcResizeObserver onResize={({ height }) => setFormHeight(height + 32)}>
               <div>
-                <Form>
+                <Form form={form}>
                   <Row gutter={16} justify="end">
                     {domList}
                     <Col

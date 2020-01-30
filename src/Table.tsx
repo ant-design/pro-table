@@ -375,7 +375,6 @@ const genColumnList = <T, U = {}>(
         fixed: config.fixed,
         width: item.width || (item.fixed ? 200 : undefined),
         children: item.children ? genColumnList(item.children, map) : undefined,
-        ellipsis: false,
         render: (text: any, row: T, index: number) => (
           <ColumRender<T> item={item} text={text} row={row} index={index} />
         ),
