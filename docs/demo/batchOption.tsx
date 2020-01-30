@@ -89,7 +89,7 @@ const columns: ProColumns<GithubIssueItem>[] = [
   {
     title: '标签',
     dataIndex: 'labels',
-    width: 80,
+    width: 120,
     render: (_, row) =>
       row.labels.map(({ name, id, color }) => (
         <Tag
@@ -166,6 +166,10 @@ export default () => (
         return pre;
       }, 0)} 项未解决 `
     }
+    tableAlertOptionRender={props => {
+      const { onCleanSelected } = props;
+      return [<a>自定义</a>, <a onClick={onCleanSelected}>清空</a>];
+    }}
     dateFormatter="string"
     headerTitle="批量操作"
     params={{ state: 'all' }}

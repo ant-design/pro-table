@@ -66,6 +66,7 @@ const columns: ProColumns<GithubIssueItem>[] = [
     title: '序号',
     dataIndex: 'index',
     valueType: 'indexBorder',
+    width: 64,
   },
   {
     title: '标题',
@@ -94,7 +95,7 @@ const columns: ProColumns<GithubIssueItem>[] = [
   {
     title: '标签',
     dataIndex: 'labels',
-    width: 80,
+    width: 120,
     render: (_, row) =>
       row.labels.map(({ name, id, color }) => (
         <Tag

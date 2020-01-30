@@ -7,7 +7,7 @@ import useMergeValue from 'use-merge-value';
 import { ColumnsType, TablePaginationConfig, TableProps } from 'antd/es/table';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
 
-import { IntlProvider, IntlConsumer } from './component/intlContext';
+import { IntlProvider, IntlConsumer, IntlType } from './component/intlContext';
 import useFetchData, { UseFetchDataAction, RequestData } from './useFetchData';
 import Container from './container';
 import Toolbar, { OptionConfig, ToolBarProps } from './component/toolBar';
@@ -220,7 +220,13 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSe
    * 设置或者返回false 即可关闭
    */
   tableAlertRender?: (keys: (string | number)[], rows: T[]) => React.ReactNode;
-
+  /**
+   * 自定义 table 的 alert 的操作
+   * 设置或者返回false 即可关闭
+   */
+  tableAlertOptionRender?:
+    | ((props: { intl: IntlType; onCleanSelected: () => void }) => React.ReactNode)
+    | false;
   rowSelection?: TableProps<T>['rowSelection'] | false;
 
   style?: React.CSSProperties;
@@ -293,7 +299,7 @@ const genEllipsis = (dom: React.ReactNode, item: ProColumns<any>, text: string) 
   }
   return (
     <Tooltip title={text}>
-      <span>{dom}</span>
+      <div>{dom}</div>
     </Tooltip>
   );
 };
@@ -303,7 +309,7 @@ const genCopyable = (dom: React.ReactNode, item: ProColumns<any>) => {
     return (
       <Typography.Text
         style={{
-          width: item.width,
+          width: (item.width as number) - 32,
         }}
         copyable={item.copyable}
         ellipsis={item.ellipsis}
@@ -372,6 +378,7 @@ const genColumnList = <T, U = {}>(
           valueItem => valueItem && valueItem.value !== 'all',
         ),
         ...item,
+        ellipsis: false,
         fixed: config.fixed,
         width: item.width || (item.fixed ? 200 : undefined),
         children: item.children ? genColumnList(item.children, map) : undefined,
@@ -662,6 +669,7 @@ const ProTable = <T extends {}, U = {}>(
                 setSelectedRowKeys([]);
                 setSelectedRows([]);
               }}
+              alertOptionRender={reset.tableAlertOptionRender}
               alertIInfoRender={tableAlertRender}
             />
           )}

@@ -38,14 +38,14 @@ const columns: ProColumns<TableListItem>[] = [
     title: '序号',
     dataIndex: 'index',
     valueType: 'index',
-    width: 80,
+    width: 64,
   },
   {
     title: 'border 序号',
     dataIndex: 'index',
     key: 'indexBorder',
     valueType: 'indexBorder',
-    width: 80,
+    width: 64,
   },
   {
     title: '金额',
