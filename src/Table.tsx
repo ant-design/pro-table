@@ -454,7 +454,7 @@ const ProTable = <T extends {}, U = {}>(
           success: true,
         } as RequestData<T>;
       }
-      const msg = await tempRequest({ current, pageSize, ...params, ...formSearch });
+      const msg = await tempRequest({ current, pageSize, ...formSearch, ...params });
       if (postData) {
         return { ...msg, data: postData(msg.data) };
       }

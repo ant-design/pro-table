@@ -254,6 +254,13 @@ const FormSearch = <T, U = {}>({
   const [formHeight, setFormHeight] = useState<number>(88);
   const rowNumber = 24 / colSize || 3;
 
+  const submit = () => {
+    const value = form.getFieldsValue();
+    if (onSubmit) {
+      onSubmit(genValue(value, dateFormatter, proColumnsMap) as T);
+    }
+  };
+
   useEffect(() => {
     if (!formRef) {
       return;
@@ -263,20 +270,13 @@ const FormSearch = <T, U = {}>({
     }
     if (formRef && typeof formRef !== 'function') {
       // eslint-disable-next-line no-param-reassign
-      formRef.current = form;
+      formRef.current = { ...form, submit };
     }
   }, []);
 
   useEffect(() => {
     setColSize(getSpanConfig(span || 8, windowSize));
   }, [windowSize]);
-
-  const submit = () => {
-    const value = form.getFieldsValue();
-    if (onSubmit) {
-      onSubmit(genValue(value, dateFormatter, proColumnsMap) as T);
-    }
-  };
 
   useDeepCompareEffect(() => {
     const tempMap = {};
