@@ -270,7 +270,13 @@ const FormSearch = <T, U = {}>({
     }
     if (formRef && typeof formRef !== 'function') {
       // eslint-disable-next-line no-param-reassign
-      formRef.current = { ...form, submit };
+      formRef.current = {
+        ...form,
+        submit: () => {
+          submit();
+          form.submit();
+        },
+      };
     }
   }, []);
 
