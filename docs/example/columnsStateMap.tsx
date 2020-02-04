@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Input } from 'antd';
-import ProTable, { ProColumns } from '@ant-design/pro-table';
+import ProTable, { ProColumns, ColumnsState } from '@ant-design/pro-table';
 
 const valueEnum = {
   0: 'close',
@@ -75,36 +75,43 @@ const columns: ProColumns<TableListItem>[] = [
 ];
 
 export default () => {
-  const [keyWord, setKeyWord] = useState();
+  const [columnsStateMap, setColumnsStateMap] = useState<{
+    [key: string]: ColumnsState;
+  }>({
+    name: {
+      show: false,
+    },
+  });
   return (
-    <ProTable<TableListItem>
-      columns={columns}
-      request={(params = {}) =>
-        Promise.resolve({
-          data: tableListDataSource.filter(item => {
-            if (!params.keyWord) {
-              return true;
-            }
-            if (item.name.includes(params.keyWord) || item.status.includes(params.keyWord)) {
-              return true;
-            }
-            return false;
-          }),
-          success: true,
-        })
-      }
-      rowKey="key"
-      pagination={{
-        showSizeChanger: true,
-      }}
-      size="middle"
-      params={{ keyWord }}
-      search={false}
-      dateFormatter="string"
-      headerTitle="简单搜索"
-      toolBarRender={() => [
-        <Input.Search placeholder="请输入" onSearch={value => setKeyWord(value)} />,
-      ]}
-    />
+    <>
+      <code>{JSON.stringify(columnsStateMap)}</code>
+      <ProTable<TableListItem>
+        columns={columns}
+        request={(params = {}) =>
+          Promise.resolve({
+            data: tableListDataSource.filter(item => {
+              if (!params.keyWord) {
+                return true;
+              }
+              if (item.name.includes(params.keyWord) || item.status.includes(params.keyWord)) {
+                return true;
+              }
+              return false;
+            }),
+            success: true,
+          })
+        }
+        rowKey="key"
+        pagination={{
+          showSizeChanger: true,
+        }}
+        columnsStateMap={columnsStateMap}
+        onColumnsStateChange={map => setColumnsStateMap(map)}
+        search={false}
+        dateFormatter="string"
+        headerTitle="简单搜索"
+        toolBarRender={() => [<Input.Search placeholder="请输入" />]}
+      />
+    </>
   );
 };

@@ -4,26 +4,32 @@ import React, { useEffect, CSSProperties, useRef, useState, ReactNode } from 're
 import { Table, ConfigProvider, Card, Typography, Empty, Tooltip } from 'antd';
 import classNames from 'classnames';
 import useMergeValue from 'use-merge-value';
-import { ColumnProps, PaginationConfig, TableProps, TableRowSelection } from 'antd/es/table';
+import { ColumnsType, TablePaginationConfig, TableProps } from 'antd/es/table';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
-import { IntlProvider, IntlConsumer } from './component/intlContext';
+
+import { IntlProvider, IntlConsumer, IntlType } from './component/intlContext';
 import useFetchData, { UseFetchDataAction, RequestData } from './useFetchData';
-import Container, { ColumnsMapItem } from './container';
+import Container from './container';
 import Toolbar, { OptionConfig, ToolBarProps } from './component/toolBar';
 import Alert from './component/alert';
 import FormSearch, { SearchConfig, TableFormItem } from './Form';
 import { StatusType } from './component/status';
-import {
+
+import get, {
   parsingText,
   parsingValueEnumToArray,
   checkUndefinedOrNull,
   useDeepCompareEffect,
+  genColumnKey,
 } from './component/util';
 
 import defaultRenderText, {
   ProColumnsValueType,
   ProColumnsValueTypeFunction,
 } from './defaultRender';
+import { DensitySize } from './component/toolBar/DensityIcon';
+
+type TableRowSelection = TableProps<any>['rowSelection'];
 
 export interface ActionType {
   reload: () => void;
@@ -31,7 +37,13 @@ export interface ActionType {
   reset: () => void;
 }
 
-export interface ProColumns<T = unknown> extends Omit<ColumnProps<T>, 'render' | 'children'> {
+export interface ColumnsState {
+  show?: boolean;
+  fixed?: 'right' | 'left' | undefined;
+}
+
+export interface ProColumns<T = unknown>
+  extends Omit<ColumnsType<T>[number], 'render' | 'children'> {
   /**
    * 自定义 render
    */
@@ -117,6 +129,13 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSe
   columns?: ProColumns<T>[];
   params?: { [key: string]: any };
 
+  columnsStateMap?: {
+    [key: string]: ColumnsState;
+  };
+  onColumnsStateChange?: (map: { [key: string]: ColumnsState }) => void;
+
+  onSizeChange?: (size: DensitySize) => void;
+
   /**
    * 一个获得 dataSource 的方法
    */
@@ -201,27 +220,33 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSe
    * 设置或者返回false 即可关闭
    */
   tableAlertRender?: (keys: (string | number)[], rows: T[]) => React.ReactNode;
-
+  /**
+   * 自定义 table 的 alert 的操作
+   * 设置或者返回false 即可关闭
+   */
+  tableAlertOptionRender?:
+    | ((props: { intl: IntlType; onCleanSelected: () => void }) => React.ReactNode)
+    | false;
   rowSelection?: TableProps<T>['rowSelection'] | false;
 
   style?: React.CSSProperties;
 }
 
 const mergePagination = <T extends any[], U>(
-  pagination: PaginationConfig | boolean | undefined = {},
+  pagination: TablePaginationConfig | boolean | undefined = {},
   action: UseFetchDataAction<RequestData<T>>,
-): PaginationConfig | false | undefined => {
+): TablePaginationConfig | false | undefined => {
   if (pagination === false) {
     return {};
   }
-  let defaultPagination: PaginationConfig | {} = pagination || {};
+  let defaultPagination: TablePaginationConfig | {} = pagination || {};
   const { current, pageSize } = action;
   if (pagination === true) {
     defaultPagination = {};
   }
   return {
     total: action.total,
-    ...(defaultPagination as PaginationConfig),
+    ...(defaultPagination as TablePaginationConfig),
     current,
     pageSize,
     onChange: (page: number, newPageSize?: number) => {
@@ -237,7 +262,7 @@ const mergePagination = <T extends any[], U>(
         }
       }
 
-      const { onChange } = pagination as PaginationConfig;
+      const { onChange } = pagination as TablePaginationConfig;
       if (onChange) {
         onChange(page, newPageSize || 10);
       }
@@ -247,7 +272,7 @@ const mergePagination = <T extends any[], U>(
         pageSize: showPageSize,
         page,
       });
-      const { onShowSizeChange } = pagination as PaginationConfig;
+      const { onShowSizeChange } = pagination as TablePaginationConfig;
       if (onShowSizeChange) {
         onShowSizeChange(page, showPageSize || 10);
       }
@@ -272,7 +297,11 @@ const genEllipsis = (dom: React.ReactNode, item: ProColumns<any>, text: string) 
   if (!item.ellipsis) {
     return dom;
   }
-  return <Tooltip title={text}>{dom}</Tooltip>;
+  return (
+    <Tooltip title={text}>
+      <div>{dom}</div>
+    </Tooltip>
+  );
 };
 
 const genCopyable = (dom: React.ReactNode, item: ProColumns<any>) => {
@@ -280,7 +309,7 @@ const genCopyable = (dom: React.ReactNode, item: ProColumns<any>) => {
     return (
       <Typography.Text
         style={{
-          width: item.width,
+          width: (item.width as number) - 32,
         }}
         copyable={item.copyable}
         ellipsis={item.ellipsis}
@@ -327,17 +356,17 @@ const ColumRender = <T, U = any>({ item, text, row, index }: ColumRenderInterfac
 const genColumnList = <T, U = {}>(
   columns: ProColumns<T>[],
   map: {
-    [key: string]: ColumnsMapItem;
+    [key: string]: ColumnsState;
   },
-): ColumnProps<T>[] =>
+): (ColumnsType<T>[number] & { index?: number })[] =>
   columns
     .map((item, columnsIndex) => {
       const { key, dataIndex } = item;
-      const columnKey = `${key || ''}-${dataIndex || ''}`;
-      const config = map[columnKey] || { fixed: item.fixed };
+      const columnKey = genColumnKey(key, dataIndex);
+      const config = columnKey ? map[columnKey] || { fixed: item.fixed } : { fixed: item.fixed };
       const tempColumns = {
         onFilter: (value: string, record: T) => {
-          let recordElement = record[item.dataIndex || ''];
+          let recordElement = get(record, item.dataIndex || '');
           if (typeof recordElement === 'number') {
             recordElement = recordElement.toString();
           }
@@ -349,10 +378,10 @@ const genColumnList = <T, U = {}>(
           valueItem => valueItem && valueItem.value !== 'all',
         ),
         ...item,
+        ellipsis: false,
         fixed: config.fixed,
         width: item.width || (item.fixed ? 200 : undefined),
         children: item.children ? genColumnList(item.children, map) : undefined,
-        ellipsis: false,
         render: (text: any, row: T, index: number) => (
           <ColumRender<T> item={item} text={text} row={row} index={index} />
         ),
@@ -372,7 +401,7 @@ const genColumnList = <T, U = {}>(
  * 更快 更好 更方便
  * @param props
  */
-const ProTable = <T, U = {}>(
+const ProTable = <T extends {}, U = {}>(
   props: ProTableProps<T> & {
     defaultClassName: string;
   },
@@ -394,10 +423,12 @@ const ProTable = <T, U = {}>(
     tableStyle,
     tableClassName,
     url,
+    columnsStateMap,
+    onColumnsStateChange,
     options,
     search = true,
     rowSelection: propsRowSelection = false,
-    beforeSearchSubmit = (searchParams: any) => searchParams,
+    beforeSearchSubmit = (searchParams: Partial<U>) => searchParams,
     tableAlertRender,
     defaultClassName,
     formRef,
@@ -411,7 +442,7 @@ const ProTable = <T, U = {}>(
    */
   const { defaultCurrent, defaultPageSize } =
     typeof propsPagination === 'object'
-      ? (propsPagination as PaginationConfig)
+      ? (propsPagination as TablePaginationConfig)
       : { defaultCurrent: 1, defaultPageSize: 10 };
 
   const action = useFetchData(
@@ -423,7 +454,7 @@ const ProTable = <T, U = {}>(
           success: true,
         } as RequestData<T>;
       }
-      const msg = await tempRequest({ current, pageSize, ...params, ...formSearch });
+      const msg = await tempRequest({ current, pageSize, ...formSearch, ...params });
       if (postData) {
         return { ...msg, data: postData(msg.data) };
       }
@@ -522,11 +553,12 @@ const ProTable = <T, U = {}>(
   useDeepCompareEffect(() => {
     const keys = counter.sortKeyColumns.join('-');
     let tableColumn = genColumnList<T>(propsColumns, counter.columnsMap);
-
     if (keys.length > 0) {
+      // 用于可视化的排序
       tableColumn = tableColumn.sort((a, b) => {
-        const aKey = `${a.key || ''}-${a.dataIndex || ''}`;
-        const bKey = `${b.key || ''}-${b.dataIndex || ''}`;
+        // 如果没有index，在 dataIndex 或者 key 不存在的时候他会报错
+        const aKey = `${genColumnKey(a.key, a.dataIndex) || a.index}`;
+        const bKey = `${genColumnKey(b.key, b.dataIndex) || b.index}`;
         return keys.indexOf(aKey) - keys.indexOf(bKey);
       });
     }
@@ -534,13 +566,13 @@ const ProTable = <T, U = {}>(
       counter.setColumns(tableColumn);
       if (keys.length < 1) {
         counter.setSortKeyColumns(
-          tableColumn.map(item => `${item.key || ''}-${item.dataIndex || ''}`),
+          tableColumn.map((item, index) => genColumnKey(item.key, item.dataIndex) || `${index}`),
         );
       }
     }
   }, [propsColumns, counter.columnsMap, counter.sortKeyColumns.join('-')]);
 
-  const [selectedRowKeys, setSelectedRowKeys] = useMergeValue<string[] | number[]>([], {
+  const [selectedRowKeys, setSelectedRowKeys] = useMergeValue<React.ReactText[]>([], {
     value: propsRowSelection ? propsRowSelection.selectedRowKeys : undefined,
   });
   const [selectedRows, setSelectedRows] = useState<T[]>([]);
@@ -565,7 +597,7 @@ const ProTable = <T, U = {}>(
     );
   }, [selectedRowKeys.join('-'), action.loading, propsRowSelection === false]);
 
-  const rowSelection: TableRowSelection<T> = {
+  const rowSelection: TableRowSelection = {
     selectedRowKeys,
     ...propsRowSelection,
     onChange: (keys, rows) => {
@@ -577,7 +609,7 @@ const ProTable = <T, U = {}>(
   };
 
   useEffect(() => {
-    counter.setTableSize(reset.size || 'default');
+    counter.setTableSize(reset.size || 'large');
   }, [reset.size]);
 
   if (counter.columns.length < 1) {
@@ -591,7 +623,7 @@ const ProTable = <T, U = {}>(
     >
       <div className={className} id="ant-design-pro-table" style={style} ref={rootRef}>
         {search && (
-          <FormSearch
+          <FormSearch<U>
             formRef={formRef}
             onSubmit={value => {
               setFormSearch(beforeSearchSubmit(value));
@@ -637,10 +669,11 @@ const ProTable = <T, U = {}>(
                 setSelectedRowKeys([]);
                 setSelectedRows([]);
               }}
+              alertOptionRender={reset.tableAlertOptionRender}
               alertIInfoRender={tableAlertRender}
             />
           )}
-          <Table
+          <Table<T>
             {...reset}
             size={counter.tableSize}
             rowSelection={propsRowSelection === false ? undefined : rowSelection}
@@ -649,15 +682,18 @@ const ProTable = <T, U = {}>(
             columns={counter.columns.filter(item => {
               // 删掉不应该显示的
               const { key, dataIndex } = item;
-              const columnKey = `${key || ''}-${dataIndex || ''}`;
+              const columnKey = genColumnKey(key, dataIndex);
+              if (!columnKey) {
+                return true;
+              }
               const config = counter.columnsMap[columnKey];
               if (config && config.show === false) {
                 return false;
               }
               return true;
             })}
-            loading={action.loading}
-            dataSource={action.dataSource as T[]}
+            loading={action.loading || props.loading}
+            dataSource={request || url ? (action.dataSource as T[]) : reset.dataSource}
             pagination={pagination}
           />
         </Card>
@@ -672,7 +708,7 @@ const ProTable = <T, U = {}>(
  * @param props
  */
 const ProviderWarp = <T, U = {}>(props: ProTableProps<T>) => (
-  <Container.Provider>
+  <Container.Provider initialState={props}>
     <ConfigConsumer>
       {({ getPrefixCls }: ConfigConsumerProps) => (
         <IntlConsumer>

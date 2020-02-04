@@ -1,5 +1,6 @@
 import React from 'react';
-import { Button, Icon, Tag } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { Button, Tag } from 'antd';
 import ProTable, { ProColumns, TableDropdown } from '@ant-design/pro-table';
 import request from 'umi-request';
 
@@ -65,7 +66,7 @@ const columns: ProColumns<GithubIssueItem>[] = [
     title: '序号',
     dataIndex: 'index',
     valueType: 'indexBorder',
-    width: 80,
+    width: 64,
   },
   {
     title: '标题',
@@ -104,7 +105,7 @@ const columns: ProColumns<GithubIssueItem>[] = [
   {
     title: '标签',
     dataIndex: 'labels',
-    width: 80,
+    width: 120,
     render: (_, row) =>
       row.labels.map(({ name, id, color }) => (
         <Tag
@@ -170,7 +171,7 @@ export default () => (
     params={{ state: 'all' }}
     toolBarRender={() => [
       <Button key="3" type="primary">
-        <Icon type="plus" />
+        <PlusOutlined />
         新建
       </Button>,
     ]}

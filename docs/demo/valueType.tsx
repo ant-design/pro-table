@@ -1,5 +1,6 @@
 import React from 'react';
-import { Button, Icon } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { Button } from 'antd';
 import ProTable, { ProColumns } from '@ant-design/pro-table';
 
 const valueEnum = {
@@ -37,14 +38,14 @@ const columns: ProColumns<TableListItem>[] = [
     title: '序号',
     dataIndex: 'index',
     valueType: 'index',
-    width: 80,
+    width: 64,
   },
   {
     title: 'border 序号',
     dataIndex: 'index',
     key: 'indexBorder',
     valueType: 'indexBorder',
-    width: 80,
+    width: 64,
   },
   {
     title: '金额',
@@ -114,7 +115,7 @@ export default () => (
         success: true,
       })
     }
-    rowKey="id"
+    rowKey="key"
     pagination={{
       showSizeChanger: true,
     }}
@@ -126,7 +127,7 @@ export default () => (
     params={{ state: 'all' }}
     toolBarRender={() => [
       <Button key="3" type="primary">
-        <Icon type="plus" />
+        <PlusOutlined />
         新建
       </Button>,
     ]}

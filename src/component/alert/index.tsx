@@ -2,16 +2,24 @@ import React from 'react';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider/context';
 import { Alert } from 'antd';
 import './index.less';
-import { useIntl } from '../intlContext';
+import { useIntl, IntlType } from '../intlContext';
 
-interface TableAlertProps<T> {
+export interface TableAlertProps<T> {
   selectedRowKeys: (number | string)[];
   selectedRows: T[];
   alertIInfoRender?:
     | ((selectedRowKeys: (number | string)[], selectedRows: T[]) => React.ReactNode)
     | false;
   onCleanSelected: () => void;
+  alertOptionRender?:
+    | false
+    | ((props: { intl: IntlType; onCleanSelected: () => void }) => React.ReactNode);
 }
+
+const defaultAlertOptionRender = (props: { intl: IntlType; onCleanSelected: () => void }) => {
+  const { intl, onCleanSelected } = props;
+  return <a onClick={onCleanSelected}>{intl.getMessage('alert.clear', '清空')}</a>;
+};
 
 const TableAlert = <T, U = {}>({
   selectedRowKeys = [],
@@ -22,8 +30,16 @@ const TableAlert = <T, U = {}>({
       已选择 <a style={{ fontWeight: 600 }}>{selectedRowKeys.length}</a> 项&nbsp;&nbsp;
     </span>
   ),
+  alertOptionRender = defaultAlertOptionRender,
 }: TableAlertProps<T>) => {
   const intl = useIntl();
+
+  const option =
+    alertOptionRender &&
+    alertOptionRender({
+      onCleanSelected,
+      intl,
+    });
   return (
     <ConfigConsumer>
       {({ getPrefixCls }: ConfigConsumerProps) => {
@@ -41,9 +57,7 @@ const TableAlert = <T, U = {}>({
               message={
                 <div className={`${className}-info`}>
                   <div className={`${className}-info-content`}>{dom}</div>
-                  <div className={`${className}-info-option`}>
-                    <a onClick={onCleanSelected}>{intl.getMessage('alert.clear', '清空')}</a>
-                  </div>
+                  {option && <div className={`${className}-info-option`}>{option}</div>}
                 </div>
               }
               type="info"

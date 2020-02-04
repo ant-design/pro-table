@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Input } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { PlusOutlined } from '@ant-design/icons';
+import { Button } from 'antd';
 import ProTable, { ProColumns } from '@ant-design/pro-table';
 
 const valueEnum = {
@@ -20,7 +21,7 @@ export interface TableListItem {
 }
 const tableListDataSource: TableListItem[] = [];
 
-for (let i = 0; i < 100; i += 1) {
+for (let i = 0; i < 10; i += 1) {
   tableListDataSource.push({
     key: i,
     name: `TradeCode ${i}`,
@@ -34,8 +35,10 @@ for (let i = 0; i < 100; i += 1) {
 
 const columns: ProColumns<TableListItem>[] = [
   {
-    title: '标题',
-    dataIndex: 'name',
+    title: '序号',
+    dataIndex: 'index',
+    valueType: 'index',
+    width: 80,
   },
   {
     title: '状态',
@@ -50,12 +53,16 @@ const columns: ProColumns<TableListItem>[] = [
       error: { text: '异常', status: 'Error' },
     },
   },
+
   {
-    title: '创建时间',
-    key: 'since',
-    dataIndex: 'createdAt',
+    title: '进度',
+    key: 'progress',
+    dataIndex: 'progress',
+    valueType: item => ({
+      type: 'progress',
+      status: item.status !== 'error' ? 'active' : 'exception',
+    }),
     width: 200,
-    valueType: 'dateTime',
   },
   {
     title: '更新时间',
@@ -64,46 +71,35 @@ const columns: ProColumns<TableListItem>[] = [
     dataIndex: 'createdAt',
     valueType: 'date',
   },
-
-  {
-    title: '操作',
-    key: 'option',
-    width: 120,
-    valueType: 'option',
-    render: () => [<a>操作</a>, <a>删除</a>],
-  },
 ];
 
 export default () => {
-  const [keyWord, setKeyWord] = useState();
+  const [loading, setLoading] = useState(true);
+  const [dataSource, setDataSource] = useState<TableListItem[]>([]);
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+      setDataSource(tableListDataSource);
+    }, 5000);
+  }, []);
+  useEffect(() => {});
   return (
     <ProTable<TableListItem>
       columns={columns}
-      request={(params = {}) =>
-        Promise.resolve({
-          data: tableListDataSource.filter(item => {
-            if (!params.keyWord) {
-              return true;
-            }
-            if (item.name.includes(params.keyWord) || item.status.includes(params.keyWord)) {
-              return true;
-            }
-            return false;
-          }),
-          success: true,
-        })
-      }
       rowKey="key"
       pagination={{
         showSizeChanger: true,
       }}
-      size="middle"
-      params={{ keyWord }}
-      search={false}
+      loading={loading}
+      dataSource={dataSource}
       dateFormatter="string"
-      headerTitle="简单搜索"
+      headerTitle="dataSource 和 loading"
+      params={{ state: 'all' }}
       toolBarRender={() => [
-        <Input.Search placeholder="请输入" onSearch={value => setKeyWord(value)} />,
+        <Button key="3" type="primary">
+          <PlusOutlined />
+          新建
+        </Button>,
       ]}
     />
   );

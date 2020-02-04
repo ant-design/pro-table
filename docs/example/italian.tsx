@@ -5,7 +5,7 @@ import ProTable, {
   ProColumns,
   TableDropdown,
   IntlProvider,
-  viVNIntl,
+  itITIntl,
   ActionType,
 } from '@ant-design/pro-table';
 import request from 'umi-request';
@@ -69,13 +69,13 @@ interface User {
 
 const columns: ProColumns<GithubIssueItem>[] = [
   {
-    title: 'STT',
+    title: 'index',
     dataIndex: 'index',
     valueType: 'indexBorder',
     width: 64,
   },
   {
-    title: 'Tiêu đề',
+    title: 'Titolo',
     dataIndex: 'title',
     copyable: true,
     ellipsis: true,
@@ -83,23 +83,23 @@ const columns: ProColumns<GithubIssueItem>[] = [
     hideInSearch: true,
   },
   {
-    title: 'Trạng thái',
+    title: 'Stato',
     dataIndex: 'state',
     initialValue: 'all',
     valueEnum: {
-      all: { text: 'ALL', status: 'Default' },
+      all: { text: 'Tutti', status: 'Default' },
       open: {
-        text: 'Error',
+        text: 'In errore',
         status: 'Error',
       },
       closed: {
-        text: 'Success',
+        text: 'Completato',
         status: 'Success',
       },
     },
   },
   {
-    title: 'Nhãn',
+    title: 'Etichette',
     dataIndex: 'labels',
     width: 80,
     render: (_, row) =>
@@ -116,24 +116,24 @@ const columns: ProColumns<GithubIssueItem>[] = [
       )),
   },
   {
-    title: 'Thời gian tạo',
+    title: 'Data e ora creazione',
     key: 'since',
     dataIndex: 'created_at',
     valueType: 'dateTime',
   },
   {
-    title: 'Thao tác',
+    title: 'Azioni',
     valueType: 'option',
     dataIndex: 'id',
     render: (text, row, _, action) => [
       <a href={row.html_url} target="_blank" rel="noopener noreferrer">
-        xem
+        Mostra
       </a>,
       <TableDropdown
         onSelect={() => action.reload()}
         menus={[
-          { key: 'copy', name: 'sao chép' },
-          { key: 'delete', name: 'xóa' },
+          { key: 'copy', name: 'Copia' },
+          { key: 'delete', name: 'Elimina' },
         ]}
       />,
     ],
@@ -156,7 +156,7 @@ export default () => {
             }
           }}
         >
-          tải lại
+          reload
         </Button>
         <Button
           onClick={() => {
@@ -165,10 +165,10 @@ export default () => {
             }
           }}
         >
-          làm lại
+          reset
         </Button>
       </Drawer>
-      <IntlProvider value={viVNIntl}>
+      <IntlProvider value={itITIntl}>
         <ProTable<GithubIssueItem>
           columns={columns}
           actionRef={actionRef}
@@ -201,14 +201,14 @@ export default () => {
           pagination={{
             showSizeChanger: true,
           }}
-          tableAlertRender={keys => `selected ${keys.length} rows`}
+          tableAlertRender={keys => `Selezionate ${keys.length} righe`}
           dateFormatter="string"
-          headerTitle="Basic Table"
+          headerTitle="Tabella semplice"
           params={{ state: 'all' }}
           toolBarRender={() => [
             <Button key="3" type="primary" onClick={() => setVisible(true)}>
               <PlusOutlined />
-              Thêm mới
+              Nuovo
             </Button>,
           ]}
         />

@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
-import { Button, Drawer, Icon, Tag } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { Button, Drawer, Tag } from 'antd';
 import ProTable, { ProColumns, TableDropdown, ActionType } from '@ant-design/pro-table';
 import request from 'umi-request';
 
@@ -65,6 +66,7 @@ const columns: ProColumns<GithubIssueItem>[] = [
     title: '序号',
     dataIndex: 'index',
     valueType: 'indexBorder',
+    width: 64,
   },
   {
     title: '标题',
@@ -93,7 +95,7 @@ const columns: ProColumns<GithubIssueItem>[] = [
   {
     title: '标签',
     dataIndex: 'labels',
-    width: 80,
+    width: 120,
     render: (_, row) =>
       row.labels.map(({ name, id, color }) => (
         <Tag
@@ -116,7 +118,6 @@ const columns: ProColumns<GithubIssueItem>[] = [
   {
     title: 'option',
     valueType: 'option',
-    dataIndex: 'id',
     render: (text, row, _, action) => [
       <a href={row.html_url} target="_blank" rel="noopener noreferrer">
         查看
@@ -135,6 +136,7 @@ const columns: ProColumns<GithubIssueItem>[] = [
 export default () => {
   const actionRef = useRef<ActionType>();
   const [visible, setVisible] = useState(false);
+
   return (
     <>
       <Drawer onClose={() => setVisible(false)} visible={visible}>
@@ -196,7 +198,7 @@ export default () => {
         params={{ state: 'all' }}
         toolBarRender={() => [
           <Button key="3" type="primary" onClick={() => setVisible(true)}>
-            <Icon type="plus" />
+            <PlusOutlined />
             新建
           </Button>,
         ]}
