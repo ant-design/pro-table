@@ -467,7 +467,9 @@ const ProTable = <T extends {}, U = {}>(
       onLoad,
       onRequestError,
       effects: [
-          params,
+          Object.values(params)
+          .filter(item => checkUndefinedOrNull(item))
+          .join('-'),
           formSearch
       ],
     },
