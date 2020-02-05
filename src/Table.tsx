@@ -467,12 +467,8 @@ const ProTable = <T extends {}, U = {}>(
       onLoad,
       onRequestError,
       effects: [
-        Object.values(params)
-          .filter(item => checkUndefinedOrNull(item))
-          .join('-'),
-        Object.values(formSearch)
-          .filter(item => checkUndefinedOrNull(item))
-          .join('-'),
+          params,
+          formSearch
       ],
     },
   );
