@@ -12,6 +12,7 @@ import {
   enUSIntl,
   viVNIntl,
   itITIntl,
+  jaJPIntl,
 } from './component/intlContext';
 import Search from './Form';
 import { ProColumnsValueType } from './defaultRender';
@@ -34,6 +35,7 @@ export {
   enUSIntl,
   viVNIntl,
   itITIntl,
+  jaJPIntl,  
   ColumnsState,
 };
 

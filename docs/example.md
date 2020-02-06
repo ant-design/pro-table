@@ -19,6 +19,10 @@ order: 0
 
 <code src="./example/vietnamese.tsx" />
 
+## 日本語 
+
+<code src="./example/japanese.tsx" />
+
 ## toolbar 搜索
 
 <code src="./example/search.tsx" />
