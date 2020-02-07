@@ -470,7 +470,9 @@ const ProTable = <T extends {}, U = {}>(
           Object.values(params)
           .filter(item => checkUndefinedOrNull(item))
           .join('-'),
-          formSearch
+          Object.values(formSearch)
+          .filter(item => checkUndefinedOrNull(item))
+          .join('-')
       ],
     },
   );
@@ -625,11 +627,13 @@ const ProTable = <T extends {}, U = {}>(
             formRef={formRef}
             onSubmit={value => {
               setFormSearch(beforeSearchSubmit(value));
+              action.reload();
               // back first page
               action.resetPageIndex();
             }}
             onReset={() => {
               setFormSearch(beforeSearchSubmit({}));
+              action.reload();
               // back first page
               action.resetPageIndex();
             }}
