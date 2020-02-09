@@ -107,29 +107,38 @@ const columns: ProColumns<TableListItem>[] = [
 ];
 
 export default () => (
-  <ProTable<TableListItem>
-    columns={columns}
-    request={() =>
-      Promise.resolve({
-        data: tableListDataSource,
-        success: true,
-      })
-    }
-    rowKey="key"
-    pagination={{
-      showSizeChanger: true,
-    }}
-    scroll={{
-      x: columns.length * 120,
-    }}
-    dateFormatter="string"
-    headerTitle="valueType 设置"
-    params={{ state: 'all' }}
-    toolBarRender={() => [
-      <Button key="3" type="primary">
-        <PlusOutlined />
-        新建
-      </Button>,
-    ]}
-  />
+  <>
+    <ProTable<TableListItem>
+      columns={columns}
+      request={() =>
+        Promise.resolve({
+          data: tableListDataSource,
+          success: true,
+        })
+      }
+      rowKey="key"
+      pagination={{
+        showSizeChanger: true,
+      }}
+      scroll={{
+        x: columns.length * 120,
+      }}
+      dateFormatter="string"
+      headerTitle="valueType 设置"
+      params={{ state: 'all' }}
+      toolBarRender={() => [
+        <Button key="3" type="primary">
+          <PlusOutlined />
+          新建
+        </Button>,
+      ]}
+    />
+    <ProTable<TableListItem>
+      style={{
+        maxWidth: 500,
+      }}
+      type="form"
+      columns={columns}
+    />
+  </>
 );
