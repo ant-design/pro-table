@@ -1,5 +1,5 @@
 ---
-title: Table 自动生成 Form
+title: Table 生成搜索表单
 order: 8
 ---
 

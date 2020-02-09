@@ -25,7 +25,7 @@ export default {
     reload: '刷新',
     density: '密度',
     densityDefault: '正常',
-    densityLarger: '大',
+    densityLarger: '默认',
     densityMiddle: '中等',
     densitySmall: '紧凑',
   },

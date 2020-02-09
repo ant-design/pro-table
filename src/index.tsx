@@ -35,7 +35,7 @@ export {
   enUSIntl,
   viVNIntl,
   itITIntl,
-  jaJPIntl,  
+  jaJPIntl,
   ColumnsState,
 };
 

@@ -24,9 +24,8 @@ export default {
     exitFullScreen: '終了',
     reload: '更新',
     density: '行高',
-    densityLarger: '大',
+    densityLarger: '默认',
     densityMiddle: '中',
     densitySmall: '小',
   },
 };
-
