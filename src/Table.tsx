@@ -125,13 +125,16 @@ export interface ProColumns<T = unknown>
   order?: number;
 }
 
-export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSelection'> {
+export interface ProTableProps<T, U extends { [key: string]: any }>
+  extends Omit<TableProps<T>, 'columns' | 'rowSelection'> {
   columns?: ProColumns<T>[];
-  params?: { [key: string]: any };
+
+  params?: U;
 
   columnsStateMap?: {
     [key: string]: ColumnsState;
   };
+
   onColumnsStateChange?: (map: { [key: string]: ColumnsState }) => void;
 
   onSizeChange?: (size: DensitySize) => void;
@@ -139,19 +142,13 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSe
   /**
    * 一个获得 dataSource 的方法
    */
-  request?: (params?: {
-    pageSize?: number;
-    current?: number;
-    [key: string]: any;
-  }) => Promise<RequestData<T>>;
-  /**
-   * 一个获得 dataSource 的方法
-   */
-  url?: (params?: {
-    pageSize: number;
-    current: number;
-    [key: string]: any;
-  }) => Promise<RequestData<T>>;
+  request?: (
+    params?: U & {
+      pageSize?: number;
+      current?: number;
+    },
+  ) => Promise<RequestData<T>>;
+
   /**
    * 对数据进行一些处理
    */
@@ -230,6 +227,16 @@ export interface ProTableProps<T> extends Omit<TableProps<T>, 'columns' | 'rowSe
   rowSelection?: TableProps<T>['rowSelection'] | false;
 
   style?: React.CSSProperties;
+
+  /**
+   * 支持 ProTable 的类型
+   */
+  type?: 'form' | 'list' | 'table' | 'cardList' | undefined;
+
+  /**
+   * 提交表单时触发
+   */
+  onSubmit?: (params: U) => void;
 }
 
 const mergePagination = <T extends any[], U>(
@@ -401,8 +408,8 @@ const genColumnList = <T, U = {}>(
  * 更快 更好 更方便
  * @param props
  */
-const ProTable = <T extends {}, U = {}>(
-  props: ProTableProps<T> & {
+const ProTable = <T extends {}, U extends object>(
+  props: ProTableProps<T, U> & {
     defaultClassName: string;
   },
 ) => {
@@ -422,7 +429,6 @@ const ProTable = <T extends {}, U = {}>(
     style,
     tableStyle,
     tableClassName,
-    url,
     columnsStateMap,
     onColumnsStateChange,
     options,
@@ -432,6 +438,7 @@ const ProTable = <T extends {}, U = {}>(
     tableAlertRender,
     defaultClassName,
     formRef,
+    type = 'table',
     ...reset
   } = props;
 
@@ -447,14 +454,13 @@ const ProTable = <T extends {}, U = {}>(
 
   const action = useFetchData(
     async ({ pageSize, current }) => {
-      const tempRequest = request || url;
-      if (!tempRequest) {
+      if (!request) {
         return {
           data: props.dataSource || [],
           success: true,
         } as RequestData<T>;
       }
-      const msg = await tempRequest({ current, pageSize, ...formSearch, ...params });
+      const msg = await request({ current, pageSize, ...formSearch, ...params } as U);
       if (postData) {
         return { ...msg, data: postData(msg.data) };
       }
@@ -622,13 +628,17 @@ const ProTable = <T extends {}, U = {}>(
       getPopupContainer={() => ((rootRef.current || document.body) as any) as HTMLElement}
     >
       <div className={className} id="ant-design-pro-table" style={style} ref={rootRef}>
-        {search && (
+        {(search || type === 'form') && (
           <FormSearch<U>
+            type={props.type}
             formRef={formRef}
             onSubmit={value => {
               setFormSearch(beforeSearchSubmit(value));
               // back first page
               action.resetPageIndex();
+              if (props.onSubmit) {
+                props.onSubmit(value);
+              }
             }}
             onReset={() => {
               setFormSearch(beforeSearchSubmit({}));
@@ -639,64 +649,66 @@ const ProTable = <T extends {}, U = {}>(
             search={search}
           />
         )}
-        <Card
-          bordered={false}
-          style={{
-            height: '100%',
-          }}
-          bodyStyle={{
-            padding: 0,
-          }}
-        >
-          {toolBarRender !== false && (
-            <Toolbar<T>
-              options={options}
-              headerTitle={headerTitle}
-              action={action}
-              selectedRows={selectedRows}
-              selectedRowKeys={selectedRowKeys}
-              toolBarRender={toolBarRender}
-            />
-          )}
-          {propsRowSelection !== false && (
-            <Alert<T>
-              selectedRowKeys={selectedRowKeys}
-              selectedRows={selectedRows}
-              onCleanSelected={() => {
-                if (propsRowSelection && propsRowSelection.onChange) {
-                  propsRowSelection.onChange([], []);
+        {type !== 'form' && (
+          <Card
+            bordered={false}
+            style={{
+              height: '100%',
+            }}
+            bodyStyle={{
+              padding: 0,
+            }}
+          >
+            {toolBarRender !== false && (
+              <Toolbar<T>
+                options={options}
+                headerTitle={headerTitle}
+                action={action}
+                selectedRows={selectedRows}
+                selectedRowKeys={selectedRowKeys}
+                toolBarRender={toolBarRender}
+              />
+            )}
+            {propsRowSelection !== false && (
+              <Alert<T>
+                selectedRowKeys={selectedRowKeys}
+                selectedRows={selectedRows}
+                onCleanSelected={() => {
+                  if (propsRowSelection && propsRowSelection.onChange) {
+                    propsRowSelection.onChange([], []);
+                  }
+                  setSelectedRowKeys([]);
+                  setSelectedRows([]);
+                }}
+                alertOptionRender={reset.tableAlertOptionRender}
+                alertIInfoRender={tableAlertRender}
+              />
+            )}
+            <Table<T>
+              {...reset}
+              size={counter.tableSize}
+              rowSelection={propsRowSelection === false ? undefined : rowSelection}
+              className={tableClassName}
+              style={tableStyle}
+              columns={counter.columns.filter(item => {
+                // 删掉不应该显示的
+                const { key, dataIndex } = item;
+                const columnKey = genColumnKey(key, dataIndex);
+                if (!columnKey) {
+                  return true;
                 }
-                setSelectedRowKeys([]);
-                setSelectedRows([]);
-              }}
-              alertOptionRender={reset.tableAlertOptionRender}
-              alertIInfoRender={tableAlertRender}
-            />
-          )}
-          <Table<T>
-            {...reset}
-            size={counter.tableSize}
-            rowSelection={propsRowSelection === false ? undefined : rowSelection}
-            className={tableClassName}
-            style={tableStyle}
-            columns={counter.columns.filter(item => {
-              // 删掉不应该显示的
-              const { key, dataIndex } = item;
-              const columnKey = genColumnKey(key, dataIndex);
-              if (!columnKey) {
+                const config = counter.columnsMap[columnKey];
+                if (config && config.show === false) {
+                  return false;
+                }
                 return true;
-              }
-              const config = counter.columnsMap[columnKey];
-              if (config && config.show === false) {
-                return false;
-              }
-              return true;
-            })}
-            loading={action.loading || props.loading}
-            dataSource={request || url ? (action.dataSource as T[]) : reset.dataSource}
-            pagination={pagination}
-          />
-        </Card>
+              })}
+              loading={action.loading || props.loading}
+              dataSource={request ? (action.dataSource as T[]) : reset.dataSource}
+              pagination={pagination}
+            />
+          </Card>
+        )}
       </div>
     </ConfigProvider>
   );
@@ -707,7 +719,7 @@ const ProTable = <T extends {}, U = {}>(
  * 更快 更好 更方便
  * @param props
  */
-const ProviderWarp = <T, U = {}>(props: ProTableProps<T>) => (
+const ProviderWarp = <T, U extends { [key: string]: any } = {}>(props: ProTableProps<T, U>) => (
   <Container.Provider initialState={props}>
     <ConfigConsumer>
       {({ getPrefixCls }: ConfigConsumerProps) => (

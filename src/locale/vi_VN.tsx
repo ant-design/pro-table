@@ -2,6 +2,7 @@ export default {
   tableFrom: {
     search: 'Tìm kiếm',
     reset: 'Làm lại',
+    submit: '提交',
     collapsed: 'Mở rộng',
     expand: 'Thu gọn',
     inputPlaceholder: 'nhập dữ liệu',

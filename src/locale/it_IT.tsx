@@ -2,6 +2,7 @@ export default {
   tableFrom: {
     search: 'Filtra',
     reset: 'Pulisci',
+    submit: 'Submit',
     collapsed: 'Espandi',
     expand: 'Contrai',
     inputPlaceholder: 'Digita',

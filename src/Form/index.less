@@ -26,10 +26,21 @@
   }
 
   &-option {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    text-align: right;
+    .@{ant-prefix}-form-item-control-input {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      text-align: right;
+    }
+  }
+  &-form-option {
+    .@{ant-prefix}-form-item-label {
+      opacity: 0;
+    }
+
+    .@{ant-prefix}-form-item-control-input {
+      justify-content: flex-start;
+    }
   }
 }
 

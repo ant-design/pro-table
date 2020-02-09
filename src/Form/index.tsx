@@ -7,6 +7,8 @@ import RcResizeObserver from 'rc-resize-observer';
 import useMediaQuery from 'use-media-antd-query';
 import useMergeValue from 'use-merge-value';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
+import classNames from 'classnames';
+
 import { parsingValueEnumToArray, useDeepCompareEffect, genColumnKey } from '../component/util';
 import { useIntl, IntlType } from '../component/intlContext';
 import Container from '../container';
@@ -21,6 +23,14 @@ const defaultColConfig = {
   sm: 12,
   xs: 24,
 };
+const defaultFromColConfig = {
+  lg: 24,
+  md: 24,
+  xxl: 24,
+  xl: 24,
+  sm: 24,
+  xs: 24,
+};
 
 export interface SearchConfig {
   searchText?: string;
@@ -29,6 +39,7 @@ export interface SearchConfig {
   collapseRender?: (collapsed: boolean) => React.ReactNode;
   collapsed?: boolean;
   onCollapse?: (collapsed: boolean) => void;
+  submitText?: string;
 }
 
 const getOffset = (length: number, span: number = 8) => {
@@ -46,6 +57,7 @@ const defaultSearch: SearchConfig = {
 export interface TableFormItem<T> extends Omit<FormItemProps, 'children'> {
   onSubmit?: (value: T) => void;
   onReset?: () => void;
+  type?: 'form' | 'list' | 'table' | 'cardList' | undefined;
   dateFormatter?: 'string' | 'number' | false;
   search?: boolean | SearchConfig;
   formRef?: React.MutableRefObject<FormInstance | undefined> | ((actionRef: FormInstance) => void);
@@ -195,6 +207,7 @@ const genValue = (value: any, dateFormatter?: string | boolean, proColumnsMap?: 
 const getDefaultSearch = (
   search: boolean | SearchConfig | undefined,
   intl: IntlType,
+  isFrom: boolean,
 ): SearchConfig => {
   const config = {
     collapseRender: (collapsed: boolean) => {
@@ -205,7 +218,8 @@ const getDefaultSearch = (
     },
     searchText: intl.getMessage('tableFrom.search', defaultSearch.searchText || '查询'),
     resetText: intl.getMessage('tableFrom.reset', defaultSearch.resetText || '重置'),
-    span: defaultColConfig,
+    submitText: intl.getMessage('tableFrom.submit', defaultSearch.resetText || '提交'),
+    span: isFrom ? defaultFromColConfig : defaultColConfig,
   };
 
   if (search === undefined || search === true) {
@@ -234,11 +248,12 @@ const FormSearch = <T, U = {}>({
   formRef,
   dateFormatter = 'string',
   search: propsSearch,
+  type,
 }: TableFormItem<T>) => {
   const [form] = Form.useForm();
   const intl = useIntl();
-  const searchConfig = getDefaultSearch(propsSearch, intl);
-  const { span, searchText, resetText, collapseRender } = searchConfig;
+  const searchConfig = getDefaultSearch(propsSearch, intl, type === 'form');
+  const { span, searchText, submitText, resetText, collapseRender } = searchConfig;
 
   const counter = Container.useContainer();
   const [collapse, setCollapse] = useMergeValue<boolean>(true, {
@@ -316,7 +331,7 @@ const FormSearch = <T, U = {}>({
   const colConfig = typeof span === 'number' ? { span } : span;
 
   const domList = columnsList
-    .filter((_, index) => (collapse ? index < (rowNumber - 1 || 1) : true))
+    .filter((_, index) => (collapse && type !== 'form' ? index < (rowNumber - 1 || 1) : true))
     .map(item => {
       const key = genColumnKey(item.key, item.dataIndex);
       return (
@@ -357,12 +372,14 @@ const FormSearch = <T, U = {}>({
                       {...colConfig}
                       offset={getOffset(domList.length, colSize)}
                       key="option"
-                      className={`${className}-option`}
+                      className={classNames(`${className}-option`, {
+                        [`${className}-form-option`]: type === 'form',
+                      })}
                     >
-                      <Form.Item>
+                      <Form.Item label={type === 'form' && ' '}>
                         <>
                           <Button type="primary" htmlType="submit" onClick={() => submit()}>
-                            {searchText}
+                            {type === 'form' ? submitText : searchText}
                           </Button>
                           <Button
                             style={{ marginLeft: 8 }}
@@ -373,7 +390,7 @@ const FormSearch = <T, U = {}>({
                           >
                             {resetText}
                           </Button>
-                          {columnsList.length > rowNumber - 1 && (
+                          {type !== 'form' && columnsList.length > rowNumber - 1 && (
                             <a
                               style={{ marginLeft: 8 }}
                               onClick={() => {

@@ -139,7 +139,7 @@ export default () => {
 
   return (
     <>
-      <Drawer onClose={() => setVisible(false)} visible={visible}>
+      <Drawer width={600} onClose={() => setVisible(false)} visible={visible}>
         <Button
           style={{
             margin: 8,
@@ -161,6 +161,11 @@ export default () => {
         >
           重置
         </Button>
+        <ProTable<GithubIssueItem>
+          columns={columns}
+          type="form"
+          onSubmit={params => console.log(params)}
+        />
       </Drawer>
       <ProTable<GithubIssueItem>
         columns={columns}

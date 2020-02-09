@@ -2,6 +2,7 @@ export default {
   tableFrom: {
     search: '查询',
     reset: '重置',
+    submit: '提交',
     collapsed: '展开',
     expand: '收起',
     inputPlaceholder: '请输入',

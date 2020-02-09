@@ -2,6 +2,7 @@ export default {
   tableFrom: {
     search: 'Query',
     reset: 'Reset',
+    submit: 'Submit',
     collapsed: 'Expand',
     expand: 'Collapse',
     inputPlaceholder: 'Please enter',

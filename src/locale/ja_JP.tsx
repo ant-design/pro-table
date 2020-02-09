@@ -2,6 +2,7 @@ export default {
   tableFrom: {
     search: '検索',
     reset: 'リセット',
+    submit: '提交',
     collapsed: '展開',
     expand: '収納',
     inputPlaceholder: '入力してください',
