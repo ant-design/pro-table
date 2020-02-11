@@ -4,7 +4,7 @@ import { Menu, Dropdown, Tooltip } from 'antd';
 import Container from '../../container';
 import { useIntl } from '../intlContext';
 
-export type DensitySize = 'middle' | 'small' | 'large' | undefined;
+export type DensitySize = 'small' | 'default' | 'middle' | undefined;
 
 const DensityIcon: React.FC<{}> = (_, ref) => {
   const counter = Container.useContainer();

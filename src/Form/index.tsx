@@ -413,4 +413,4 @@ const FormSearch = <T, U = {}>({
   );
 };
 
-export default Form.create()(FormSearch);
+export default Form.create<TableFormItem<any>>()(FormSearch);

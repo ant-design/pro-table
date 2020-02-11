@@ -4,7 +4,7 @@ import React, { useEffect, CSSProperties, useRef, useState, ReactNode } from 're
 import { Table, ConfigProvider, Card, Typography, Empty, Tooltip } from 'antd';
 import classNames from 'classnames';
 import useMergeValue from 'use-merge-value';
-import { ColumnsType, TablePaginationConfig, TableProps } from 'antd/es/table';
+import { ColumnProps, PaginationConfig, TableProps } from 'antd/es/table';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
 
 import { IntlProvider, IntlConsumer, IntlType } from './component/intlContext';
@@ -42,8 +42,7 @@ export interface ColumnsState {
   fixed?: 'right' | 'left' | undefined;
 }
 
-export interface ProColumns<T = unknown>
-  extends Omit<ColumnsType<T>[number], 'render' | 'children'> {
+export interface ProColumns<T = unknown> extends Omit<ColumnProps<T>, 'render' | 'children'> {
   /**
    * 自定义 render
    */
@@ -240,20 +239,20 @@ export interface ProTableProps<T, U extends { [key: string]: any }>
 }
 
 const mergePagination = <T extends any[], U>(
-  pagination: TablePaginationConfig | boolean | undefined = {},
+  pagination: PaginationConfig | boolean | undefined = {},
   action: UseFetchDataAction<RequestData<T>>,
-): TablePaginationConfig | false | undefined => {
+): PaginationConfig | false | undefined => {
   if (pagination === false) {
     return {};
   }
-  let defaultPagination: TablePaginationConfig | {} = pagination || {};
+  let defaultPagination: PaginationConfig | {} = pagination || {};
   const { current, pageSize } = action;
   if (pagination === true) {
     defaultPagination = {};
   }
   return {
     total: action.total,
-    ...(defaultPagination as TablePaginationConfig),
+    ...(defaultPagination as PaginationConfig),
     current,
     pageSize,
     onChange: (page: number, newPageSize?: number) => {
@@ -269,7 +268,7 @@ const mergePagination = <T extends any[], U>(
         }
       }
 
-      const { onChange } = pagination as TablePaginationConfig;
+      const { onChange } = pagination as PaginationConfig;
       if (onChange) {
         onChange(page, newPageSize || 10);
       }
@@ -279,7 +278,7 @@ const mergePagination = <T extends any[], U>(
         pageSize: showPageSize,
         page,
       });
-      const { onShowSizeChange } = pagination as TablePaginationConfig;
+      const { onShowSizeChange } = pagination as PaginationConfig;
       if (onShowSizeChange) {
         onShowSizeChange(page, showPageSize || 10);
       }
@@ -365,7 +364,7 @@ const genColumnList = <T, U = {}>(
   map: {
     [key: string]: ColumnsState;
   },
-): (ColumnsType<T>[number] & { index?: number })[] =>
+): (ColumnProps<T> & { index?: number })[] =>
   columns
     .map((item, columnsIndex) => {
       const { key, dataIndex } = item;
@@ -449,7 +448,7 @@ const ProTable = <T extends {}, U extends object>(
    */
   const { defaultCurrent, defaultPageSize } =
     typeof propsPagination === 'object'
-      ? (propsPagination as TablePaginationConfig)
+      ? (propsPagination as PaginationConfig)
       : { defaultCurrent: 1, defaultPageSize: 10 };
 
   const action = useFetchData(
@@ -578,7 +577,7 @@ const ProTable = <T extends {}, U extends object>(
     }
   }, [propsColumns, counter.columnsMap, counter.sortKeyColumns.join('-')]);
 
-  const [selectedRowKeys, setSelectedRowKeys] = useMergeValue<React.ReactText[]>([], {
+  const [selectedRowKeys, setSelectedRowKeys] = useMergeValue<string[] | number[]>([], {
     value: propsRowSelection ? propsRowSelection.selectedRowKeys : undefined,
   });
   const [selectedRows, setSelectedRows] = useState<T[]>([]);
@@ -615,7 +614,7 @@ const ProTable = <T extends {}, U extends object>(
   };
 
   useEffect(() => {
-    counter.setTableSize(reset.size || 'large');
+    counter.setTableSize(reset.size || 'default');
   }, [reset.size]);
 
   if (counter.columns.length < 1) {
@@ -629,7 +628,7 @@ const ProTable = <T extends {}, U extends object>(
     >
       <div className={className} id="ant-design-pro-table" style={style} ref={rootRef}>
         {(search || type === 'form') && (
-          <FormSearch<U>
+          <FormSearch
             type={props.type}
             formRef={formRef}
             onSubmit={value => {
