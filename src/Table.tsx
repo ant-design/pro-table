@@ -5,6 +5,7 @@ import { Table, ConfigProvider, Card, Typography, Empty, Tooltip } from 'antd';
 import classNames from 'classnames';
 import useMergeValue from 'use-merge-value';
 import { ColumnsType, TablePaginationConfig, TableProps } from 'antd/es/table';
+import { FormItemProps } from 'antd/es/form';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
 
 import { IntlProvider, IntlConsumer, IntlType } from './component/intlContext';
@@ -43,7 +44,8 @@ export interface ColumnsState {
 }
 
 export interface ProColumns<T = unknown>
-  extends Omit<ColumnsType<T>[number], 'render' | 'children'> {
+  extends Omit<ColumnsType<T>[number], 'render' | 'children'>,
+    Partial<Omit<FormItemProps, 'children'>> {
   /**
    * 自定义 render
    */
@@ -119,8 +121,14 @@ export interface ProColumns<T = unknown>
    * 在 table 中隐藏
    */
   hideInTable?: boolean;
+
   /**
-   * from 的排序
+   * 在新建表单中删除
+   */
+  hideInForm?: boolean;
+
+  /**
+   * form 的排序
    */
   order?: number;
 }

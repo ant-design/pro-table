@@ -73,6 +73,12 @@ const columns: ProColumns<GithubIssueItem>[] = [
     dataIndex: 'title',
     copyable: true,
     ellipsis: true,
+    rules: [
+      {
+        required: true,
+        message: '此项为必填项',
+      },
+    ],
     width: 200,
     hideInSearch: true,
   },
@@ -114,6 +120,7 @@ const columns: ProColumns<GithubIssueItem>[] = [
     key: 'since',
     dataIndex: 'created_at',
     valueType: 'dateTime',
+    hideInForm: true,
   },
   {
     title: 'option',

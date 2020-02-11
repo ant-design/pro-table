@@ -308,14 +308,23 @@ const FormSearch = <T, U = {}>({
   }, counter.proColumns);
 
   const columnsList = counter.proColumns
-    .filter(
-      item =>
+    .filter(item => {
+      if (item.hideInSearch && type !== 'form') {
+        return false;
+      }
+      if (type === 'form' && item.hideInForm) {
+        return false;
+      }
+      if (
         item.valueType !== 'index' &&
         item.valueType !== 'indexBorder' &&
         item.valueType !== 'option' &&
-        !item.hideInSearch &&
-        (item.key || item.dataIndex),
-    )
+        (item.key || item.dataIndex)
+      ) {
+        return true;
+      }
+      return false;
+    })
     .sort((a, b) => {
       if (a && b) {
         return (b.order || 0) - (a.order || 0);
@@ -336,7 +345,12 @@ const FormSearch = <T, U = {}>({
       const key = genColumnKey(item.key, item.dataIndex);
       return (
         <Col {...colConfig} key={key}>
-          <Form.Item labelAlign="right" label={item.title} name={key}>
+          <Form.Item
+            labelAlign="right"
+            label={item.title}
+            name={key}
+            {...(type === 'form' && item)}
+          >
             <FromInputRender item={item} />
           </Form.Item>
         </Col>
