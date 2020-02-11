@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DownOutlined } from '@ant-design/icons';
-import { FormInstance, FormItemProps } from 'antd/es/form';
+import { FormComponentProps, FormItemProps } from 'antd/es/form';
 import { Input, Form, Row, Col, TimePicker, InputNumber, DatePicker, Select, Button } from 'antd';
 import moment, { Moment } from 'moment';
 import RcResizeObserver from 'rc-resize-observer';
@@ -60,7 +60,10 @@ export interface TableFormItem<T> extends Omit<FormItemProps, 'children'> {
   type?: 'form' | 'list' | 'table' | 'cardList' | undefined;
   dateFormatter?: 'string' | 'number' | false;
   search?: boolean | SearchConfig;
-  formRef?: React.MutableRefObject<FormInstance | undefined> | ((actionRef: FormInstance) => void);
+  form: FormComponentProps['form'];
+  formRef?:
+    | React.MutableRefObject<FormComponentProps['form'] | undefined>
+    | ((actionRef: FormComponentProps['form']) => void);
 }
 
 const FromInputRender: React.FC<{
@@ -249,8 +252,8 @@ const FormSearch = <T, U = {}>({
   dateFormatter = 'string',
   search: propsSearch,
   type,
+  form,
 }: TableFormItem<T>) => {
-  const [form] = Form.useForm();
   const intl = useIntl();
   const searchConfig = getDefaultSearch(propsSearch, intl, type === 'form');
   const { span, searchText, submitText, resetText, collapseRender } = searchConfig;
@@ -287,10 +290,6 @@ const FormSearch = <T, U = {}>({
       // eslint-disable-next-line no-param-reassign
       formRef.current = {
         ...form,
-        submit: () => {
-          submit();
-          form.submit();
-        },
       };
     }
   }, []);
@@ -336,8 +335,10 @@ const FormSearch = <T, U = {}>({
       const key = genColumnKey(item.key, item.dataIndex);
       return (
         <Col {...colConfig} key={key}>
-          <Form.Item labelAlign="right" label={item.title} name={key}>
-            <FromInputRender item={item} />
+          <Form.Item labelAlign="right" label={item.title}>
+            {form.getFieldDecorator(`${key}`, {
+              initialValue: item.initialValue,
+            })(<FromInputRender item={item} />)}
           </Form.Item>
         </Col>
       );
@@ -356,16 +357,7 @@ const FormSearch = <T, U = {}>({
           >
             <RcResizeObserver onResize={({ height }) => setFormHeight(height + 32)}>
               <div>
-                <Form
-                  form={form}
-                  initialValues={columnsList.reduce((pre, item) => {
-                    const key = genColumnKey(item.key, item.dataIndex) || '';
-                    return {
-                      ...pre,
-                      [key]: item.initialValue,
-                    };
-                  }, {})}
-                >
+                <Form>
                   <Row gutter={16} justify="end">
                     {domList}
                     <Col
@@ -421,4 +413,4 @@ const FormSearch = <T, U = {}>({
   );
 };
 
-export default FormSearch;
+export default Form.create()(FormSearch);
