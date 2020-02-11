@@ -1,5 +1,6 @@
 import React from 'react';
-import { Button, Icon } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { Button } from 'antd';
 import ProTable, { ProColumns } from '@ant-design/pro-table';
 
 const valueEnum = {
@@ -37,20 +38,20 @@ const columns: ProColumns<TableListItem>[] = [
     title: '序号',
     dataIndex: 'index',
     valueType: 'index',
-    width: 80,
+    width: 64,
   },
   {
     title: 'border 序号',
     dataIndex: 'index',
     key: 'indexBorder',
     valueType: 'indexBorder',
-    width: 80,
+    width: 64,
   },
   {
     title: '金额',
     dataIndex: 'money',
     valueType: 'money',
-    width: 100,
+    width: 150,
   },
   {
     title: '状态',
@@ -106,29 +107,38 @@ const columns: ProColumns<TableListItem>[] = [
 ];
 
 export default () => (
-  <ProTable<TableListItem>
-    columns={columns}
-    request={() =>
-      Promise.resolve({
-        data: tableListDataSource,
-        success: true,
-      })
-    }
-    rowKey="id"
-    pagination={{
-      showSizeChanger: true,
-    }}
-    scroll={{
-      x: columns.length * 120,
-    }}
-    dateFormatter="string"
-    headerTitle="valueType 设置"
-    params={{ state: 'all' }}
-    toolBarRender={() => [
-      <Button key="3" type="primary">
-        <Icon type="plus" />
-        新建
-      </Button>,
-    ]}
-  />
+  <>
+    <ProTable<TableListItem>
+      columns={columns}
+      request={() =>
+        Promise.resolve({
+          data: tableListDataSource,
+          success: true,
+        })
+      }
+      rowKey="key"
+      pagination={{
+        showSizeChanger: true,
+      }}
+      scroll={{
+        x: columns.length * 120,
+      }}
+      dateFormatter="string"
+      headerTitle="valueType 设置"
+      params={{ state: 'all' }}
+      toolBarRender={() => [
+        <Button key="3" type="primary">
+          <PlusOutlined />
+          新建
+        </Button>,
+      ]}
+    />
+    <ProTable<TableListItem>
+      style={{
+        maxWidth: 500,
+      }}
+      type="form"
+      columns={columns}
+    />
+  </>
 );

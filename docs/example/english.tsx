@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
-import { Button, Drawer, Icon, Tag } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { Button, Drawer, Tag } from 'antd';
 import ProTable, {
   ProColumns,
   TableDropdown,
@@ -71,6 +72,7 @@ const columns: ProColumns<GithubIssueItem>[] = [
     title: 'index',
     dataIndex: 'index',
     valueType: 'indexBorder',
+    width: 64,
   },
   {
     title: 'Title',
@@ -195,15 +197,17 @@ export default () => {
             };
           }}
           rowKey="id"
+          rowSelection={{}}
           pagination={{
             showSizeChanger: true,
           }}
+          tableAlertRender={keys => `selected ${keys.length} rows`}
           dateFormatter="string"
           headerTitle="Basic Table"
           params={{ state: 'all' }}
           toolBarRender={() => [
             <Button key="3" type="primary" onClick={() => setVisible(true)}>
-              <Icon type="plus" />
+              <PlusOutlined />
               New
             </Button>,
           ]}

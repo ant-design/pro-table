@@ -26,12 +26,16 @@ pro-table is encapsulated in an antd table, supports some presets, and encapsula
 | actionRef | Triggered after the table data is successfully initialized, it will be triggered multiple times. | `React.MutableRefObject<ActionType> \| ((actionRef: ActionType) => void)` | [] |
 | toolBarRender | Render toolbar, support for returning a dom array, will automatically increase margin-right. | `(action: UseFetchDataAction<RequestData<T>>) => React.ReactNode[]` | - |
 | onLoad | Triggered after the data is loaded, it will be triggered multiple times. | `(dataSource: T[]) => void` | - |
+| onRequestError | Triggered when fetching data failed | `(e: Error) => void` | - |
 | tableClassName | The className of the packaged table | string | - |
 | tableStyle | The style of the packaged table | CSSProperties | - |
 | options | table's default operation, set to false to close it | `{{ fullScreen: boolean \| function, reload: boolean \| function,setting: true }}` | `{{ fullScreen: true, reload:true,setting: true }}` |
-| search | Whether to search the form. It can also be a query form config when passing an object. | `boolean \| { span?: number \| DefaultColConfig, searchText?: string, resetText?: string, collapseRender?: (collapsed: boolean) => React.ReactNode }` | true |
+| search | Whether to search the form. It can also be a query form config when passing an object. | `boolean \| { span?: number \| DefaultColConfig,searchText?: string, resetText?: string, collapseRender?: (collapsed: boolean) => React.ReactNode, collapsed:boolean, onCollapse: (collapsed:boolean)=> void }` | true |
 | dateFormatter | formatting moment type | `"string" \| "number" \| false` | string |
 | beforeSearchSubmit | Make some changes before searching | `(params:T)=>T` | - |
+| onSizeChange | table size changes | `(size: 'default' | 'middle' | 'small' | undefined) => void` | - |
+| columnsStateMap | columns status | `{[key: string]: { show:boolean, fixed: "right"|"left"} }` | - |
+| onColumnsStateChange | columns status changed | `(props: {[key: string]: { show:boolean, fixed: "right"|"left"} }) => void` | - |
 
 ### Columns
 

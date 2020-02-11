@@ -26,12 +26,16 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 | actionRef | get table action | `React.MutableRefObject<ActionType> | ((actionRef: ActionType) => void)` | - |
 | toolBarRender | 渲染工具栏，支持返回一个 dom 数组，会自动增加 margin-right | `(action: UseFetchDataAction<RequestData<T>>) => React.ReactNode[]` | - |
 | onLoad | 数据加载完成后触发,会多次触发 | `(dataSource: T[]) => void` | - |
+| onRequestError | 数据加载失败时触发 | `(e: Error) => void` | - |
 | tableClassName | 封装的 table 的 className | string | - |
 | tableStyle | 封装的 table 的 style | CSSProperties | - |
 | options | table 的默认操作，设置为 false 可以关闭它 | `{{ fullScreen: boolean \| function, reload: boolean \| function,setting: true }}` | `{ fullScreen: true, reload:true , setting: true }` |
-| search | 是否显示搜索表单，传入对象时为搜索表单的配置 | `boolean \| { span?: number \| DefaultColConfig,searchText?: string, resetText?: string, collapseRender?: (collapsed: boolean) => React.ReactNode }` | true |
+| search | 是否显示搜索表单，传入对象时为搜索表单的配置 | `boolean \| { span?: number \| DefaultColConfig,searchText?: string, resetText?: string, collapseRender?: (collapsed: boolean) => React.ReactNode, collapsed:boolean, onCollapse: (collapsed:boolean)=> void }` | true |
 | dateFormatter | moment 的格式化方式 | `"string" \| "number" \| false` | string |
 | beforeSearchSubmit | 搜索之前进行一些修改 | `(params:T)=>T` | - |
+| onSizeChange | table 尺寸发生改变 | `(size: 'default' | 'middle' | 'small' | undefined) => void` | - |
+| columnsStateMap | columns 的状态枚举 | `{[key: string]: { show:boolean, fixed: "right"|"left"} }` | - |
+| onColumnsStateChange | columns 状态发生改变 | `(props: {[key: string]: { show:boolean, fixed: "right"|"left"} }) => void` | - |
 
 ### Columns
 

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { Input } from 'antd';
+import React, { useRef, useState } from 'react';
+import { Button } from 'antd';
 import ProTable, { ProColumns } from '@ant-design/pro-table';
+import { FormInstance } from 'antd/lib/form';
 
 const valueEnum = {
   0: 'close',
@@ -41,7 +42,6 @@ const columns: ProColumns<TableListItem>[] = [
     title: '状态',
     dataIndex: 'status',
     initialValue: 'all',
-    width: 100,
     valueEnum: {
       all: { text: '全部', status: 'Default' },
       close: { text: '关闭', status: 'Default' },
@@ -54,17 +54,8 @@ const columns: ProColumns<TableListItem>[] = [
     title: '创建时间',
     key: 'since',
     dataIndex: 'createdAt',
-    width: 200,
     valueType: 'dateTime',
   },
-  {
-    title: '更新时间',
-    key: 'since2',
-    width: 120,
-    dataIndex: 'createdAt',
-    valueType: 'date',
-  },
-
   {
     title: '操作',
     key: 'option',
@@ -75,21 +66,15 @@ const columns: ProColumns<TableListItem>[] = [
 ];
 
 export default () => {
-  const [keyWord, setKeyWord] = useState();
+  const ref = useRef<FormInstance>();
+  const [collapsed, setCollapsed] = useState(false);
+
   return (
     <ProTable<TableListItem>
       columns={columns}
-      request={(params = {}) =>
+      request={() =>
         Promise.resolve({
-          data: tableListDataSource.filter(item => {
-            if (!params.keyWord) {
-              return true;
-            }
-            if (item.name.includes(params.keyWord) || item.status.includes(params.keyWord)) {
-              return true;
-            }
-            return false;
-          }),
+          data: tableListDataSource,
           success: true,
         })
       }
@@ -97,14 +82,26 @@ export default () => {
       pagination={{
         showSizeChanger: true,
       }}
-      size="middle"
-      params={{ keyWord }}
-      search={false}
+      search={{
+        collapsed,
+        onCollapse: setCollapsed,
+      }}
+      formRef={ref}
+      toolBarRender={() => [
+        <Button
+          onClick={() => {
+            if (ref.current) {
+              ref.current.setFieldsValue({
+                name: 'test-xxx',
+              });
+            }
+          }}
+        >
+          赋值
+        </Button>,
+      ]}
       dateFormatter="string"
       headerTitle="简单搜索"
-      toolBarRender={() => [
-        <Input.Search placeholder="请输入" onSearch={value => setKeyWord(value)} />,
-      ]}
     />
   );
 };

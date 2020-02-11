@@ -1,4 +1,4 @@
-import ProTable, { ProColumns, ActionType, ProColumnsValueType, ProTableProps } from './Table';
+import ProTable, { ProColumns, ActionType, ProTableProps, ColumnsState } from './Table';
 import IndexColumn from './component/indexColumn';
 import { RequestData } from './useFetchData';
 import TableDropdown from './component/dropdown';
@@ -10,8 +10,12 @@ import {
   IntlType,
   zhCNIntl,
   enUSIntl,
+  viVNIntl,
+  itITIntl,
+  jaJPIntl,
 } from './component/intlContext';
 import Search from './Form';
+import { ProColumnsValueType } from './defaultRender';
 
 export {
   ProColumns,
@@ -29,6 +33,10 @@ export {
   zhCNIntl,
   createIntl,
   enUSIntl,
+  viVNIntl,
+  itITIntl,
+  jaJPIntl,
+  ColumnsState,
 };
 
 export default ProTable;

@@ -1,7 +1,12 @@
 import React, { useRef, useState } from 'react';
-import { PlusOutlined } from '@ant-design/icons';
-import { Button, Drawer, Tag } from 'antd';
-import ProTable, { ProColumns, TableDropdown, ActionType } from '@ant-design/pro-table';
+import { Button, Drawer, Icon, Tag } from 'antd';
+import ProTable, {
+  ProColumns,
+  TableDropdown,
+  IntlProvider,
+  jaJPIntl,
+  ActionType,
+} from '@ant-design/pro-table';
 import request from 'umi-request';
 
 interface GithubIssueItem {
@@ -63,45 +68,38 @@ interface User {
 
 const columns: ProColumns<GithubIssueItem>[] = [
   {
-    title: '序号',
+    title: '番号',
     dataIndex: 'index',
     valueType: 'indexBorder',
-    width: 64,
   },
   {
-    title: '标题',
+    title: 'タイトル',
     dataIndex: 'title',
     copyable: true,
     ellipsis: true,
-    rules: [
-      {
-        required: true,
-        message: '此项为必填项',
-      },
-    ],
     width: 200,
     hideInSearch: true,
   },
   {
-    title: '状态',
+    title: 'ステータス',
     dataIndex: 'state',
     initialValue: 'all',
     valueEnum: {
-      all: { text: '全部', status: 'Default' },
+      all: { text: 'ALL', status: 'Default' },
       open: {
-        text: '未解决',
+        text: 'Error',
         status: 'Error',
       },
       closed: {
-        text: '已解决',
+        text: 'Success',
         status: 'Success',
       },
     },
   },
   {
-    title: '标签',
+    title: 'ラベル',
     dataIndex: 'labels',
-    width: 120,
+    width: 80,
     render: (_, row) =>
       row.labels.map(({ name, id, color }) => (
         <Tag
@@ -116,24 +114,24 @@ const columns: ProColumns<GithubIssueItem>[] = [
       )),
   },
   {
-    title: '创建时间',
+    title: '作成日',
     key: 'since',
     dataIndex: 'created_at',
     valueType: 'dateTime',
-    hideInForm: true,
   },
   {
-    title: 'option',
+    title: 'オプション',
     valueType: 'option',
+    dataIndex: 'id',
     render: (text, row, _, action) => [
       <a href={row.html_url} target="_blank" rel="noopener noreferrer">
-        查看
+        show
       </a>,
       <TableDropdown
         onSelect={() => action.reload()}
         menus={[
-          { key: 'copy', name: '复制' },
-          { key: 'delete', name: '删除' },
+          { key: 'copy', name: 'copy' },
+          { key: 'delete', name: 'delete' },
         ]}
       />,
     ],
@@ -143,10 +141,9 @@ const columns: ProColumns<GithubIssueItem>[] = [
 export default () => {
   const actionRef = useRef<ActionType>();
   const [visible, setVisible] = useState(false);
-
   return (
     <>
-      <Drawer width={600} onClose={() => setVisible(false)} visible={visible}>
+      <Drawer onClose={() => setVisible(false)} visible={visible}>
         <Button
           style={{
             margin: 8,
@@ -157,7 +154,7 @@ export default () => {
             }
           }}
         >
-          刷新
+          reload
         </Button>
         <Button
           onClick={() => {
@@ -166,55 +163,54 @@ export default () => {
             }
           }}
         >
-          重置
+          reset
         </Button>
+      </Drawer>
+      <IntlProvider value={jaJPIntl}>
         <ProTable<GithubIssueItem>
           columns={columns}
-          type="form"
-          onSubmit={params => console.log(params)}
-        />
-      </Drawer>
-      <ProTable<GithubIssueItem>
-        columns={columns}
-        actionRef={actionRef}
-        request={async (params = {}) => {
-          const data = await request<GithubIssueItem[]>(
-            'https://api.github.com/repos/ant-design/ant-design-pro/issues',
-            {
-              params: {
-                ...params,
-                page: params.current,
-                per_page: params.pageSize,
+          actionRef={actionRef}
+          request={async (params = {}) => {
+            const data = await request<GithubIssueItem[]>(
+              'https://api.github.com/repos/ant-design/ant-design-pro/issues',
+              {
+                params: {
+                  ...params,
+                  page: params.current,
+                  per_page: params.pageSize,
+                },
               },
-            },
-          );
-          const totalObj = await request(
-            'https://api.github.com/repos/ant-design/ant-design-pro/issues?per_page=1',
-            {
-              params,
-            },
-          );
-          return {
-            data,
-            page: params.current,
-            success: true,
-            total: ((totalObj[0] || { number: 0 }).number - 56) as number,
-          };
-        }}
-        rowKey="id"
-        pagination={{
-          showSizeChanger: true,
-        }}
-        dateFormatter="string"
-        headerTitle="基础 Table"
-        params={{ state: 'all' }}
-        toolBarRender={() => [
-          <Button key="3" type="primary" onClick={() => setVisible(true)}>
-            <PlusOutlined />
-            新建
-          </Button>,
-        ]}
-      />
+            );
+            const totalObj = await request(
+              'https://api.github.com/repos/ant-design/ant-design-pro/issues?per_page=1',
+              {
+                params,
+              },
+            );
+            return {
+              data,
+              page: params.current,
+              success: true,
+              total: ((totalObj[0] || { number: 0 }).number - 56) as number,
+            };
+          }}
+          rowKey="id"
+          rowSelection={{}}
+          pagination={{
+            showSizeChanger: true,
+          }}
+          tableAlertRender={keys => `selected ${keys.length} rows`}
+          dateFormatter="string"
+          headerTitle="Basic Table"
+          params={{ state: 'all' }}
+          toolBarRender={() => [
+            <Button key="3" type="primary" onClick={() => setVisible(true)}>
+              <Icon type="plus" />
+              New
+            </Button>,
+          ]}
+        />
+      </IntlProvider>
     </>
   );
 };

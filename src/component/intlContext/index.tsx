@@ -1,6 +1,10 @@
 import React, { useContext } from 'react';
 import zhCN from '../../locale/zh_CN';
 import enUS from '../../locale/en_US';
+import viVN from '../../locale/vi_VN';
+import itIT from '../../locale/it_IT';
+import jaJP from '../../locale/ja_JP';
+
 
 export interface IntlType {
   locale: string;
@@ -36,8 +40,11 @@ const createIntl = (locale: string, localeMap: { [key: string]: any }): IntlType
 
 const zhCNIntl = createIntl('zh_CN', zhCN);
 const enUSIntl = createIntl('en_US', enUS);
+const viVNIntl = createIntl('vi_VN', viVN);
+const itITIntl = createIntl('it_IT', itIT);
+const jaJPIntl = createIntl('ja_JP', jaJP);
 
-export { enUSIntl, zhCNIntl };
+export { enUSIntl, zhCNIntl, viVNIntl, itITIntl, jaJPIntl };
 
 const IntlContext = React.createContext<IntlType>(zhCNIntl);
 

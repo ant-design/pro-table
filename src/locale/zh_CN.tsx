@@ -2,10 +2,14 @@ export default {
   tableFrom: {
     search: '查询',
     reset: '重置',
+    submit: '提交',
     collapsed: '展开',
     expand: '收起',
     inputPlaceholder: '请输入',
     selectPlaceholder: '请选择',
+  },
+  alert: {
+    clear: '清空',
   },
   tableToolBar: {
     leftPin: '固定到左边',
@@ -21,7 +25,8 @@ export default {
     exitFullScreen: '退出全屏',
     reload: '刷新',
     density: '密度',
-    densityLarger: '正常',
+    densityDefault: '正常',
+    densityLarger: '默认',
     densityMiddle: '中等',
     densitySmall: '紧凑',
   },

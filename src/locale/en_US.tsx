@@ -2,10 +2,14 @@ export default {
   tableFrom: {
     search: 'Query',
     reset: 'Reset',
+    submit: 'Submit',
     collapsed: 'Expand',
     expand: 'Collapse',
     inputPlaceholder: 'Please enter',
     selectPlaceholder: 'Please select',
+  },
+  alert: {
+    clear: 'Clear',
   },
   tableToolBar: {
     leftPin: 'Pin to left',
@@ -21,7 +25,8 @@ export default {
     exitFullScreen: 'Exit Full Screen',
     reload: 'Refresh',
     density: 'Density',
-    densityLarger: 'Default',
+    densityDefault: 'Default',
+    densityLarger: 'Larger',
     densityMiddle: 'Middle',
     densitySmall: 'Compact',
   },
