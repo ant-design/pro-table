@@ -326,6 +326,8 @@ const genCopyable = (dom: React.ReactNode, item: ProColumns<any>) => {
       <Typography.Paragraph
         style={{
           width: (item.width as number) - 32,
+          margin: 0,
+          padding: 0,
         }}
         copyable={item.copyable}
         ellipsis={item.ellipsis}
