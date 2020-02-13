@@ -322,15 +322,16 @@ const genEllipsis = (dom: React.ReactNode, item: ProColumns<any>, text: string) 
 const genCopyable = (dom: React.ReactNode, item: ProColumns<any>) => {
   if (item.copyable || item.ellipsis) {
     return (
-      <Typography.Text
+      <Typography.Paragraph
         style={{
           width: (item.width as number) - 32,
+          marginBottom: -1,
         }}
         copyable={item.copyable}
         ellipsis={item.ellipsis}
       >
         {dom}
-      </Typography.Text>
+      </Typography.Paragraph>
     );
   }
   return dom;
