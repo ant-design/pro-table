@@ -232,6 +232,7 @@ export interface ProTableProps<T, U extends { [key: string]: any }>
   tableAlertOptionRender?:
     | ((props: { intl: IntlType; onCleanSelected: () => void }) => React.ReactNode)
     | false;
+
   rowSelection?: TableProps<T>['rowSelection'] | false;
 
   style?: React.CSSProperties;
@@ -691,7 +692,7 @@ const ProTable = <T extends {}, U extends object>(
                   setSelectedRows([]);
                 }}
                 alertOptionRender={reset.tableAlertOptionRender}
-                alertIInfoRender={tableAlertRender}
+                alertInfoRender={tableAlertRender}
               />
             )}
             <Table<T>

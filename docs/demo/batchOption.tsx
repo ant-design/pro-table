@@ -168,7 +168,16 @@ export default () => (
     }
     tableAlertOptionRender={props => {
       const { onCleanSelected } = props;
-      return [<a>自定义</a>, <a onClick={onCleanSelected}>清空</a>];
+      return [
+        <a
+          style={{
+            marginRight: 8,
+          }}
+        >
+          自定义
+        </a>,
+        <a onClick={onCleanSelected}>清空</a>,
+      ];
     }}
     dateFormatter="string"
     headerTitle="批量操作"
