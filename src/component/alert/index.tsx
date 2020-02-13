@@ -18,7 +18,7 @@ export interface TableAlertProps<T> {
 
 const defaultAlertOptionRender = (props: { intl: IntlType; onCleanSelected: () => void }) => {
   const { intl, onCleanSelected } = props;
-  return [<a onClick={onCleanSelected}>{intl.getMessage('alert.clear', '清空')}</a>];
+  return [<a onClick={onCleanSelected} key="0">{intl.getMessage('alert.clear', '清空')}</a>];
 };
 
 const TableAlert = <T, U = {}>({
