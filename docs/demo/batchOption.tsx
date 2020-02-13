@@ -181,7 +181,6 @@ export default () => (
     }}
     dateFormatter="string"
     headerTitle="批量操作"
-    params={{ state: 'all' }}
     toolBarRender={(_, { selectedRowKeys }) => [
       <Button key="3" type="primary">
         <PlusOutlined />

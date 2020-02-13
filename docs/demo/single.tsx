@@ -207,7 +207,6 @@ export default () => {
         }}
         dateFormatter="string"
         headerTitle="基础 Table"
-        params={{ state: 'all' }}
         toolBarRender={() => [
           <Button key="3" type="primary" onClick={() => setVisible(true)}>
             <PlusOutlined />

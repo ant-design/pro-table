@@ -204,7 +204,6 @@ export default () => {
           tableAlertRender={keys => `Selezionate ${keys.length} righe`}
           dateFormatter="string"
           headerTitle="Tabella semplice"
-          params={{ state: 'all' }}
           toolBarRender={() => [
             <Button key="3" type="primary" onClick={() => setVisible(true)}>
               <PlusOutlined />

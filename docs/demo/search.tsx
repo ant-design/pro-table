@@ -168,7 +168,6 @@ export default () => (
     rowKey="id"
     dateFormatter="string"
     headerTitle="查询 Table"
-    params={{ state: 'all' }}
     toolBarRender={() => [
       <Button key="3" type="primary">
         <PlusOutlined />

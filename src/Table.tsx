@@ -644,12 +644,14 @@ const ProTable = <T extends {}, U extends object>(
             type={props.type}
             formRef={formRef}
             onSubmit={value => {
-              setFormSearch(beforeSearchSubmit(value));
+              setFormSearch(
+                beforeSearchSubmit({
+                  ...value,
+                  _timestamp: Date.now(),
+                }),
+              );
               // back first page
               action.resetPageIndex();
-              setTimeout(() => {
-                action.reload();
-              }, 0);
 
               if (props.onSubmit) {
                 props.onSubmit(value);
@@ -657,9 +659,6 @@ const ProTable = <T extends {}, U extends object>(
             }}
             onReset={() => {
               setFormSearch(beforeSearchSubmit({}));
-              setTimeout(() => {
-                action.reload();
-              }, 0);
               // back first page
               action.resetPageIndex();
             }}

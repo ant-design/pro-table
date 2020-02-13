@@ -125,7 +125,6 @@ export default () => (
       }}
       dateFormatter="string"
       headerTitle="valueType 设置"
-      params={{ state: 'all' }}
       toolBarRender={() => [
         <Button key="3" type="primary">
           <PlusOutlined />
