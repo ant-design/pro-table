@@ -15,6 +15,7 @@ import { getProgressStatus } from './component/util';
  */
 export type ProColumnsValueType =
   | 'money'
+  | 'textarea'
   | 'option'
   | 'date'
   | 'dateTime'

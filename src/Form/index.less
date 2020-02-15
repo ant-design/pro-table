@@ -12,6 +12,8 @@
 
   &.@{table-form-prefix-cls} {
     margin: 0;
+    padding: 0 16px;
+    overflow: unset;
   }
 
   .@{ant-prefix}-form-item-label {
@@ -42,10 +44,12 @@
   }
 
   &-form-option {
+    .@{ant-prefix}-form-item {
+      margin: 0;
+    }
     .@{ant-prefix}-form-item-label {
       opacity: 0;
     }
-
     .@{ant-prefix}-form-item-control-input {
       justify-content: flex-start;
     }

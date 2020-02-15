@@ -5,7 +5,7 @@ import { Table, ConfigProvider, Card, Typography, Empty, Tooltip } from 'antd';
 import classNames from 'classnames';
 import useMergeValue from 'use-merge-value';
 import { ColumnsType, TablePaginationConfig, TableProps } from 'antd/es/table';
-import { FormItemProps } from 'antd/es/form';
+import { FormItemProps, FormProps } from 'antd/es/form';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
 
 import { IntlProvider, IntlConsumer, IntlType } from './component/intlContext';
@@ -209,6 +209,13 @@ export interface ProTableProps<T, U extends { [key: string]: any }>
    * 是否显示搜索表单
    */
   search?: boolean | SearchConfig;
+
+  /**
+   * type="form" 和 搜索表单 的 Form 配置
+   * 基本配置与 antd Form 相同
+   *  但是劫持了 form 的配置
+   */
+  form?: Omit<FormProps, 'form'>;
   /**
    * 如何格式化日期
    * 暂时只支持 moment
@@ -641,6 +648,7 @@ const ProTable = <T extends {}, U extends object>(
       <div className={className} id="ant-design-pro-table" style={style} ref={rootRef}>
         {(search || type === 'form') && (
           <FormSearch<U>
+            {...reset}
             type={props.type}
             formRef={formRef}
             onSubmit={value => {
