@@ -1,12 +1,19 @@
 @import '~antd/es/style/themes/default.less';
 
-@form-search-prefix-cls: ~'@{ant-prefix}-pro-table-form-search';
+@table-search-prefix-cls: ~'@{ant-prefix}-pro-table-search';
 
-.@{form-search-prefix-cls} {
+@table-form-prefix-cls: ~'@{ant-prefix}-pro-table-form';
+
+.@{table-search-prefix-cls} {
   margin-bottom: 24px;
   padding: 16px;
   overflow: hidden;
   background: @component-background;
+
+  &.@{table-form-prefix-cls} {
+    margin: 0;
+  }
+
   .@{ant-prefix}-form-item-label {
     min-width: 80px;
     text-align: right;
@@ -33,6 +40,7 @@
       text-align: right;
     }
   }
+
   &-form-option {
     .@{ant-prefix}-form-item-label {
       opacity: 0;
@@ -45,7 +53,7 @@
 }
 
 @media (max-width: 575px) {
-  .@{form-search-prefix-cls} {
+  .@{table-search-prefix-cls} {
     .@{ant-prefix}-form-item {
       display: inline;
     }

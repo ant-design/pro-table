@@ -81,7 +81,7 @@
     "enzyme-to-json": "^3.4.3",
     "eslint": "^6.8.0",
     "father": "^2.26.0",
-    "father-doc": "1.0.0-alpha.12",
+    "father-doc": "^1.0.0-alpha.20",
     "jsdom-global": "^3.0.2",
     "less-loader": "^5.0.0",
     "np": "^5.1.3",

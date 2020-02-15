@@ -23,7 +23,7 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 | request | 一个获得 dataSource 的方法 | `(params?: {pageSize: number;current: number;[key: string]: any;}) => Promise<RequestData<T>>` | - |
 | postData | 对通过 url 获取的数据进行一些处理 | `(data: T[]) => T[]` | - |
 | defaultData | 默认的数据 | `T[]` | - |
-| actionRef | get table action | `React.MutableRefObject<ActionType> | ((actionRef: ActionType) => void)` | - |
+| actionRef | get table action | `React.MutableRefObject<ActionType> \| ((actionRef: ActionType) => void)` | - |
 | toolBarRender | 渲染工具栏，支持返回一个 dom 数组，会自动增加 margin-right | `(action: UseFetchDataAction<RequestData<T>>) => React.ReactNode[]` | - |
 | onLoad | 数据加载完成后触发,会多次触发 | `(dataSource: T[]) => void` | - |
 | onRequestError | 数据加载失败时触发 | `(e: Error) => void` | - |
@@ -56,7 +56,7 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 
 有些时候我们要触发 table 的 reload 等操作，action 可以帮助我们做到这一点。
 
-```tsx
+```tsx | pure
 interface ActionType {
   reload: () => void;
   fetchMore: () => void;
@@ -92,7 +92,7 @@ ref.reset();
 
 当前列值的枚举
 
-```typescript
+```typescript | pure
 interface IValueEnum {
   [key: string]:
     | React.ReactNode
@@ -112,7 +112,9 @@ yarn add @ant-design/pro-table
 ```
 
 ```tsx
+import React, { useState } from 'react';
 import ProTable, { ProColumns } from '@ant-design/pro-table';
+import { Input, Button } from 'antd';
 
 const columns: ProColumns[] = [
   {
@@ -154,48 +156,38 @@ const columns: ProColumns[] = [
   },
 ];
 
-export default () => (
-  <ProTable
-    size="small"
-    columns={columns}
-    url={request}
-    rowKey="key"
-    params={{ keyword }}
-    toolBarRender={action => [
-      <Input.Search
-        style={{
-          width: 200,
-        }}
-        onSearch={value => setKeyword(value)}
-      />,
-      <Button
-        onClick={() => {
-          action.reload();
-        }}
-        type="primary"
-        style={{
-          marginRight: 8,
-        }}
-      >
-        刷新
-      </Button>,
-      <Button
-        onClick={() => {
-          action.resetPageIndex();
-        }}
-        type="default"
-        style={{
-          marginRight: 8,
-        }}
-      >
-        回到第一页
-      </Button>,
-    ]}
-    pagination={{
-      defaultCurrent: 10,
-    }}
-  />
-);
+export default () => {
+  const [keywords, setKeywords] = useState('');
+  return (
+    <ProTable<{}, { keywords: string }>
+      size="small"
+      columns={columns}
+      request={() => ({
+        data: [
+          {
+            name: 'Jack',
+            age: 12,
+            date: '2020-01-02',
+          },
+        ],
+        success: true,
+      })}
+      rowKey="name"
+      params={{ keywords }}
+      toolBarRender={action => [
+        <Input.Search
+          style={{
+            width: 200,
+          }}
+          onSearch={value => setKeywords(value)}
+        />,
+      ]}
+      pagination={{
+        defaultCurrent: 10,
+      }}
+    />
+  );
+};
 ```
 
 ## LICENSE

@@ -56,7 +56,7 @@ pro-table is encapsulated in an antd table, supports some presets, and encapsula
 
 Sometimes we need to trigger the reload of the table and other actions, and actions can help us do this.
 
-```tsx
+```tsx | pure
 interface ActionType {
   reload: () => void;
   fetchMore: () => void;
@@ -88,7 +88,7 @@ ref.reset();
 
 ### valueEnums
 
-```typescript
+```typescript | pure
 interface IValueEnum {
   [key: string]:
     | React.ReactNode
@@ -108,13 +108,19 @@ yarn add @ant-design/pro-table
 ```
 
 ```tsx
+import React, { useState } from 'react';
 import ProTable, { ProColumns } from '@ant-design/pro-table';
+import { Input, Button } from 'antd';
 
 const columns: ProColumns[] = [
   {
     title: 'Name',
     dataIndex: 'name',
     copyable: true,
+  },
+  {
+    title: 'Age',
+    dataIndex: 'age',
   },
   {
     title: 'date',
@@ -134,38 +140,50 @@ const columns: ProColumns[] = [
       >
         delete
       </a>,
+      <a
+        onClick={() => {
+          window.alert('确认刷新？');
+          action.reload();
+        }}
+      >
+        reload
+      </a>,
     ],
   },
 ];
 
-export default () => (
-  <ProTable
-    size="small"
-    columns={columns}
-    url={request}
-    rowKey="key"
-    params={{}}
-    toolBarRender={action => [
-      <Input.Search
-        style={{
-          width: 200,
-        }}
-        onSearch={value => setKeyword(value)}
-      />,
-      <Button
-        onClick={() => {
-          action.reload();
-        }}
-        type="primary"
-        style={{
-          marginRight: 8,
-        }}
-      >
-        reload
-      </Button>,
-    ]}
-  />
-);
+export default () => {
+  const [keywords, setKeywords] = useState('');
+  return (
+    <ProTable<{}, { keywords: string }>
+      size="small"
+      columns={columns}
+      request={() => ({
+        data: [
+          {
+            name: 'Jack',
+            age: 12,
+            date: '2020-01-02',
+          },
+        ],
+        success: true,
+      })}
+      rowKey="name"
+      params={{ keywords }}
+      toolBarRender={action => [
+        <Input.Search
+          style={{
+            width: 200,
+          }}
+          onSearch={value => setKeywords(value)}
+        />,
+      ]}
+      pagination={{
+        defaultCurrent: 10,
+      }}
+    />
+  );
+};
 ```
 
 ## LICENSE

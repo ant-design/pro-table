@@ -360,10 +360,13 @@ const FormSearch = <T, U = {}>({
   return (
     <ConfigConsumer>
       {({ getPrefixCls }: ConfigConsumerProps) => {
-        const className = getPrefixCls('pro-table-form-search');
+        const className = getPrefixCls('pro-table-search');
+        const formClassName = getPrefixCls('pro-table-form');
         return (
           <div
-            className={className}
+            className={classNames(className, {
+              [formClassName]: type === 'form',
+            })}
             style={{
               height: formHeight,
             }}
