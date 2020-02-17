@@ -575,14 +575,14 @@ const ProTable = <T extends {}, U extends object>(
    * tableColumn 变化的时候更新一下，这个参数将会用于渲染
    */
   useDeepCompareEffect(() => {
-    const keys = counter.sortKeyColumns.join('-');
+    const keys = counter.sortKeyColumns.join(',');
     let tableColumn = genColumnList<T>(propsColumns, counter.columnsMap);
     if (keys.length > 0) {
       // 用于可视化的排序
       tableColumn = tableColumn.sort((a, b) => {
         // 如果没有index，在 dataIndex 或者 key 不存在的时候他会报错
-        const aKey = `${genColumnKey(a.key, a.dataIndex) || a.index}`;
-        const bKey = `${genColumnKey(b.key, b.dataIndex) || b.index}`;
+        const aKey = `${genColumnKey(a.key, a.dataIndex) || a.index}_${a.index}`;
+        const bKey = `${genColumnKey(b.key, b.dataIndex) || b.index}_${b.index}`;
         return keys.indexOf(aKey) - keys.indexOf(bKey);
       });
     }
@@ -590,7 +590,10 @@ const ProTable = <T extends {}, U extends object>(
       counter.setColumns(tableColumn);
       if (keys.length < 1) {
         counter.setSortKeyColumns(
-          tableColumn.map((item, index) => genColumnKey(item.key, item.dataIndex) || `${index}`),
+          tableColumn.map((item, index) => {
+            const key = genColumnKey(item.key, item.dataIndex) || `${index}`;
+            return `${key}_${item.index}`;
+          }),
         );
       }
     }
