@@ -411,7 +411,7 @@ const FormSearch = <T, U = {}>({
       const key = genColumnKey(rest.key, dataIndex);
       return (
         <Col {...colConfig} key={key}>
-          <Form.Item labelAlign="right" label={item.title} name={key} {...(isForm && rest)}>
+          <Form.Item labelAlign="right" label={item.title} {...(isForm && rest)}>
             {form.getFieldDecorator(`${key}`, {
               initialValue: item.initialValue,
             })(<FromInputRender item={item} type={type} />)}

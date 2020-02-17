@@ -648,7 +648,7 @@ const ProTable = <T extends {}, U extends object>(
     >
       <div className={className} id="ant-design-pro-table" style={style} ref={rootRef}>
         {(search || type === 'form') && (
-          <FormSearch<U>
+          <FormSearch
             {...reset}
             type={props.type}
             formRef={formRef}
