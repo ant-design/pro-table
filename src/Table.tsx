@@ -571,6 +571,22 @@ const ProTable = <T extends {}, U extends object>(
     }
   }, []);
 
+  useDeepCompareEffect(() => {
+    const keys = counter.sortKeyColumns.join(',');
+    const tableColumn = genColumnList<T>(propsColumns, counter.columnsMap);
+    if (tableColumn && tableColumn.length > 0) {
+      counter.setColumns(tableColumn);
+      if (keys.length < 1) {
+        counter.setSortKeyColumns(
+          tableColumn.map((item, index) => {
+            const key = genColumnKey(item.key, item.dataIndex) || `${index}`;
+            return `${key}_${item.index}`;
+          }),
+        );
+      }
+    }
+  }, [propsColumns]);
+
   /**
    * tableColumn 变化的时候更新一下，这个参数将会用于渲染
    */
@@ -588,16 +604,8 @@ const ProTable = <T extends {}, U extends object>(
     }
     if (tableColumn && tableColumn.length > 0) {
       counter.setColumns(tableColumn);
-      if (keys.length < 1) {
-        counter.setSortKeyColumns(
-          tableColumn.map((item, index) => {
-            const key = genColumnKey(item.key, item.dataIndex) || `${index}`;
-            return `${key}_${item.index}`;
-          }),
-        );
-      }
     }
-  }, [propsColumns, counter.columnsMap, counter.sortKeyColumns.join('-')]);
+  }, [counter.columnsMap, counter.sortKeyColumns.join('-')]);
 
   const [selectedRowKeys, setSelectedRowKeys] = useMergeValue<React.ReactText[]>([], {
     value: propsRowSelection ? propsRowSelection.selectedRowKeys : undefined,
