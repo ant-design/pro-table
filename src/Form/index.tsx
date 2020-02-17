@@ -145,6 +145,21 @@ const FromInputRender: React.FC<{
       />
     );
   }
+  if (valueType === 'digit') {
+    return (
+      <InputNumber
+        ref={ref}
+        min={0}
+        precision={2}
+        placeholder={intl.getMessage('tableFrom.inputPlaceholder', '请输入')}
+        style={{
+          width: '100%',
+        }}
+        {...rest}
+        {...item.formItemProps}
+      />
+    );
+  }
   if (valueType === 'money') {
     return (
       <InputNumber
@@ -157,7 +172,7 @@ const FromInputRender: React.FC<{
           return '';
         }}
         parser={value => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
-        placeholder={intl.getMessage('tableFrom.selectPlaceholder', '请选择')}
+        placeholder={intl.getMessage('tableFrom.inputPlaceholder', '请输入')}
         precision={2}
         style={{
           width: '100%',

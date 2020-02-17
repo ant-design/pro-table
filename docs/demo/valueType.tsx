@@ -54,6 +54,13 @@ const columns: ProColumns<TableListItem>[] = [
     width: 150,
   },
   {
+    title: '数字',
+    dataIndex: 'money',
+    key: 'digit',
+    valueType: 'digit',
+    width: 150,
+  },
+  {
     title: '状态',
     dataIndex: 'status',
     initialValue: 'all',

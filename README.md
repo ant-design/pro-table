@@ -79,14 +79,20 @@ ref.reset();
 
 ### valueType
 
-- money 转化值为金额 eg. ¥10,000.26
-- date 日期 eg. 2019-11-16
-- dateTime 日期和时间 eg. 2019-11-16 12:50:00
-- time 时间 eg. 12:50:00
-- option 操作项，会自动增加 marginRight，只支持一个数组
-- text 默认值，不做任何处理
-- index 序号列
-- indexBorder 带 border 的序号列
+| 类型 | 描述 | 示例 |
+| --- | --- | --- |
+| money | 转化值为金额 | ¥10,000.26 |
+| date | 日期 | 2019-11-16 |
+| dateTime | 日期和时间 | 2019-11-16 12:50:00 |
+| time | 时间 | 12:50:00 |
+| option | 操作项，会自动增加 marginRight，只支持一个数组,表单中会自动忽略 | `[<a>操作a</a>,<a>操作b</a>]` |
+| text | 默认值，不做任何处理 | - |
+| textarea | 与 text 相同， form 转化时会转为 textarea 组件 | - |
+| index | 序号列 | - |
+| indexBorder | 带 border 的序号列 | - |
+| progress | 进度条 | - |
+| digit | 单纯的数字，form 转化时会转为 inputNumber | - |
+| progress | 进度条 | - |
 
 ### valueEnum
 

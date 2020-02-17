@@ -79,12 +79,20 @@ ref.reset();
 
 ### valueType
 
-- money conversion value is the amount of eg. ¥10,000.26
-- date date eg. 2019-11-16
-- dateTime date and time eg. 2019-11-16 12:50:00
-- time time eg. 12:50:00
-- option operation item, it will automatically increase marginRight, only one array is supported.
-- text default value, no processing
+| Type | Description | Examples |
+| --- | --- | --- |
+| money | Conversion value is amount | ¥ 10,000.26 |
+| date | Date | 2019-11-16 |
+| dateTime | Date and Time | 2019-11-16 12:50:00 |
+| time | time | 12:50:00 |
+| option | The operation item will automatically increase the marginRight. Only one array is supported, and it will be automatically ignored in the form. |
+| text | Default value, no processing | - |
+| textarea | Same as text, form will be converted to textarea component when converting | - |
+| index | serial number | - |
+| indexBorder | ordinal column with border | - |
+| progress | progress bar | - |
+| digit | Simple digit, which will be converted to inputNumber when form is converted | - |
+| progress | progress bar | - |
 
 ### valueEnums
 

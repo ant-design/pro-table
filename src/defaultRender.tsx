@@ -23,7 +23,8 @@ export type ProColumnsValueType =
   | 'text'
   | 'index'
   | 'indexBorder'
-  | 'progress';
+  | 'progress'
+  | 'digit';
 
 // function return type
 export type ProColumnsValueObjectType = {
