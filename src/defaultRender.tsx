@@ -8,7 +8,9 @@ import { getProgressStatus } from './component/util';
  * money 金额
  * option 操作 需要返回一个数组
  * date 日期 YYYY-MM-DD
+ * dateRange 日期范围 YYYY-MM-DD[]
  * dateTime 日期和时间 YYYY-MM-DD HH:mm:ss
+ * dateTimeRange 范围日期和时间 YYYY-MM-DD HH:mm:ss[]
  * time: 时间 HH:mm:ss
  * index：序列
  * progress: 进度条
@@ -18,6 +20,8 @@ export type ProColumnsValueType =
   | 'textarea'
   | 'option'
   | 'date'
+  | 'dateRange'
+  | 'dateTimeRange'
   | 'dateTime'
   | 'time'
   | 'text'
@@ -79,7 +83,7 @@ const defaultRenderTextByObject = (text: string | number, value: ProColumnsValue
  * @param valueType
  */
 const defaultRenderText = <T, U>(
-  text: string | number,
+  text: string | number | React.ReactText[],
   valueType: ProColumnsValueType | ProColumnsValueTypeFunction<T>,
   index: number,
   item?: T,
@@ -92,7 +96,7 @@ const defaultRenderText = <T, U>(
       return defaultRenderText(text, valueType, index);
     }
     if (typeof value === 'object') {
-      return defaultRenderTextByObject(text, value);
+      return defaultRenderTextByObject(text as string, value);
     }
   }
   /**
@@ -105,7 +109,7 @@ const defaultRenderText = <T, U>(
     if (typeof text === 'string') {
       return moneyIntl.format(parseFloat(text));
     }
-    return moneyIntl.format(text);
+    return moneyIntl.format(text as number);
   }
 
   /**
@@ -114,12 +118,36 @@ const defaultRenderText = <T, U>(
   if (valueType === 'date' && text) {
     return moment(text).format('YYYY-MM-DD');
   }
+  /**
+   *如果是日期范围的值
+   */
+  if (valueType === 'dateRange' && text && Array.isArray(text)) {
+    return (
+      <div>
+        {text.map(t => (
+          <div>{moment(t).format('YYYY-MM-DD')}</div>
+        ))}
+      </div>
+    );
+  }
 
   /**
    *如果是日期加时间类型的值
    */
   if (valueType === 'dateTime' && text) {
     return moment(text).format('YYYY-MM-DD HH:mm:ss');
+  }
+  /**
+   *如果是日期加时间类型的值的值
+   */
+  if (valueType === 'dateTimeRange' && text && Array.isArray(text)) {
+    return (
+      <div>
+        {text.map(t => (
+          <div>{moment(t).format('YYYY-MM-DD HH:mm:ss')}</div>
+        ))}
+      </div>
+    );
   }
 
   /**

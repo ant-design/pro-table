@@ -132,6 +132,41 @@ const FromInputRender: React.FC<{
       />
     );
   }
+
+  if (valueType === 'dateRange') {
+    return (
+      <DatePicker.RangePicker
+        ref={ref}
+        placeholder={[
+          intl.getMessage('tableFrom.selectPlaceholder', '请选择'),
+          intl.getMessage('tableFrom.selectPlaceholder', '请选择'),
+        ]}
+        style={{
+          width: '100%',
+        }}
+        {...rest}
+        {...item.formItemProps}
+      />
+    );
+  }
+  if (valueType === 'dateTimeRange') {
+    return (
+      <DatePicker.RangePicker
+        ref={ref}
+        showTime
+        placeholder={[
+          intl.getMessage('tableFrom.selectPlaceholder', '请选择'),
+          intl.getMessage('tableFrom.selectPlaceholder', '请选择'),
+        ]}
+        style={{
+          width: '100%',
+        }}
+        {...rest}
+        {...item.formItemProps}
+      />
+    );
+  }
+
   if (valueType === 'time') {
     return (
       <TimePicker
