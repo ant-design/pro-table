@@ -120,7 +120,7 @@ export function getProgressStatus(text: number): 'success' | 'exception' | 'norm
  * @param key
  * @param dataIndex
  */
-export const genColumnKey = (key?: React.ReactText | undefined, dataIndex?: string) => {
+export const genColumnKey = (key?: React.ReactText | undefined, dataIndex?: string | number) => {
   if (key) {
     return key;
   }
