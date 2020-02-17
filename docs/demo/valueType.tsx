@@ -18,6 +18,7 @@ export interface TableListItem {
   createdAt: number;
   progress: number;
   money: number;
+  createdAtRange: number[];
 }
 const tableListDataSource: TableListItem[] = [];
 
@@ -28,6 +29,10 @@ for (let i = 0; i < 10; i += 1) {
     status: valueEnum[Math.floor(Math.random() * 10) % 4],
     updatedAt: Date.now() - Math.floor(Math.random() * 1000),
     createdAt: Date.now() - Math.floor(Math.random() * 2000),
+    createdAtRange: [
+      Date.now() - Math.floor(Math.random() * 2000),
+      Date.now() - Math.floor(Math.random() * 2000),
+    ],
     money: Math.floor(Math.random() * 2000) * i,
     progress: Math.ceil(Math.random() * 100) + 1,
   });
@@ -54,6 +59,13 @@ const columns: ProColumns<TableListItem>[] = [
     width: 150,
   },
   {
+    title: '数字',
+    dataIndex: 'money',
+    key: 'digit',
+    valueType: 'digit',
+    width: 150,
+  },
+  {
     title: '状态',
     dataIndex: 'status',
     initialValue: 'all',
@@ -72,6 +84,20 @@ const columns: ProColumns<TableListItem>[] = [
     dataIndex: 'createdAt',
     width: 200,
     valueType: 'dateTime',
+  },
+  {
+    title: '日期区间',
+    key: 'createdAtRange',
+    dataIndex: 'createdAtRange',
+    width: 200,
+    valueType: 'dateRange',
+  },
+  {
+    title: '时间区间',
+    key: 'createdAtRange',
+    dataIndex: 'createdAtRange',
+    width: 200,
+    valueType: 'dateTimeRange',
   },
   {
     title: '进度',
@@ -125,7 +151,6 @@ export default () => (
       }}
       dateFormatter="string"
       headerTitle="valueType 设置"
-      params={{ state: 'all' }}
       toolBarRender={() => [
         <Button key="3" type="primary">
           <PlusOutlined />

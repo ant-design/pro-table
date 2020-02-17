@@ -28,6 +28,7 @@ import defaultRenderText, {
   ProColumnsValueTypeFunction,
 } from './defaultRender';
 import { DensitySize } from './component/toolBar/DensityIcon';
+import { FormProps } from 'antd/es/form';
 
 type TableRowSelection = TableProps<any>['rowSelection'];
 
@@ -118,8 +119,14 @@ export interface ProColumns<T = unknown> extends Omit<ColumnProps<T>, 'render' |
    * 在 table 中隐藏
    */
   hideInTable?: boolean;
+
   /**
-   * from 的排序
+   * 在新建表单中删除
+   */
+  hideInForm?: boolean;
+
+  /**
+   * form 的排序
    */
   order?: number;
 }
@@ -200,6 +207,13 @@ export interface ProTableProps<T, U extends { [key: string]: any }>
    * 是否显示搜索表单
    */
   search?: boolean | SearchConfig;
+
+  /**
+   * type="form" 和 搜索表单 的 Form 配置
+   * 基本配置与 antd Form 相同
+   *  但是劫持了 form 的配置
+   */
+  form?: Omit<FormProps, 'form'>;
   /**
    * 如何格式化日期
    * 暂时只支持 moment
@@ -223,6 +237,7 @@ export interface ProTableProps<T, U extends { [key: string]: any }>
   tableAlertOptionRender?:
     | ((props: { intl: IntlType; onCleanSelected: () => void }) => React.ReactNode)
     | false;
+
   rowSelection?: TableProps<T>['rowSelection'] | false;
 
   style?: React.CSSProperties;
@@ -315,7 +330,9 @@ const genCopyable = (dom: React.ReactNode, item: ProColumns<any>) => {
     return (
       <Typography.Paragraph
         style={{
-          width: (item.width as number) - 32,
+          width: item.width && (item.width as number) - 32,
+          margin: 0,
+          padding: 0,
         }}
         copyable={item.copyable}
         ellipsis={item.ellipsis}
@@ -556,14 +573,14 @@ const ProTable = <T extends {}, U extends object>(
    * tableColumn 变化的时候更新一下，这个参数将会用于渲染
    */
   useDeepCompareEffect(() => {
-    const keys = counter.sortKeyColumns.join('-');
+    const keys = counter.sortKeyColumns.join(',');
     let tableColumn = genColumnList<T>(propsColumns, counter.columnsMap);
     if (keys.length > 0) {
       // 用于可视化的排序
       tableColumn = tableColumn.sort((a, b) => {
         // 如果没有index，在 dataIndex 或者 key 不存在的时候他会报错
-        const aKey = `${genColumnKey(a.key, a.dataIndex) || a.index}`;
-        const bKey = `${genColumnKey(b.key, b.dataIndex) || b.index}`;
+        const aKey = `${genColumnKey(a.key, a.dataIndex) || a.index}_${a.index}`;
+        const bKey = `${genColumnKey(b.key, b.dataIndex) || b.index}_${b.index}`;
         return keys.indexOf(aKey) - keys.indexOf(bKey);
       });
     }
@@ -571,7 +588,10 @@ const ProTable = <T extends {}, U extends object>(
       counter.setColumns(tableColumn);
       if (keys.length < 1) {
         counter.setSortKeyColumns(
-          tableColumn.map((item, index) => genColumnKey(item.key, item.dataIndex) || `${index}`),
+          tableColumn.map((item, index) => {
+            const key = genColumnKey(item.key, item.dataIndex) || `${index}`;
+            return `${key}_${item.index}`;
+          }),
         );
       }
     }
@@ -628,13 +648,21 @@ const ProTable = <T extends {}, U extends object>(
     >
       <div className={className} id="ant-design-pro-table" style={style} ref={rootRef}>
         {(search || type === 'form') && (
-          <FormSearch
+          <FormSearch<U>
+            {...reset}
             type={props.type}
             formRef={formRef}
+            formConfig={props.form}
             onSubmit={value => {
-              setFormSearch(beforeSearchSubmit(value));
+              setFormSearch(
+                beforeSearchSubmit({
+                  ...value,
+                  _timestamp: Date.now(),
+                }),
+              );
               // back first page
               action.resetPageIndex();
+
               if (props.onSubmit) {
                 props.onSubmit(value);
               }
@@ -680,7 +708,7 @@ const ProTable = <T extends {}, U extends object>(
                   setSelectedRows([]);
                 }}
                 alertOptionRender={reset.tableAlertOptionRender}
-                alertIInfoRender={tableAlertRender}
+                alertInfoRender={tableAlertRender}
               />
             )}
             <Table<T>

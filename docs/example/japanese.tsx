@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Button, Drawer, Icon, Tag } from 'antd';
+import { Button, Drawer, Tag } from 'antd';
 import ProTable, {
   ProColumns,
   TableDropdown,
@@ -202,10 +202,8 @@ export default () => {
           tableAlertRender={keys => `selected ${keys.length} rows`}
           dateFormatter="string"
           headerTitle="Basic Table"
-          params={{ state: 'all' }}
           toolBarRender={() => [
             <Button key="3" type="primary" onClick={() => setVisible(true)}>
-              <Icon type="plus" />
               New
             </Button>,
           ]}

@@ -159,7 +159,7 @@ export default () => (
     rowKey="id"
     rowSelection={{}}
     tableAlertRender={(keys, rows) =>
-      `当前共选中${keys.length} 项，共有 ${rows.reduce((pre, item) => {
+      `当前共选中 ${keys.length} 项，共有 ${rows.reduce((pre, item) => {
         if (item.state === 'open') {
           return pre + 1;
         }
@@ -168,11 +168,19 @@ export default () => (
     }
     tableAlertOptionRender={props => {
       const { onCleanSelected } = props;
-      return [<a>自定义</a>, <a onClick={onCleanSelected}>清空</a>];
+      return [
+        <a
+          style={{
+            marginRight: 8,
+          }}
+        >
+          自定义
+        </a>,
+        <a onClick={onCleanSelected}>清空</a>,
+      ];
     }}
     dateFormatter="string"
     headerTitle="批量操作"
-    params={{ state: 'all' }}
     toolBarRender={(_, { selectedRowKeys }) => [
       <Button key="3" type="primary">
         <PlusOutlined />

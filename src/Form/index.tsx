@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DownOutlined } from '@ant-design/icons';
-import { FormComponentProps, FormItemProps } from 'antd/es/form';
+import { FormComponentProps, FormItemProps, FormProps } from 'antd/es/form';
 import { Input, Form, Row, Col, TimePicker, InputNumber, DatePicker, Select, Button } from 'antd';
 import moment, { Moment } from 'moment';
 import RcResizeObserver from 'rc-resize-observer';
@@ -57,6 +57,7 @@ const defaultSearch: SearchConfig = {
 export interface TableFormItem<T> extends Omit<FormItemProps, 'children'> {
   onSubmit?: (value: T) => void;
   onReset?: () => void;
+  formConfig?: Omit<FormProps, 'form'>;
   type?: 'form' | 'list' | 'table' | 'cardList' | undefined;
   dateFormatter?: 'string' | 'number' | false;
   search?: boolean | SearchConfig;
@@ -69,8 +70,10 @@ export interface TableFormItem<T> extends Omit<FormItemProps, 'children'> {
 const FromInputRender: React.FC<{
   item: ProColumns<any>;
   value?: any;
+  type: 'form' | 'list' | 'table' | 'cardList' | undefined;
   onChange?: (value: any) => void;
 }> = React.forwardRef(({ item, ...rest }, ref: any) => {
+  const { valueType } = item;
   const intl = useIntl();
   /**
    * 自定义 render
@@ -78,7 +81,7 @@ const FromInputRender: React.FC<{
   if (item.renderFormItem) {
     return item.renderFormItem(item, rest) as any;
   }
-  if (!item.valueType || item.valueType === 'text') {
+  if (!valueType || valueType === 'text') {
     const { valueEnum } = item;
     if (valueEnum) {
       return (
@@ -104,7 +107,7 @@ const FromInputRender: React.FC<{
       />
     );
   }
-  if (item.valueType === 'date') {
+  if (valueType === 'date') {
     return (
       <DatePicker
         ref={ref}
@@ -118,7 +121,7 @@ const FromInputRender: React.FC<{
     );
   }
 
-  if (item.valueType === 'dateTime') {
+  if (valueType === 'dateTime') {
     return (
       <DatePicker
         showTime
@@ -132,7 +135,42 @@ const FromInputRender: React.FC<{
       />
     );
   }
-  if (item.valueType === 'time') {
+
+  if (valueType === 'dateRange') {
+    return (
+      <DatePicker.RangePicker
+        ref={ref}
+        placeholder={[
+          intl.getMessage('tableFrom.selectPlaceholder', '请选择'),
+          intl.getMessage('tableFrom.selectPlaceholder', '请选择'),
+        ]}
+        style={{
+          width: '100%',
+        }}
+        {...rest}
+        {...item.formItemProps}
+      />
+    );
+  }
+  if (valueType === 'dateTimeRange') {
+    return (
+      <DatePicker.RangePicker
+        ref={ref}
+        showTime
+        placeholder={[
+          intl.getMessage('tableFrom.selectPlaceholder', '请选择'),
+          intl.getMessage('tableFrom.selectPlaceholder', '请选择'),
+        ]}
+        style={{
+          width: '100%',
+        }}
+        {...rest}
+        {...item.formItemProps}
+      />
+    );
+  }
+
+  if (valueType === 'time') {
     return (
       <TimePicker
         ref={ref}
@@ -145,7 +183,22 @@ const FromInputRender: React.FC<{
       />
     );
   }
-  if (item.valueType === 'money') {
+  if (valueType === 'digit') {
+    return (
+      <InputNumber
+        ref={ref}
+        min={0}
+        precision={2}
+        placeholder={intl.getMessage('tableFrom.inputPlaceholder', '请输入')}
+        style={{
+          width: '100%',
+        }}
+        {...rest}
+        {...item.formItemProps}
+      />
+    );
+  }
+  if (valueType === 'money') {
     return (
       <InputNumber
         ref={ref}
@@ -157,7 +210,7 @@ const FromInputRender: React.FC<{
           return '';
         }}
         parser={value => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
-        placeholder={intl.getMessage('tableFrom.selectPlaceholder', '请选择')}
+        placeholder={intl.getMessage('tableFrom.inputPlaceholder', '请输入')}
         precision={2}
         style={{
           width: '100%',
@@ -167,7 +220,16 @@ const FromInputRender: React.FC<{
       />
     );
   }
-
+  if (valueType === 'textarea' && rest.type === 'form') {
+    return (
+      <Input.TextArea
+        placeholder={intl.getMessage('tableFrom.inputPlaceholder', '请输入')}
+        ref={ref}
+        {...rest}
+        {...item.formItemProps}
+      />
+    );
+  }
   return (
     <Input
       placeholder={intl.getMessage('tableFrom.inputPlaceholder', '请输入')}
@@ -253,6 +315,7 @@ const FormSearch = <T, U = {}>({
   search: propsSearch,
   type,
   form,
+  formConfig = {},
 }: TableFormItem<T>) => {
   const intl = useIntl();
   const searchConfig = getDefaultSearch(propsSearch, intl, type === 'form');
@@ -269,8 +332,10 @@ const FormSearch = <T, U = {}>({
 
   const windowSize = useMediaQuery();
   const [colSize, setColSize] = useState(getSpanConfig(span || 8, windowSize));
-  const [formHeight, setFormHeight] = useState<number>(88);
+  const [formHeight, setFormHeight] = useState<number | undefined>(88);
   const rowNumber = 24 / colSize || 3;
+
+  const isForm = type === 'form';
 
   const submit = () => {
     const value = form.getFieldsValue();
@@ -307,14 +372,24 @@ const FormSearch = <T, U = {}>({
   }, counter.proColumns);
 
   const columnsList = counter.proColumns
-    .filter(
-      item =>
-        item.valueType !== 'index' &&
-        item.valueType !== 'indexBorder' &&
-        item.valueType !== 'option' &&
-        !item.hideInSearch &&
-        (item.key || item.dataIndex),
-    )
+    .filter(item => {
+      const { valueType } = item;
+      if (item.hideInSearch && type !== 'form') {
+        return false;
+      }
+      if (type === 'form' && item.hideInForm) {
+        return false;
+      }
+      if (
+        valueType !== 'index' &&
+        valueType !== 'indexBorder' &&
+        valueType !== 'option' &&
+        (item.key || item.dataIndex)
+      ) {
+        return true;
+      }
+      return false;
+    })
     .sort((a, b) => {
       if (a && b) {
         return (b.order || 0) - (a.order || 0);
@@ -332,13 +407,14 @@ const FormSearch = <T, U = {}>({
   const domList = columnsList
     .filter((_, index) => (collapse && type !== 'form' ? index < (rowNumber - 1 || 1) : true))
     .map(item => {
-      const key = genColumnKey(item.key, item.dataIndex);
+      const { valueType, dataIndex, ...rest } = item;
+      const key = genColumnKey(rest.key, dataIndex);
       return (
         <Col {...colConfig} key={key}>
-          <Form.Item labelAlign="right" label={item.title}>
+          <Form.Item labelAlign="right" label={item.title} name={key} {...(isForm && rest)}>
             {form.getFieldDecorator(`${key}`, {
               initialValue: item.initialValue,
-            })(<FromInputRender item={item} />)}
+            })(<FromInputRender item={item} type={type} />)}
           </Form.Item>
         </Col>
       );
@@ -347,17 +423,31 @@ const FormSearch = <T, U = {}>({
   return (
     <ConfigConsumer>
       {({ getPrefixCls }: ConfigConsumerProps) => {
-        const className = getPrefixCls('pro-table-form-search');
+        const className = getPrefixCls('pro-table-search');
+        const formClassName = getPrefixCls('pro-table-form');
         return (
           <div
-            className={className}
-            style={{
-              height: formHeight,
-            }}
+            className={classNames(className, {
+              [formClassName]: isForm,
+            })}
+            style={
+              isForm
+                ? undefined
+                : {
+                    height: formHeight,
+                  }
+            }
           >
-            <RcResizeObserver onResize={({ height }) => setFormHeight(height + 32)}>
+            <RcResizeObserver
+              onResize={({ height }) => {
+                if (type === 'form') {
+                  return;
+                }
+                setFormHeight(height + 32);
+              }}
+            >
               <div>
-                <Form>
+                <Form {...formConfig} form={form}>
                   <Row gutter={16} justify="end">
                     {domList}
                     <Col
@@ -365,24 +455,26 @@ const FormSearch = <T, U = {}>({
                       offset={getOffset(domList.length, colSize)}
                       key="option"
                       className={classNames(`${className}-option`, {
-                        [`${className}-form-option`]: type === 'form',
+                        [`${className}-form-option`]: isForm,
                       })}
                     >
-                      <Form.Item label={type === 'form' && ' '}>
+                      <Form.Item label={isForm && ' '}>
                         <>
                           <Button type="primary" htmlType="submit" onClick={() => submit()}>
-                            {type === 'form' ? submitText : searchText}
+                            {isForm ? submitText : searchText}
                           </Button>
                           <Button
                             style={{ marginLeft: 8 }}
                             onClick={() => {
                               form.resetFields();
-                              submit();
+                              if (!isForm) {
+                                submit();
+                              }
                             }}
                           >
                             {resetText}
                           </Button>
-                          {type !== 'form' && columnsList.length > rowNumber - 1 && (
+                          {!isForm && columnsList.length > rowNumber - 1 && (
                             <a
                               style={{ marginLeft: 8 }}
                               onClick={() => {

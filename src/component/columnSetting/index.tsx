@@ -113,7 +113,7 @@ const CheckboxListItem: React.FC<{
 };
 
 const CheckboxList: React.FC<{
-  list: ProColumns<any>[];
+  list: (ProColumns<any> & { index?: number })[];
   className?: string;
   title: string;
   showTitle?: boolean;
@@ -138,12 +138,12 @@ const CheckboxList: React.FC<{
     setSortKeyColumns(newColumns);
   };
 
-  const listDom = list.map(({ key, dataIndex, title, fixed }, index) => {
-    const columnKey = genColumnKey(key, dataIndex);
+  const listDom = list.map(({ key, dataIndex, title, fixed, ...rest }, index) => {
+    const columnKey = genColumnKey(key, dataIndex || rest.index);
     return (
       <DnDItem
         index={index}
-        id={columnKey}
+        id={`${columnKey}_${rest.index}`}
         key={columnKey}
         end={(id, targetIndex) => {
           move(id, targetIndex);
@@ -169,12 +169,12 @@ const CheckboxList: React.FC<{
 };
 
 const GroupCheckboxList: React.FC<{
-  localColumns: ProColumns<any>[];
+  localColumns: (ProColumns<any> & { index?: number })[];
   className?: string;
 }> = ({ localColumns, className }) => {
-  const rightList: ProColumns<any>[] = [];
-  const leftList: ProColumns<any>[] = [];
-  const list: ProColumns<any>[] = [];
+  const rightList: (ProColumns<any> & { index?: number })[] = [];
+  const leftList: (ProColumns<any> & { index?: number })[] = [];
+  const list: (ProColumns<any> & { index?: number })[] = [];
   const intl = useIntl();
   localColumns.forEach(item => {
     const { fixed } = item;
@@ -215,7 +215,8 @@ const GroupCheckboxList: React.FC<{
 
 const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
   const counter = Container.useContainer();
-  const localColumns: ProColumns<T>[] = props.columns || counter.columns || [];
+  const localColumns: (ProColumns<any> & { index?: number })[] =
+    props.columns || counter.columns || [];
   const { columnsMap, setColumnsMap, setSortKeyColumns } = counter;
   /**
    * 设置全部选中，或全部未选中

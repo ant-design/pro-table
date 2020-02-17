@@ -94,7 +94,6 @@ export default () => {
       dataSource={dataSource}
       dateFormatter="string"
       headerTitle="dataSource 和 loading"
-      params={{ state: 'all' }}
       toolBarRender={() => [
         <Button key="3" type="primary">
           <PlusOutlined />

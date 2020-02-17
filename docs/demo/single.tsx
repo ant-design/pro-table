@@ -73,6 +73,12 @@ const columns: ProColumns<GithubIssueItem>[] = [
     dataIndex: 'title',
     copyable: true,
     ellipsis: true,
+    rules: [
+      {
+        required: true,
+        message: '此项为必填项',
+      },
+    ],
     width: 200,
     hideInSearch: true,
   },
@@ -114,6 +120,7 @@ const columns: ProColumns<GithubIssueItem>[] = [
     key: 'since',
     dataIndex: 'created_at',
     valueType: 'dateTime',
+    hideInForm: true,
   },
   {
     title: 'option',
@@ -200,7 +207,6 @@ export default () => {
         }}
         dateFormatter="string"
         headerTitle="基础 Table"
-        params={{ state: 'all' }}
         toolBarRender={() => [
           <Button key="3" type="primary" onClick={() => setVisible(true)}>
             <PlusOutlined />
