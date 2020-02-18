@@ -457,7 +457,7 @@ const FormSearch = <T, U = {}>({
                 if (type === 'form') {
                   return;
                 }
-                setFormHeight(height + 32);
+                setFormHeight(height + 24);
               }}
             >
               <div>
