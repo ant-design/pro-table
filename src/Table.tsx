@@ -344,6 +344,10 @@ const genCopyable = (dom: React.ReactNode, item: ProColumns<any>) => {
   return dom;
 };
 
+/**
+ * 这个组件负责单元格的具体渲染
+ * @param param0
+ */
 const ColumRender = <T, U = any>({ item, text, row, index }: ColumRenderInterface<T>): any => {
   const counter = Container.useContainer();
   const { action } = counter;
@@ -462,11 +466,13 @@ const ProTable = <T extends {}, U extends object>(
 
   /**
    * 需要初始化 不然默认可能报错
+   * 这里取了 defaultCurrent 和 current
+   * 为了保证不会重复刷新
    */
-  const { defaultCurrent, defaultPageSize } =
+  const fetchPagination =
     typeof propsPagination === 'object'
-      ? (propsPagination as PaginationConfig)
-      : { defaultCurrent: 1, defaultPageSize: 10 };
+      ? (propsPagination as TablePaginationConfig)
+      : { defaultCurrent: 1, defaultPageSize: 10, pageSize: 10, current: 1 };
 
   const action = useFetchData(
     async ({ pageSize, current }) => {
@@ -484,8 +490,8 @@ const ProTable = <T extends {}, U extends object>(
     },
     defaultData,
     {
-      defaultCurrent,
-      defaultPageSize,
+      defaultCurrent: fetchPagination.current || fetchPagination.defaultCurrent,
+      defaultPageSize: fetchPagination.pageSize || fetchPagination.defaultPageSize,
       onLoad,
       onRequestError,
       effects: [
@@ -531,6 +537,10 @@ const ProTable = <T extends {}, U extends object>(
 
   counter.setAction(action);
 
+  /**
+   * 这里生成action的映射，保证 action 总是使用的最新
+   * 只需要渲染一次即可
+   */
   useEffect(() => {
     const userAction: ActionType = {
       reload: async () => {
@@ -570,7 +580,24 @@ const ProTable = <T extends {}, U extends object>(
   }, []);
 
   /**
-   * tableColumn 变化的时候更新一下，这个参数将会用于渲染
+   * Table Column 变化的时候更新一下，这个参数将会用于渲染
+   */
+  useDeepCompareEffect(() => {
+    const tableColumn = genColumnList<T>(propsColumns, counter.columnsMap);
+    if (tableColumn && tableColumn.length > 0) {
+      counter.setColumns(tableColumn);
+      // 重新生成key的字符串用于排序
+      counter.setSortKeyColumns(
+        tableColumn.map((item, index) => {
+          const key = genColumnKey(item.key, item.dataIndex) || `${index}`;
+          return `${key}_${item.index}`;
+        }),
+      );
+    }
+  }, [propsColumns]);
+
+  /**
+   * 这里主要是为了排序，为了保证更新及时，每次都重新计算
    */
   useDeepCompareEffect(() => {
     const keys = counter.sortKeyColumns.join(',');
@@ -588,6 +615,18 @@ const ProTable = <T extends {}, U extends object>(
       counter.setColumns(tableColumn);
     }
   }, [counter.columnsMap, counter.sortKeyColumns.join('-')]);
+
+  /**
+   * 同步 Pagination，支持受控的 页码 和 pageSize
+   */
+  useDeepCompareEffect(() => {
+    if (propsPagination && propsPagination.current && propsPagination.pageSize) {
+      action.setPageInfo({
+        pageSize: propsPagination.pageSize,
+        page: propsPagination.current,
+      });
+    }
+  }, [propsPagination]);
 
   /**
    * tableColumn 变化的时候更新一下，这个参数将会用于渲染
@@ -661,14 +700,16 @@ const ProTable = <T extends {}, U extends object>(
             formRef={formRef}
             formConfig={props.form}
             onSubmit={value => {
-              setFormSearch(
-                beforeSearchSubmit({
-                  ...value,
-                  _timestamp: Date.now(),
-                }),
-              );
-              // back first page
-              action.resetPageIndex();
+              if (type !== 'form') {
+                setFormSearch(
+                  beforeSearchSubmit({
+                    ...value,
+                    _timestamp: Date.now(),
+                  }),
+                );
+                // back first page
+                action.resetPageIndex();
+              }
 
               if (props.onSubmit) {
                 props.onSubmit(value);

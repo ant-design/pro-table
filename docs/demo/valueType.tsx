@@ -87,14 +87,14 @@ const columns: ProColumns<TableListItem>[] = [
   },
   {
     title: '日期区间',
-    key: 'createdAtRange',
+    key: 'dateRange',
     dataIndex: 'createdAtRange',
     width: 200,
     valueType: 'dateRange',
   },
   {
     title: '时间区间',
-    key: 'createdAtRange',
+    key: 'dateTimeRange',
     dataIndex: 'createdAtRange',
     width: 200,
     valueType: 'dateTimeRange',
@@ -118,7 +118,7 @@ const columns: ProColumns<TableListItem>[] = [
   },
   {
     title: '关闭时间',
-    key: 'since2',
+    key: 'since3',
     width: 120,
     dataIndex: 'updatedAt',
     valueType: 'time',
@@ -164,6 +164,10 @@ export default () => (
       }}
       type="form"
       columns={columns}
+      onSubmit={params => {
+        // eslint-disable-next-line no-console
+        console.log(params);
+      }}
     />
   </>
 );
