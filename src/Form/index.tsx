@@ -197,6 +197,7 @@ const FromInputRender: React.FC<{
     return (
       <InputNumber
         ref={ref}
+        min={0}
         precision={2}
         formatter={value => {
           if (value) {
