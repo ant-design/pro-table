@@ -99,6 +99,7 @@ const defaultRenderText = <T, U>(
       return defaultRenderTextByObject(text as string, value);
     }
   }
+          
   /**
    * 如果是金额的值
    */
@@ -118,34 +119,34 @@ const defaultRenderText = <T, U>(
   if (valueType === 'date' && text) {
     return moment(text).format('YYYY-MM-DD');
   }
+          
   /**
    *如果是日期范围的值
    */
-  if (valueType === 'dateRange' && text && Array.isArray(text)) {
+  if (valueType === 'dateRange' && text && Array.isArray(text) && text.length === 2) {
     return (
       <div>
-        {text.map(t => (
-          <div>{moment(t).format('YYYY-MM-DD')}</div>
-        ))}
+        <div>{moment(text[0]).format('YYYY-MM-DD')}</div>
+        <div>{moment(text[1]).format('YYYY-MM-DD')}</div>
       </div>
     );
   }
-
+          
   /**
    *如果是日期加时间类型的值
    */
   if (valueType === 'dateTime' && text) {
     return moment(text).format('YYYY-MM-DD HH:mm:ss');
   }
+          
   /**
    *如果是日期加时间类型的值的值
    */
-  if (valueType === 'dateTimeRange' && text && Array.isArray(text)) {
+  if (valueType === 'dateTimeRange' && text && Array.isArray(text) && text.length === 2) {
     return (
       <div>
-        {text.map(t => (
-          <div>{moment(t).format('YYYY-MM-DD HH:mm:ss')}</div>
-        ))}
+        <div>{moment(text[0]).format('YYYY-MM-DD HH:mm:ss')}</div>
+        <div>{moment(text[1]).format('YYYY-MM-DD HH:mm:ss')}</div>
       </div>
     );
   }

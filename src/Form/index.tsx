@@ -260,6 +260,21 @@ const genValue = (value: any, dateFormatter?: string | boolean, proColumnsMap?: 
           return;
         }
       }
+      if (Array.isArray(itemValue) && itemValue.length === 2 && dateFormatter) {
+        if (dateFormatter === 'string') {
+          const formatString =
+            dateFormatterMap[(proColumnsMap[key || 'null'] || {}).valueType || 'dateTime'];
+          tmpValue[key] = [
+            (itemValue[0] as Moment).format(formatString || 'YYYY-MM-DD HH:mm:ss'),
+            (itemValue[1] as Moment).format(formatString || 'YYYY-MM-DD HH:mm:ss'),
+          ];
+          return;
+        }
+        if (dateFormatter === 'number') {
+          tmpValue[key] = [(itemValue[0] as Moment).valueOf(), (itemValue[1] as Moment).valueOf()];
+          return;
+        }
+      }
       tmpValue[key] = itemValue;
     }
   });
