@@ -349,10 +349,25 @@ const FormSearch = <T, U = {}>({
 
   const isForm = type === 'form';
 
-  const submit = () => {
-    const value = form.getFieldsValue();
-    if (onSubmit) {
-      onSubmit(genValue(value, dateFormatter, proColumnsMap) as T);
+  /**
+   *提交表单，根据两种模式不同，方法不相同
+   */
+  const submit = async () => {
+    // 如果不是表单模式，不用进行验证
+    if (!isForm) {
+      const value = form.getFieldsValue();
+      if (onSubmit) {
+        onSubmit(genValue(value, dateFormatter, proColumnsMap) as T);
+      }
+      return;
+    }
+    try {
+      const value = await form.validateFields();
+      if (onSubmit) {
+        onSubmit(genValue(value, dateFormatter, proColumnsMap) as T);
+      }
+    } catch (error) {
+      // console.log(error)
     }
   };
 
