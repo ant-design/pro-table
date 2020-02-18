@@ -586,16 +586,24 @@ const ProTable = <T extends {}, U extends object>(
     }
     if (tableColumn && tableColumn.length > 0) {
       counter.setColumns(tableColumn);
-      if (keys.length < 1) {
-        counter.setSortKeyColumns(
-          tableColumn.map((item, index) => {
-            const key = genColumnKey(item.key, item.dataIndex) || `${index}`;
-            return `${key}_${item.index}`;
-          }),
-        );
-      }
     }
-  }, [propsColumns, counter.columnsMap, counter.sortKeyColumns.join('-')]);
+  }, [counter.columnsMap, counter.sortKeyColumns.join('-')]);
+
+  /**
+   * tableColumn 变化的时候更新一下，这个参数将会用于渲染
+   */
+  useDeepCompareEffect(() => {
+    const tableColumn = genColumnList<T>(propsColumns, counter.columnsMap);
+    if (tableColumn && tableColumn.length > 0) {
+      counter.setColumns(tableColumn);
+      counter.setSortKeyColumns(
+        tableColumn.map((item, index) => {
+          const key = genColumnKey(item.key, item.dataIndex) || `${index}`;
+          return `${key}_${item.index}`;
+        }),
+      );
+    }
+  }, [propsColumns]);
 
   const [selectedRowKeys, setSelectedRowKeys] = useMergeValue<string[] | number[]>([], {
     value: propsRowSelection ? propsRowSelection.selectedRowKeys : undefined,
@@ -640,7 +648,6 @@ const ProTable = <T extends {}, U extends object>(
   if (counter.columns.length < 1) {
     return <Empty />;
   }
-
   const className = classNames(defaultClassName, propsClassName);
   return (
     <ConfigProvider
