@@ -6,6 +6,7 @@ import classNames from 'classnames';
 import useMergeValue from 'use-merge-value';
 import { ColumnProps, PaginationConfig, TableProps } from 'antd/es/table';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
+import { FormProps } from 'antd/es/form';
 
 import { IntlProvider, IntlConsumer, IntlType } from './component/intlContext';
 import useFetchData, { UseFetchDataAction, RequestData } from './useFetchData';
@@ -28,7 +29,6 @@ import defaultRenderText, {
   ProColumnsValueTypeFunction,
 } from './defaultRender';
 import { DensitySize } from './component/toolBar/DensityIcon';
-import { FormProps } from 'antd/es/form';
 
 type TableRowSelection = TableProps<any>['rowSelection'];
 
@@ -63,7 +63,7 @@ export interface ProColumns<T = unknown> extends Omit<ColumnProps<T>, 'render' |
     index: number,
     action: UseFetchDataAction<RequestData<T>>,
   ) => string;
-
+  url?: any;
   /**
    * 自定义搜索 form 的输入
    */
@@ -131,7 +131,7 @@ export interface ProColumns<T = unknown> extends Omit<ColumnProps<T>, 'render' |
   order?: number;
 }
 
-export interface ProTableProps<T, U extends { [key: string]: any }>
+export interface ProTableProps<T, U extends { [key: string]: any } = {}>
   extends Omit<TableProps<T>, 'columns' | 'rowSelection'> {
   columns?: ProColumns<T>[];
 
@@ -152,7 +152,7 @@ export interface ProTableProps<T, U extends { [key: string]: any }>
     params?: U & {
       pageSize?: number;
       current?: number;
-    },
+    } & { [key: string]: any },
   ) => Promise<RequestData<T>>;
 
   /**
@@ -471,7 +471,7 @@ const ProTable = <T extends {}, U extends object>(
    */
   const fetchPagination =
     typeof propsPagination === 'object'
-      ? (propsPagination as TablePaginationConfig)
+      ? (propsPagination as PaginationConfig)
       : { defaultCurrent: 1, defaultPageSize: 10, pageSize: 10, current: 1 };
 
   const action = useFetchData(
