@@ -92,6 +92,17 @@ export default () => {
       }}
       loading={loading}
       dataSource={dataSource}
+      options={{
+        density: true,
+        reload: () => {
+          setLoading(true);
+          setTimeout(() => {
+            setLoading(false);
+          }, 1000);
+        },
+        fullScreen: true,
+        setting: true,
+      }}
       dateFormatter="string"
       headerTitle="dataSource 和 loading"
       toolBarRender={() => [

@@ -108,6 +108,10 @@ const renderDefaultOption = <T, U = {}>(
             className={className}
             onClick={() => {
               if (value && defaultOptions[key] !== true) {
+                if (value !== true) {
+                  value();
+                  return;
+                }
                 defaultOptions[key]();
               }
             }}
