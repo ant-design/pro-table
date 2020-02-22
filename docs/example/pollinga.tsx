@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
-import ProTable, { ProColumns } from '@ant-design/pro-table';
+import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
 
 const valueEnum = {
   0: 'close',
@@ -32,6 +32,13 @@ for (let i = 0; i < 10; i += 1) {
     progress: Math.ceil(Math.random() * 100) + 1,
   });
 }
+
+const timeAwait = (waitTime: number) =>
+  new Promise(res =>
+    window.setTimeout(() => {
+      res();
+    }, waitTime),
+  );
 
 const columns: ProColumns<TableListItem>[] = [
   {
@@ -74,13 +81,22 @@ const columns: ProColumns<TableListItem>[] = [
 ];
 
 export default () => {
-  const [loading, setLoading] = useState(true);
-  const [dataSource, setDataSource] = useState<TableListItem[]>([]);
+  const actionRef = useRef<ActionType | undefined>(undefined);
   useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-      setDataSource(tableListDataSource);
-    }, 5000);
+    let id = 0;
+    const loop = () => {
+      id = window.setTimeout(() => {
+        const { current } = actionRef;
+        if (current) {
+          current.reload();
+        }
+        loop();
+      }, 1000);
+    };
+    loop();
+    return () => {
+      window.clearTimeout(id);
+    };
   }, []);
 
   return (
@@ -90,21 +106,17 @@ export default () => {
       pagination={{
         showSizeChanger: true,
       }}
-      loading={loading}
-      dataSource={dataSource}
-      options={{
-        density: true,
-        reload: () => {
-          setLoading(true);
-          setTimeout(() => {
-            setLoading(false);
-          }, 1000);
-        },
-        fullScreen: true,
-        setting: true,
+      actionRef={actionRef}
+      request={async () => {
+        await timeAwait(500);
+        return {
+          data: tableListDataSource,
+          success: true,
+          total: tableListDataSource.length,
+        };
       }}
       dateFormatter="string"
-      headerTitle="dataSource 和 loading"
+      headerTitle="轮询"
       toolBarRender={() => [
         <Button key="3" type="primary">
           <PlusOutlined />
