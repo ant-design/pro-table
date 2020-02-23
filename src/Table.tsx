@@ -350,7 +350,7 @@ const genCopyable = (dom: React.ReactNode, item: ProColumns<any>) => {
  * 这个组件负责单元格的具体渲染
  * @param param0
  */
-const ColumRender = <T, U = any>({ item, text, row, index }: ColumRenderInterface<T>): any => {
+const columRender = <T, U = any>({ item, text, row, index }: ColumRenderInterface<T>): any => {
   const counter = Container.useContainer();
   const { action } = counter;
   const { renderText = (val: any) => val, valueEnum = {} } = item;
@@ -365,6 +365,17 @@ const ColumRender = <T, U = any>({ item, text, row, index }: ColumRenderInterfac
 
   if (item.render) {
     const renderDom = item.render(dom, row, index, action.current);
+
+    // 如果是合并单元格的，直接返回对象
+    if (
+      renderDom &&
+      typeof renderDom === 'object' &&
+      (renderDom as { props: { colSpan: number } }).props &&
+      (renderDom as { props: { colSpan: number } }).props.colSpan
+    ) {
+      return renderDom;
+    }
+
     if (renderDom && item.valueType === 'option' && Array.isArray(renderDom)) {
       return (
         <div className="ant-pro-table-option-cell">
@@ -411,9 +422,7 @@ const genColumnList = <T, U = {}>(
         fixed: config.fixed,
         width: item.width || (item.fixed ? 200 : undefined),
         children: item.children ? genColumnList(item.children, map) : undefined,
-        render: (text: any, row: T, index: number) => (
-          <ColumRender<T> item={item} text={text} row={row} index={index} />
-        ),
+        render: (text: any, row: T, index: number) => columRender<T>({ item, text, row, index }),
       };
       if (!tempColumns.children || !tempColumns.children.length) {
         delete tempColumns.children;
