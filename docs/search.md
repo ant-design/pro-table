@@ -1,5 +1,5 @@
 ---
-title: Table 生成搜索表单
+title: 搜索表单
 order: 8
 ---
 
