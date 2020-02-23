@@ -165,8 +165,10 @@ const ToolBar = <T, U = {}>({
               {node}
             </div>
           ))}
-        {optionDom.length > 0 && actions.length > 0 && <Divider type="vertical" />}
-        {optionDom}
+        <div className={`${className}-default-option`}>
+          {optionDom.length > 0 && actions.length > 0 && <Divider type="vertical" />}
+          {optionDom}
+        </div>
       </div>
     </div>
   );
