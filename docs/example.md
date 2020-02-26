@@ -19,7 +19,7 @@ order: 0
 
 <code src="./example/vietnamese.tsx" />
 
-## 日本語 
+## 日本語
 
 <code src="./example/japanese.tsx" />
 
@@ -38,3 +38,7 @@ order: 0
 ## 受控模式
 
 <code src="./example/columnsStateMap.tsx" />
+
+## 轮询
+
+<code src="./example/pollinga.tsx" />

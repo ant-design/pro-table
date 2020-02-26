@@ -14,8 +14,9 @@ import classNames from 'classnames';
 import { parsingValueEnumToArray, useDeepCompareEffect, genColumnKey } from '../component/util';
 import { useIntl, IntlType } from '../component/intlContext';
 import Container from '../container';
-import { ProColumns } from '../index';
+import { ProColumns, ProColumnsValueType } from '../index';
 import './index.less';
+import { ProColumnsValueTypeFunction } from 'src/defaultRender';
 
 const defaultColConfig = {
   lg: 8,
@@ -189,8 +190,6 @@ const FromInputRender: React.FC<{
     return (
       <InputNumber
         ref={ref}
-        min={0}
-        precision={2}
         placeholder={intl.getMessage('tableFrom.inputPlaceholder', '请输入')}
         style={{
           width: '100%',
@@ -205,6 +204,7 @@ const FromInputRender: React.FC<{
       <InputNumber
         ref={ref}
         min={0}
+        precision={2}
         formatter={value => {
           if (value) {
             return `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -213,7 +213,6 @@ const FromInputRender: React.FC<{
         }}
         parser={value => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
         placeholder={intl.getMessage('tableFrom.inputPlaceholder', '请输入')}
-        precision={2}
         style={{
           width: '100%',
         }}
@@ -248,39 +247,85 @@ const dateFormatterMap = {
   dateTime: 'YYYY-MM-DD HH:mm:ss',
 };
 
-const genValue = (value: any, dateFormatter?: string | boolean, proColumnsMap?: any) => {
+/**
+ * 判断 DataType 是不是日期类型
+ * @param type
+ */
+const isDateValueType = (type: ProColumnsValueType | ProColumnsValueTypeFunction<any>) => {
+  let valueType: ProColumnsValueType = type as ProColumnsValueType;
+  if (typeof type === 'function') {
+    // 如果是 object 说明是进度条，直接返回 false
+    if (typeof type({}) === 'object') {
+      return false;
+    }
+    valueType = type({}) as ProColumnsValueType;
+  }
+  const dateTypes = ['date', 'dateRange', 'dateTimeRange', 'dateTime', 'time'];
+  return dateTypes.includes(valueType);
+};
+
+/**
+ * 这里主要是来转化一下数据
+ * 将 moment 转化为 string
+ * 将 all 默认删除
+ * @param value
+ * @param dateFormatter
+ * @param proColumnsMap
+ */
+const conversionValue = (
+  value: any,
+  dateFormatter: string | boolean,
+  proColumnsMap: { [key: string]: ProColumns<any> },
+) => {
   const tmpValue = {};
+
   Object.keys(value).forEach(key => {
+    const column = proColumnsMap[key || 'null'] || {};
+    const valueType = column.valueType || 'dateTime';
     const itemValue = value[key];
-    if (itemValue && itemValue !== 'all') {
-      if (moment.isMoment(itemValue) && dateFormatter) {
-        if (dateFormatter === 'string') {
-          const formatString =
-            dateFormatterMap[(proColumnsMap[key || 'null'] || {}).valueType || 'dateTime'];
-          tmpValue[key] = (itemValue as Moment).format(formatString || 'YYYY-MM-DD HH:mm:ss');
-          return;
-        }
-        if (dateFormatter === 'number') {
-          tmpValue[key] = (itemValue as Moment).valueOf();
-          return;
-        }
-      }
-      if (Array.isArray(itemValue) && itemValue.length === 2 && dateFormatter) {
-        if (dateFormatter === 'string') {
-          const formatString =
-            dateFormatterMap[(proColumnsMap[key || 'null'] || {}).valueType || 'dateTime'];
-          tmpValue[key] = [
-            (itemValue[0] as Moment).format(formatString || 'YYYY-MM-DD HH:mm:ss'),
-            (itemValue[1] as Moment).format(formatString || 'YYYY-MM-DD HH:mm:ss'),
-          ];
-          return;
-        }
-        if (dateFormatter === 'number') {
-          tmpValue[key] = [(itemValue[0] as Moment).valueOf(), (itemValue[1] as Moment).valueOf()];
-          return;
-        }
-      }
+
+    // 如果值是 "all"，或者不存在直接删除
+    // 下拉框里选 all，会删除
+    if (!itemValue || (itemValue === 'all' && column.valueEnum)) {
+      return;
+    }
+
+    // 如果是日期，再处理这些
+    if (!isDateValueType(valueType)) {
       tmpValue[key] = itemValue;
+      return;
+    }
+
+    // 如果是 moment 的对象的处理方式
+    // 如果执行到这里，肯定是 ['date', 'dateRange', 'dateTimeRange', 'dateTime', 'time'] 之一
+    if (moment.isMoment(itemValue) && dateFormatter) {
+      if (dateFormatter === 'string') {
+        const formatString = dateFormatterMap[valueType as 'dateTime'];
+        tmpValue[key] = (itemValue as Moment).format(formatString || 'YYYY-MM-DD HH:mm:ss');
+        return;
+      }
+      if (dateFormatter === 'number') {
+        tmpValue[key] = (itemValue as Moment).valueOf();
+        return;
+      }
+    }
+
+    // 这里是日期数组
+    if (Array.isArray(itemValue) && itemValue.length === 2 && dateFormatter) {
+      if (dateFormatter === 'string') {
+        const formatString = dateFormatterMap[valueType as 'dateTime'];
+        tmpValue[key] = [
+          moment(itemValue[0] as Moment).format(formatString || 'YYYY-MM-DD HH:mm:ss'),
+          moment(itemValue[1] as Moment).format(formatString || 'YYYY-MM-DD HH:mm:ss'),
+        ];
+        return;
+      }
+      if (dateFormatter === 'number') {
+        tmpValue[key] = [
+          moment(itemValue[0] as Moment).valueOf(),
+          moment(itemValue[1] as Moment).valueOf(),
+        ];
+      }
     }
   });
   return tmpValue;
@@ -362,14 +407,14 @@ const FormSearch = <T, U = {}>({
     if (!isForm) {
       const value = form.getFieldsValue();
       if (onSubmit) {
-        onSubmit(genValue(value, dateFormatter, proColumnsMap) as T);
+        onSubmit(conversionValue(value, dateFormatter, proColumnsMap) as T);
       }
       return;
     }
     try {
       const value = await form.validateFields();
       if (onSubmit) {
-        onSubmit(genValue(value, dateFormatter, proColumnsMap) as T);
+        onSubmit(conversionValue(value, dateFormatter, proColumnsMap) as T);
       }
     } catch (error) {
       // console.log(error)
