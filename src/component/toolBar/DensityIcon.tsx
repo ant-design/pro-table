@@ -40,4 +40,4 @@ const DensityIcon: React.FC<{}> = (_, ref) => {
   );
 };
 
-export default React.forwardRef(DensityIcon);
+export default React.forwardRef(DensityIcon as any);
