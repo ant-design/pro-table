@@ -348,8 +348,10 @@ const genCopyable = (dom: React.ReactNode, item: ProColumns<any>) => {
  * 这个组件负责单元格的具体渲染
  * @param param0
  */
-const columRender = <T, U = any>({ item, text, row, index }: ColumRenderInterface<T>): any => {
-  const counter = Container.useContainer();
+const columRender = <T, U = any>(
+  { item, text, row, index }: ColumRenderInterface<T>,
+  counter: any,
+): any => {
   const { action } = counter;
   const { renderText = (val: any) => val, valueEnum = {} } = item;
   if (!action.current) {
@@ -396,6 +398,7 @@ const genColumnList = <T, U = {}>(
   map: {
     [key: string]: ColumnsState;
   },
+  counter: any,
 ): (ColumnProps<T> & { index?: number })[] =>
   columns
     .map((item, columnsIndex) => {
@@ -419,8 +422,9 @@ const genColumnList = <T, U = {}>(
         ellipsis: false,
         fixed: config.fixed,
         width: item.width || (item.fixed ? 200 : undefined),
-        children: item.children ? genColumnList(item.children, map) : undefined,
-        render: (text: any, row: T, index: number) => columRender<T>({ item, text, row, index }),
+        children: item.children ? genColumnList(item.children, map, counter) : undefined,
+        render: (text: any, row: T, index: number) =>
+          columRender<T>({ item, text, row, index }, counter),
       };
       if (!tempColumns.children || !tempColumns.children.length) {
         delete tempColumns.children;
@@ -592,7 +596,7 @@ const ProTable = <T extends {}, U extends object>(
    * Table Column 变化的时候更新一下，这个参数将会用于渲染
    */
   useDeepCompareEffect(() => {
-    const tableColumn = genColumnList<T>(propsColumns, counter.columnsMap);
+    const tableColumn = genColumnList<T>(propsColumns, counter.columnsMap, counter);
     if (tableColumn && tableColumn.length > 0) {
       counter.setColumns(tableColumn);
       // 重新生成key的字符串用于排序
@@ -610,7 +614,7 @@ const ProTable = <T extends {}, U extends object>(
    */
   useDeepCompareEffect(() => {
     const keys = counter.sortKeyColumns.join(',');
-    let tableColumn = genColumnList<T>(propsColumns, counter.columnsMap);
+    let tableColumn = genColumnList<T>(propsColumns, counter.columnsMap, counter);
     if (keys.length > 0) {
       // 用于可视化的排序
       tableColumn = tableColumn.sort((a, b) => {
@@ -641,7 +645,7 @@ const ProTable = <T extends {}, U extends object>(
    * tableColumn 变化的时候更新一下，这个参数将会用于渲染
    */
   useDeepCompareEffect(() => {
-    const tableColumn = genColumnList<T>(propsColumns, counter.columnsMap);
+    const tableColumn = genColumnList<T>(propsColumns, counter.columnsMap, counter);
     if (tableColumn && tableColumn.length > 0) {
       counter.setColumns(tableColumn);
       counter.setSortKeyColumns(

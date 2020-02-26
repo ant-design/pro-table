@@ -6,6 +6,7 @@ import useMergeValue from 'use-merge-value';
 import { RequestData, ProColumns } from './index';
 import { UseFetchDataAction } from './useFetchData';
 import { DensitySize } from './component/toolBar/DensityIcon';
+// eslint-disable-next-line import/named
 import { ColumnsState } from './Table';
 
 export interface UseCounterProps {

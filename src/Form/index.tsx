@@ -12,11 +12,11 @@ import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
 import classNames from 'classnames';
 
 import { parsingValueEnumToArray, useDeepCompareEffect, genColumnKey } from '../component/util';
+import { ProColumnsValueTypeFunction } from '../defaultRender';
 import { useIntl, IntlType } from '../component/intlContext';
 import Container from '../container';
 import { ProColumns, ProColumnsValueType } from '../index';
 import './index.less';
-import { ProColumnsValueTypeFunction } from 'src/defaultRender';
 
 const defaultColConfig = {
   lg: 8,
