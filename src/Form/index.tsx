@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { DownOutlined } from '@ant-design/icons';
-import { FormComponentProps, FormItemProps, FormProps } from 'antd/es/form';
-import { Input, Form, Row, Col, TimePicker, InputNumber, DatePicker, Select, Button } from 'antd';
+import { FormComponentProps, FormItemProps, FormProps } from '@ant-design/compatible/es/form';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Input, Row, Col, TimePicker, InputNumber, DatePicker, Select, Button } from 'antd';
 import moment, { Moment } from 'moment';
 import RcResizeObserver from 'rc-resize-observer';
 import useMediaQuery from 'use-media-antd-query';
