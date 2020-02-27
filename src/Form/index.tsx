@@ -281,7 +281,7 @@ const conversionValue = (
 
   Object.keys(value).forEach(key => {
     const column = proColumnsMap[key || 'null'] || {};
-    const valueType = column.valueType || 'dateTime';
+    const valueType = column.valueType || 'text';
     const itemValue = value[key];
 
     // 如果值是 "all"，或者不存在直接删除
@@ -412,10 +412,11 @@ const FormSearch = <T, U = {}>({
       return;
     }
     try {
-      const value = await form.validateFields();
-      if (onSubmit) {
-        onSubmit(conversionValue(value, dateFormatter, proColumnsMap) as T);
-      }
+      form.validateFields((error, values) => {
+        if (onSubmit && !error) {
+          onSubmit(conversionValue(values, dateFormatter, proColumnsMap) as T);
+        }
+      });
     } catch (error) {
       // console.log(error)
     }
