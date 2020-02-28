@@ -38,7 +38,6 @@
     "@ant-design/compatible": "^0.0.1-rc.1",
     "@ant-design/icons": "^4.0.0-alpha.11",
     "@types/react-responsive": "^8.0.2",
-    "antd": "^3.26.9",
     "classnames": "^2.2.6",
     "dnd-core": "^10.0.2",
     "lodash.isequal": "^4.5.0",
