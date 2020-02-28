@@ -470,7 +470,7 @@ const ProTable = <T extends {}, U extends object>(
     defaultClassName,
     formRef,
     type = 'table',
-    ...reset
+    ...rest
   } = props;
 
   const [formSearch, setFormSearch] = useState<{}>({});
@@ -649,7 +649,7 @@ const ProTable = <T extends {}, U extends object>(
     if (action.loading !== false || propsRowSelection === false) {
       return;
     }
-    const tableKey = reset.rowKey;
+    const tableKey = rest.rowKey;
     setSelectedRows(
       ((action.dataSource as T[]) || []).filter((item, index) => {
         if (!tableKey) {
@@ -676,8 +676,8 @@ const ProTable = <T extends {}, U extends object>(
   };
 
   useEffect(() => {
-    counter.setTableSize(reset.size || 'large');
-  }, [reset.size]);
+    counter.setTableSize(rest.size || 'large');
+  }, [rest.size]);
 
   if (counter.columns.length < 1) {
     return <Empty />;
@@ -691,7 +691,7 @@ const ProTable = <T extends {}, U extends object>(
       <div className={className} id="ant-design-pro-table" style={style} ref={rootRef}>
         {(search || type === 'form') && (
           <FormSearch<U>
-            {...reset}
+            {...rest}
             type={props.type}
             formRef={formRef}
             onSubmit={value => {
@@ -715,7 +715,7 @@ const ProTable = <T extends {}, U extends object>(
               // back first page
               action.resetPageIndex();
             }}
-            dateFormatter={reset.dateFormatter}
+            dateFormatter={rest.dateFormatter}
             search={search}
           />
         )}
@@ -750,12 +750,12 @@ const ProTable = <T extends {}, U extends object>(
                   setSelectedRowKeys([]);
                   setSelectedRows([]);
                 }}
-                alertOptionRender={reset.tableAlertOptionRender}
+                alertOptionRender={rest.tableAlertOptionRender}
                 alertInfoRender={tableAlertRender}
               />
             )}
             <Table<T>
-              {...reset}
+              {...rest}
               size={counter.tableSize}
               rowSelection={propsRowSelection === false ? undefined : rowSelection}
               className={tableClassName}
@@ -774,7 +774,7 @@ const ProTable = <T extends {}, U extends object>(
                 return true;
               })}
               loading={action.loading || props.loading}
-              dataSource={request ? (action.dataSource as T[]) : reset.dataSource}
+              dataSource={request ? (action.dataSource as T[]) : rest.dataSource}
               pagination={pagination}
             />
           </Card>
