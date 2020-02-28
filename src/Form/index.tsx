@@ -276,7 +276,7 @@ const conversionValue = (
 
   Object.keys(value).forEach(key => {
     const column = proColumnsMap[key || 'null'] || {};
-    const valueType = column.valueType || 'dateTime';
+    const valueType = column.valueType || 'text';
     const itemValue = value[key];
 
     // 如果值是 "all"，或者不存在直接删除
