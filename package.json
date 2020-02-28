@@ -87,6 +87,7 @@
     "webpack-cli": "^3.3.10"
   },
   "peerDependencies": {
+    "antd": "3.x",
     "react": "16.x"
   },
   "authors": {
