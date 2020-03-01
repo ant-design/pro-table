@@ -1,6 +1,9 @@
 ---
 title: 值类型
 order: 7
+nav:
+  title: 默认值类型
+  order: 5
 ---
 
 # 值类型

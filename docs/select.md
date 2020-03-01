@@ -1,6 +1,9 @@
 ---
-title: 批量操作 Table
+title: 批量操作
 order: 6
+nav:
+  title: 批量操作
+  order: 5
 ---
 
 # 批量操作

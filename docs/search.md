@@ -1,6 +1,9 @@
 ---
 title: 搜索表单
 order: 8
+nav:
+  title: 搜索表单
+  order: 2
 ---
 
 # Table 搜索
