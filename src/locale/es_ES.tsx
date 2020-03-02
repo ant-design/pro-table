@@ -1,7 +1,7 @@
 export default {
     tableFrom: {
       search: 'Buscar',
-      reset: 'Reiniciar',
+      reset: 'Limpiar',
       submit: 'Submit',
       collapsed: 'Expandir',
       expand: 'Colapsar',
