@@ -361,7 +361,7 @@ const columRender = <T, U = any>({ item, text, row, index }: ColumRenderInterfac
   const renderTextStr = renderText(parsingText(text, valueEnum), row, index, action.current);
   const textDom = defaultRenderText<T, {}>(renderTextStr, item.valueType || 'text', index, row);
 
-  const dom: React.ReactNode = genEllipsis(genCopyable(textDom, item), item, text);
+  const dom: React.ReactNode = genEllipsis(genCopyable(textDom, item), item, renderTextStr);
 
   if (item.render) {
     const renderDom = item.render(dom, row, index, action.current);
