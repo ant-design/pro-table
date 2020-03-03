@@ -4,7 +4,7 @@ import enUS from '../../locale/en_US';
 import viVN from '../../locale/vi_VN';
 import itIT from '../../locale/it_IT';
 import jaJP from '../../locale/ja_JP';
-
+import esES from '../../locale/es_ES';
 
 export interface IntlType {
   locale: string;
@@ -43,8 +43,9 @@ const enUSIntl = createIntl('en_US', enUS);
 const viVNIntl = createIntl('vi_VN', viVN);
 const itITIntl = createIntl('it_IT', itIT);
 const jaJPIntl = createIntl('ja_JP', jaJP);
+const esESIntl = createIntl('es_ES', esES);
 
-export { enUSIntl, zhCNIntl, viVNIntl, itITIntl, jaJPIntl };
+export { enUSIntl, zhCNIntl, viVNIntl, itITIntl, jaJPIntl, esESIntl };
 
 const IntlContext = React.createContext<IntlType>(zhCNIntl);
 
