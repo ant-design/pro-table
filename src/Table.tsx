@@ -204,7 +204,7 @@ export interface ProTableProps<T, U extends { [key: string]: any }>
   /**
    * 默认的操作栏配置
    */
-  options?: OptionConfig<T>;
+  options?: OptionConfig<T> | false;
   /**
    * 是否显示搜索表单
    */
