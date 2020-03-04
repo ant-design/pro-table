@@ -35,7 +35,7 @@
     "not ie <= 10"
   ],
   "dependencies": {
-    "@ant-design/compatible": "^0.0.1-rc.1",
+    "@ant-design/compatible": "^1.0.1",
     "@ant-design/icons": "^4.0.0-alpha.11",
     "@types/react-responsive": "^8.0.2",
     "classnames": "^2.2.6",
