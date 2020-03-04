@@ -699,7 +699,6 @@ const ProTable = <T extends {}, U extends object>(
                 setFormSearch(
                   beforeSearchSubmit({
                     ...value,
-                    _timestamp: Date.now(),
                   }),
                 );
                 // back first page
