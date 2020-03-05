@@ -474,6 +474,9 @@ const ProTable = <T extends {}, U extends object>(
     ...rest
   } = props;
 
+  const [selectedRowKeys, setSelectedRowKeys] = useMergeValue<React.ReactText[]>([], {
+    value: propsRowSelection ? propsRowSelection.selectedRowKeys : undefined,
+  });
   const [formSearch, setFormSearch] = useState<{}>({});
 
   /**
@@ -555,6 +558,8 @@ const ProTable = <T extends {}, U extends object>(
         if (!current) {
           return;
         }
+        // reload 之后大概率会切换数据，清空一下选择。
+        setSelectedRowKeys([]);
         await current.reload();
       },
       fetchMore: async () => {
@@ -633,9 +638,6 @@ const ProTable = <T extends {}, U extends object>(
     }
   }, [propsPagination]);
 
-  const [selectedRowKeys, setSelectedRowKeys] = useMergeValue<React.ReactText[]>([], {
-    value: propsRowSelection ? propsRowSelection.selectedRowKeys : undefined,
-  });
   const [selectedRows, setSelectedRows] = useState<T[]>([]);
 
   // 映射 selectedRowKeys 与 selectedRow
