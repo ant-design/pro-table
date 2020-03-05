@@ -79,9 +79,9 @@ export interface SearchConfig {
       showCollapseButton: boolean;
    * }
    */
-  footerRender?:
+  optionRender?:
     | ((
-        searchConfig: Omit<SearchConfig, 'footerRender'>,
+        searchConfig: Omit<SearchConfig, 'optionRender'>,
         props: Omit<FormOptionProps, 'searchConfig'>,
       ) => React.ReactNode)
     | false;
@@ -644,7 +644,13 @@ const FormSearch = <T, U = {}>({
                           showCollapseButton={columnsList.length > rowNumber - 1}
                           searchConfig={searchConfig}
                           submit={submit}
-                          form={form}
+                          form={{
+                            ...form,
+                            submit: () => {
+                              submit();
+                              form.submit();
+                            },
+                          }}
                           collapse={collapse}
                           setCollapse={setCollapse}
                         />

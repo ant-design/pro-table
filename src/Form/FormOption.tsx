@@ -20,13 +20,12 @@ export interface FormOptionProps {
 const FormOption: React.FC<FormOptionProps> = props => {
   const { searchConfig, setCollapse, collapse, type, form, submit, showCollapseButton } = props;
   const isForm = type === 'form';
-
-  const { searchText, submitText, resetText, collapseRender, footerRender } = searchConfig;
-  if (footerRender === false) {
+  const { searchText, submitText, resetText, collapseRender, optionRender } = searchConfig;
+  if (optionRender === false) {
     return null;
   }
-  if (footerRender) {
-    return <>{footerRender(searchConfig, props)}</>;
+  if (optionRender) {
+    return <>{optionRender(searchConfig, props)}</>;
   }
   return (
     <>
