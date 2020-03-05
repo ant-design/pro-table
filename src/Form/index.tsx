@@ -54,7 +54,15 @@ export interface SearchConfig {
   /**
    * 收起按钮的 render
    */
-  collapseRender?: (collapsed: boolean) => React.ReactNode;
+  collapseRender?: (
+    collapsed: boolean,
+    /**
+     * 是否应该展示，有两种情况
+     * 列只有三列，不需要收起
+     * form 模式 不需要收起
+     */
+    showCollapseButton?: boolean,
+  ) => React.ReactNode;
   /**
    * 底部操作栏的 render
    */
