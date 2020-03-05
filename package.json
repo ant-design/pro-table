@@ -35,9 +35,9 @@
     "not ie <= 10"
   ],
   "dependencies": {
-    "@ant-design/icons": "^4.0.0-alpha.11",
+    "@ant-design/icons": "^4.0.0",
     "@types/react-responsive": "^8.0.2",
-    "antd": "^4.0.0-rc.0",
+    "antd": "^4.0.0",
     "classnames": "^2.2.6",
     "dnd-core": "^10.0.2",
     "lodash.isequal": "^4.5.0",
