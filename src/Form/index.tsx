@@ -15,7 +15,7 @@ import Container from '../container';
 import { ProColumnsValueTypeFunction } from '../defaultRender';
 import { ProColumns, ProColumnsValueType } from '../index';
 import './index.less';
-import FormFooter from './FormFooter';
+import FormOption, { FormOptionProps } from './FormOption';
 
 /**
  * 默认的查询表单配置
@@ -41,6 +41,9 @@ const defaultFromColConfig = {
   xs: 24,
 };
 
+/**
+ * 用于配置操作栏
+ */
 export interface SearchConfig {
   /**
    * 查询按钮的文本
@@ -65,8 +68,23 @@ export interface SearchConfig {
   ) => React.ReactNode;
   /**
    * 底部操作栏的 render
+   * searchConfig 基础的配置
+   * props 更加详细的配置
+   * {
+      type?: 'form' | 'list' | 'table' | 'cardList' | undefined;
+      form: FormInstance;
+      submit: () => void;
+      collapse: boolean;
+      setCollapse: (collapse: boolean) => void;
+      showCollapseButton: boolean;
+   * }
    */
-  footerRender?: (searchConfig: Omit<SearchConfig, 'footerRender'>) => React.ReactNode;
+  footerRender?:
+    | ((
+        searchConfig: Omit<SearchConfig, 'footerRender'>,
+        props: Omit<FormOptionProps, 'searchConfig'>,
+      ) => React.ReactNode)
+    | false;
   /**
    * 是否收起
    */
@@ -622,7 +640,7 @@ const FormSearch = <T, U = {}>({
                       })}
                     >
                       <Form.Item label={isForm && ' '}>
-                        <FormFooter
+                        <FormOption
                           showCollapseButton={columnsList.length > rowNumber - 1}
                           searchConfig={searchConfig}
                           submit={submit}

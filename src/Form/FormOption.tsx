@@ -3,7 +3,7 @@ import { FormInstance } from 'antd/es/form';
 import { Button } from 'antd';
 import { SearchConfig } from './index';
 
-interface FormFooterProps {
+export interface FormOptionProps {
   searchConfig: SearchConfig;
   type?: 'form' | 'list' | 'table' | 'cardList' | undefined;
   form: FormInstance;
@@ -13,17 +13,21 @@ interface FormFooterProps {
   showCollapseButton: boolean;
 }
 
-const FormFooter: React.FC<FormFooterProps> = ({
-  searchConfig,
-  setCollapse,
-  collapse,
-  type,
-  form,
-  submit,
-  showCollapseButton,
-}) => {
+/**
+ * FormFooter 的组件，可以自动进行一些配置
+ * @param props
+ */
+const FormOption: React.FC<FormOptionProps> = props => {
+  const { searchConfig, setCollapse, collapse, type, form, submit, showCollapseButton } = props;
   const isForm = type === 'form';
-  const { searchText, submitText, resetText, collapseRender } = searchConfig;
+
+  const { searchText, submitText, resetText, collapseRender, footerRender } = searchConfig;
+  if (footerRender === false) {
+    return null;
+  }
+  if (footerRender) {
+    return <>{footerRender(searchConfig, props)}</>;
+  }
   return (
     <>
       <Button type="primary" htmlType="submit" onClick={() => submit()}>
@@ -54,4 +58,4 @@ const FormFooter: React.FC<FormFooterProps> = ({
   );
 };
 
-export default FormFooter;
+export default FormOption;
