@@ -39,8 +39,20 @@ Form 的列是根据 `valueType` 来生成不同的类型。
 | onLoad | 数据加载完成后触发,会多次触发 | `(dataSource: T[]) => void` | - |
 | onRequestError | 数据加载失败时触发 | `(e: Error) => void` | - |
 | beforeSearchSubmit | 搜索之前进行一些修改 | `(params:T)=>T` | - |
-| search | 是否显示搜索表单 | boolean | true |
+| search | 是否显示搜索表单，传入对象时为搜索表单的配置 | `boolean \| { span?: number \| DefaultColConfig,searchText?: string, resetText?: string, collapseRender?: (collapsed: boolean) => React.ReactNode, collapsed:boolean, onCollapse: (collapsed:boolean)=> void }` | true |
 | dateFormatter | moment 的格式化方式,默认会转化成 string | `"string" \| "number" \| false` | string |
+
+### search
+
+| 属性 | 描述 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| searchText | 查询按钮的文本 | string | 查询 |
+| searchText | 重置按钮的文本 | string | 重置 |
+| submitText | 查询按钮的文本 | string | 重置 |
+| collapseRender | 收起按钮的 render | `(collapsed: boolean,showCollapseButton?: boolean,) => React.ReactNode` | - |
+| collapsed | 是否收起 | boolean | - |
+| onCollapse | 收起按钮的事件 | `(collapsed: boolean) => void;` | - |
+| optionRender | 操作栏的 render | `(( searchConfig: Omit<SearchConfig, 'optionRender'>, props: Omit<FormOptionProps, 'searchConfig'>, ) => React.ReactNode) \| false;` | - |
 
 ### Columns
 
@@ -52,6 +64,10 @@ Form 的列是根据 `valueType` 来生成不同的类型。
 | hideInTable | 在 Table 中不展示此列 | boolean | - |
 | renderFormItem | 渲染查询表单的输入组件 | `(item,props:{value,onChange}) => React.ReactNode` | - |
 
-## Demo
+## 基本使用
 
 <code src="./demo/search.tsx" />
+
+## 操作栏
+
+<code src="./demo/search_option.tsx" />

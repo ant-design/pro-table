@@ -1,21 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { DownOutlined } from '@ant-design/icons';
 import { FormInstance, FormItemProps, FormProps } from 'antd/es/form';
-import { Input, Form, Row, Col, TimePicker, InputNumber, DatePicker, Select, Button } from 'antd';
+import { Input, Form, Row, Col, TimePicker, InputNumber, DatePicker, Select } from 'antd';
 import moment, { Moment } from 'moment';
 import RcResizeObserver from 'rc-resize-observer';
 import useMediaQuery from 'use-media-antd-query';
 import useMergeValue from 'use-merge-value';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
+import { DownOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 
 import { parsingValueEnumToArray, useDeepCompareEffect, genColumnKey } from '../component/util';
 import { useIntl, IntlType } from '../component/intlContext';
 import Container from '../container';
+import { ProColumnsValueTypeFunction } from '../defaultRender';
 import { ProColumns, ProColumnsValueType } from '../index';
 import './index.less';
-import { ProColumnsValueTypeFunction } from 'src/defaultRender';
+import FormOption, { FormOptionProps } from './FormOption';
 
+/**
+ * 默认的查询表单配置
+ */
 const defaultColConfig = {
   lg: 8,
   md: 12,
@@ -24,6 +28,10 @@ const defaultColConfig = {
   sm: 12,
   xs: 24,
 };
+
+/**
+ * 默认的新建表单配置
+ */
 const defaultFromColConfig = {
   lg: 24,
   md: 24,
@@ -33,21 +41,77 @@ const defaultFromColConfig = {
   xs: 24,
 };
 
+/**
+ * 用于配置操作栏
+ */
 export interface SearchConfig {
+  /**
+   * 查询按钮的文本
+   */
   searchText?: string;
+  /**
+   * 重置按钮的文本
+   */
   resetText?: string;
   span?: number | typeof defaultColConfig;
-  collapseRender?: (collapsed: boolean) => React.ReactNode;
+  /**
+   * 收起按钮的 render
+   */
+  collapseRender?: (
+    collapsed: boolean,
+    /**
+     * 是否应该展示，有两种情况
+     * 列只有三列，不需要收起
+     * form 模式 不需要收起
+     */
+    showCollapseButton?: boolean,
+  ) => React.ReactNode;
+  /**
+   * 底部操作栏的 render
+   * searchConfig 基础的配置
+   * props 更加详细的配置
+   * {
+      type?: 'form' | 'list' | 'table' | 'cardList' | undefined;
+      form: FormInstance;
+      submit: () => void;
+      collapse: boolean;
+      setCollapse: (collapse: boolean) => void;
+      showCollapseButton: boolean;
+   * }
+   */
+  optionRender?:
+    | ((
+        searchConfig: Omit<SearchConfig, 'optionRender'>,
+        props: Omit<FormOptionProps, 'searchConfig'>,
+      ) => React.ReactNode)
+    | false;
+  /**
+   * 是否收起
+   */
   collapsed?: boolean;
+  /**
+   * 收起按钮的事件
+   */
   onCollapse?: (collapsed: boolean) => void;
+  /**
+   * 提交按钮的文本
+   */
   submitText?: string;
 }
 
+/**
+ * 获取最后一行的 offset，保证在最后一列
+ * @param length
+ * @param span
+ */
 const getOffset = (length: number, span: number = 8) => {
   const cols = 24 / span;
   return (cols - 1 - (length % cols)) * span;
 };
 
+/**
+ * 默认的设置
+ */
 const defaultSearch: SearchConfig = {
   searchText: '查询',
   resetText: '重置',
@@ -334,9 +398,31 @@ const getDefaultSearch = (
   const config = {
     collapseRender: (collapsed: boolean) => {
       if (collapsed) {
-        return intl.getMessage('tableFrom.collapsed', '展开');
+        return (
+          <>
+            {intl.getMessage('tableFrom.collapsed', '展开')}
+            <DownOutlined
+              style={{
+                marginLeft: '0.5em',
+                transition: '0.3s all',
+                transform: `rotate(${collapsed ? 0 : 0.5}turn)`,
+              }}
+            />
+          </>
+        );
       }
-      return intl.getMessage('tableFrom.expand', '收起');
+      return (
+        <>
+          {intl.getMessage('tableFrom.expand', '收起')}
+          <DownOutlined
+            style={{
+              marginLeft: '0.5em',
+              transition: '0.3s all',
+              transform: `rotate(${collapsed ? 0 : 0.5}turn)`,
+            }}
+          />
+        </>
+      );
     },
     searchText: intl.getMessage('tableFrom.search', defaultSearch.searchText || '查询'),
     resetText: intl.getMessage('tableFrom.reset', defaultSearch.resetText || '重置'),
@@ -351,6 +437,11 @@ const getDefaultSearch = (
   return { ...config, ...search } as Required<SearchConfig>;
 };
 
+/**
+ * 合并用户和默认的配置
+ * @param span
+ * @param size
+ */
 const getSpanConfig = (
   span: number | typeof defaultColConfig,
   size: keyof typeof defaultColConfig,
@@ -376,7 +467,7 @@ const FormSearch = <T, U = {}>({
   const [form] = Form.useForm();
   const intl = useIntl();
   const searchConfig = getDefaultSearch(propsSearch, intl, type === 'form');
-  const { span, searchText, submitText, resetText, collapseRender } = searchConfig;
+  const { span } = searchConfig;
 
   const counter = Container.useContainer();
   const [collapse, setCollapse] = useMergeValue<boolean>(true, {
@@ -549,39 +640,20 @@ const FormSearch = <T, U = {}>({
                       })}
                     >
                       <Form.Item label={isForm && ' '}>
-                        <>
-                          <Button type="primary" htmlType="submit" onClick={() => submit()}>
-                            {isForm ? submitText : searchText}
-                          </Button>
-                          <Button
-                            style={{ marginLeft: 8 }}
-                            onClick={() => {
-                              form.resetFields();
-                              if (!isForm) {
-                                submit();
-                              }
-                            }}
-                          >
-                            {resetText}
-                          </Button>
-                          {!isForm && columnsList.length > rowNumber - 1 && (
-                            <a
-                              style={{ marginLeft: 8 }}
-                              onClick={() => {
-                                setCollapse(!collapse);
-                              }}
-                            >
-                              {collapseRender && collapseRender(collapse)}
-                              <DownOutlined
-                                style={{
-                                  marginLeft: '0.5em',
-                                  transition: '0.3s all',
-                                  transform: `rotate(${collapse ? 0 : 0.5}turn)`,
-                                }}
-                              />
-                            </a>
-                          )}
-                        </>
+                        <FormOption
+                          showCollapseButton={columnsList.length > rowNumber - 1}
+                          searchConfig={searchConfig}
+                          submit={submit}
+                          form={{
+                            ...form,
+                            submit: () => {
+                              submit();
+                              form.submit();
+                            },
+                          }}
+                          collapse={collapse}
+                          setCollapse={setCollapse}
+                        />
                       </Form.Item>
                     </Col>
                   </Row>
