@@ -4,6 +4,7 @@ import React, { useEffect, CSSProperties, useRef, useState, ReactNode } from 're
 import { Table, ConfigProvider, Card, Typography, Empty, Tooltip } from 'antd';
 import classNames from 'classnames';
 import useMergeValue from 'use-merge-value';
+import { stringify } from 'use-json-comparison';
 import { ColumnsType, TablePaginationConfig, TableProps } from 'antd/es/table';
 import { FormItemProps, FormProps } from 'antd/es/form';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
@@ -505,14 +506,7 @@ const ProTable = <T extends {}, U extends object>(
       defaultPageSize: fetchPagination.pageSize || fetchPagination.defaultPageSize,
       onLoad,
       onRequestError,
-      effects: [
-        Object.values(params)
-          .filter(item => checkUndefinedOrNull(item))
-          .join('-'),
-        Object.values(formSearch)
-          .filter(item => checkUndefinedOrNull(item))
-          .join('-'),
-      ],
+      effects: [stringify(params), stringify(formSearch)],
     },
   );
 
