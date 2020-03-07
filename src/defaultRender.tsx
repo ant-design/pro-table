@@ -1,6 +1,7 @@
 import React from 'react';
 import { Progress } from 'antd';
 import moment from 'moment';
+import Percent from './component/Percent';
 import IndexColumn from './component/indexColumn';
 import { getProgressStatus } from './component/util';
 
@@ -14,6 +15,7 @@ import { getProgressStatus } from './component/util';
  * time: 时间 HH:mm:ss
  * index：序列
  * progress: 进度条
+ * percent: 百分比
  */
 export type ProColumnsValueType =
   | 'money'
@@ -28,13 +30,17 @@ export type ProColumnsValueType =
   | 'index'
   | 'indexBorder'
   | 'progress'
+  | 'percent'
   | 'digit';
 
 // function return type
 export type ProColumnsValueObjectType = {
-  type: 'progress' | 'money';
+  type: 'progress' | 'money' | 'percent';
   status?: 'normal' | 'active' | 'success' | 'exception' | undefined;
   locale?: string;
+  /** percent */
+  showSymbol?: boolean;
+  precision?: number;
 };
 
 /**
@@ -74,6 +80,9 @@ const defaultRenderTextByObject = (text: string | number, value: ProColumnsValue
     }
     return moneyIntl.format(text as number);
   }
+  if (value.type === 'percent') {
+    return <Percent value={text} showSymbol={value.showSymbol} precision={value.precision} />;
+  }
   return text;
 };
 
@@ -99,7 +108,7 @@ const defaultRenderText = <T, U>(
       return defaultRenderTextByObject(text as string, value);
     }
   }
-          
+
   /**
    * 如果是金额的值
    */
@@ -119,7 +128,7 @@ const defaultRenderText = <T, U>(
   if (valueType === 'date' && text) {
     return moment(text).format('YYYY-MM-DD');
   }
-          
+
   /**
    *如果是日期范围的值
    */
@@ -131,14 +140,14 @@ const defaultRenderText = <T, U>(
       </div>
     );
   }
-          
+
   /**
    *如果是日期加时间类型的值
    */
   if (valueType === 'dateTime' && text) {
     return moment(text).format('YYYY-MM-DD HH:mm:ss');
   }
-          
+
   /**
    *如果是日期加时间类型的值的值
    */
@@ -170,6 +179,10 @@ const defaultRenderText = <T, U>(
     return (
       <Progress size="small" percent={text as number} status={getProgressStatus(text as number)} />
     );
+  }
+  /** 百分比, 默认展示符号, 不展示小数位 */
+  if (valueType === 'percent') {
+    return <Percent showSymbol value={text as number} />;
   }
 
   return text;
