@@ -7,6 +7,7 @@ import useMergeValue from 'use-merge-value';
 import { ColumnProps, PaginationConfig, TableProps } from 'antd/es/table';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
 import { FormProps } from 'antd/es/form';
+import { stringify } from 'use-json-comparison';
 
 import { IntlProvider, IntlConsumer, IntlType } from './component/intlContext';
 import useFetchData, { UseFetchDataAction, RequestData } from './useFetchData';
@@ -202,7 +203,7 @@ export interface ProTableProps<T, U extends { [key: string]: any } = {}>
   /**
    * 默认的操作栏配置
    */
-  options?: OptionConfig<T>;
+  options?: OptionConfig<T> | false;
   /**
    * 是否显示搜索表单
    */
@@ -229,7 +230,7 @@ export interface ProTableProps<T, U extends { [key: string]: any } = {}>
    * 自定义 table 的 alert
    * 设置或者返回false 即可关闭
    */
-  tableAlertRender?: (keys: (string | number)[], rows: T[]) => React.ReactNode;
+  tableAlertRender?: ((keys: (string | number)[], rows: T[]) => React.ReactNode) | false;
   /**
    * 自定义 table 的 alert 的操作
    * 设置或者返回false 即可关闭
@@ -361,7 +362,7 @@ const columRender = <T, U = any>(
   const renderTextStr = renderText(parsingText(text, valueEnum), row, index, action.current);
   const textDom = defaultRenderText<T, {}>(renderTextStr, item.valueType || 'text', index, row);
 
-  const dom: React.ReactNode = genEllipsis(genCopyable(textDom, item), item, text);
+  const dom: React.ReactNode = genEllipsis(genCopyable(textDom, item), item, renderTextStr);
 
   if (item.render) {
     const renderDom = item.render(dom, row, index, action.current);
@@ -472,9 +473,12 @@ const ProTable = <T extends {}, U extends object>(
     defaultClassName,
     formRef,
     type = 'table',
-    ...reset
+    ...rest
   } = props;
 
+  const [selectedRowKeys, setSelectedRowKeys] = useMergeValue<React.ReactText[]>([], {
+    value: propsRowSelection ? propsRowSelection.selectedRowKeys : undefined,
+  });
   const [formSearch, setFormSearch] = useState<{}>({});
 
   /**
@@ -507,14 +511,7 @@ const ProTable = <T extends {}, U extends object>(
       defaultPageSize: fetchPagination.pageSize || fetchPagination.defaultPageSize,
       onLoad,
       onRequestError,
-      effects: [
-        Object.values(params)
-          .filter(item => checkUndefinedOrNull(item))
-          .join('-'),
-        Object.values(formSearch)
-          .filter(item => checkUndefinedOrNull(item))
-          .join('-'),
-      ],
+      effects: [stringify(params), stringify(formSearch)],
     },
   );
 
@@ -563,6 +560,8 @@ const ProTable = <T extends {}, U extends object>(
         if (!current) {
           return;
         }
+        // reload 之后大概率会切换数据，清空一下选择。
+        setSelectedRowKeys([]);
         await current.reload();
       },
       fetchMore: async () => {
@@ -641,25 +640,6 @@ const ProTable = <T extends {}, U extends object>(
     }
   }, [propsPagination]);
 
-  /**
-   * tableColumn 变化的时候更新一下，这个参数将会用于渲染
-   */
-  useDeepCompareEffect(() => {
-    const tableColumn = genColumnList<T>(propsColumns, counter.columnsMap, counter);
-    if (tableColumn && tableColumn.length > 0) {
-      counter.setColumns(tableColumn);
-      counter.setSortKeyColumns(
-        tableColumn.map((item, index) => {
-          const key = genColumnKey(item.key, item.dataIndex) || `${index}`;
-          return `${key}_${item.index}`;
-        }),
-      );
-    }
-  }, [propsColumns]);
-
-  const [selectedRowKeys, setSelectedRowKeys] = useMergeValue<string[] | number[]>([], {
-    value: propsRowSelection ? propsRowSelection.selectedRowKeys : undefined,
-  });
   const [selectedRows, setSelectedRows] = useState<T[]>([]);
 
   // 映射 selectedRowKeys 与 selectedRow
@@ -667,7 +647,7 @@ const ProTable = <T extends {}, U extends object>(
     if (action.loading !== false || propsRowSelection === false) {
       return;
     }
-    const tableKey = reset.rowKey;
+    const tableKey = rest.rowKey;
     setSelectedRows(
       ((action.dataSource as T[]) || []).filter((item, index) => {
         if (!tableKey) {
@@ -694,8 +674,8 @@ const ProTable = <T extends {}, U extends object>(
   };
 
   useEffect(() => {
-    counter.setTableSize(reset.size || 'default');
-  }, [reset.size]);
+    counter.setTableSize(rest.size || 'default');
+  }, [rest.size]);
 
   if (counter.columns.length < 1) {
     return <Empty />;
@@ -708,7 +688,7 @@ const ProTable = <T extends {}, U extends object>(
       <div className={className} id="ant-design-pro-table" style={style} ref={rootRef}>
         {(search || type === 'form') && (
           <FormSearch
-            {...reset}
+            {...rest}
             type={props.type}
             formRef={formRef}
             formConfig={props.form}
@@ -733,7 +713,7 @@ const ProTable = <T extends {}, U extends object>(
               // back first page
               action.resetPageIndex();
             }}
-            dateFormatter={reset.dateFormatter}
+            dateFormatter={rest.dateFormatter}
             search={search}
           />
         )}
@@ -768,12 +748,12 @@ const ProTable = <T extends {}, U extends object>(
                   setSelectedRowKeys([]);
                   setSelectedRows([]);
                 }}
-                alertOptionRender={reset.tableAlertOptionRender}
+                alertOptionRender={rest.tableAlertOptionRender}
                 alertInfoRender={tableAlertRender}
               />
             )}
             <Table<T>
-              {...reset}
+              {...rest}
               size={counter.tableSize}
               rowSelection={propsRowSelection === false ? undefined : rowSelection}
               className={tableClassName}
@@ -792,7 +772,7 @@ const ProTable = <T extends {}, U extends object>(
                 return true;
               })}
               loading={action.loading || props.loading}
-              dataSource={request ? (action.dataSource as T[]) : reset.dataSource}
+              dataSource={request ? (action.dataSource as T[]) : rest.dataSource}
               pagination={pagination}
             />
           </Card>

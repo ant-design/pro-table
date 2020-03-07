@@ -31,7 +31,7 @@ export interface ToolBarProps<T = unknown> {
     },
   ) => React.ReactNode[];
   action: UseFetchDataAction<RequestData<T>>;
-  options?: OptionConfig<T>;
+  options?: OptionConfig<T> | false;
   selectedRowKeys?: (string | number)[];
   selectedRows?: T[];
   className?: string;

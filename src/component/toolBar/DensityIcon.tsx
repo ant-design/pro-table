@@ -6,7 +6,7 @@ import { useIntl } from '../intlContext';
 
 export type DensitySize = 'small' | 'default' | 'middle' | undefined;
 
-const DensityIcon: React.FC<{}> = (_, ref) => {
+const DensityIcon: React.ForwardRefRenderFunction<Dropdown, {}> = (_, ref) => {
   const counter = Container.useContainer();
   const intl = useIntl();
   return (

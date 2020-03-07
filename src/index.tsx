@@ -13,6 +13,7 @@ import {
   viVNIntl,
   itITIntl,
   jaJPIntl,
+  esESIntl,
 } from './component/intlContext';
 import Search from './Form';
 import { ProColumnsValueType } from './defaultRender';
@@ -36,6 +37,7 @@ export {
   viVNIntl,
   itITIntl,
   jaJPIntl,
+  esESIntl,
   ColumnsState,
 };
 

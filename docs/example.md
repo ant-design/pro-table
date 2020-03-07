@@ -1,6 +1,9 @@
 ---
 title: 例子
 order: 0
+nav:
+  title: 例子
+  order: 9
 ---
 
 # 各种示例

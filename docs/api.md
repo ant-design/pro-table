@@ -1,6 +1,9 @@
 ---
 title: API
 order: 9
+nav:
+  title: API
+  order: 2
 ---
 
 # API
@@ -87,7 +90,6 @@ ref.reset();
 | indexBorder | 带 border 的序号列 | - |
 | progress | 进度条 | - |
 | digit | 单纯的数字，form 转化时会转为 inputNumber | - |
-| progress | 进度条 | - |
 
 ## valueEnum
 
