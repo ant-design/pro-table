@@ -1,7 +1,7 @@
 import React from 'react';
 import { Progress } from 'antd';
 import moment from 'moment';
-import Percent from './component/Percent';
+import Percent from './component/percent';
 import IndexColumn from './component/indexColumn';
 import { getProgressStatus } from './component/util';
 
