@@ -129,7 +129,7 @@ export interface TableFormItem<T> extends Omit<FormItemProps, 'children'> {
   formRef?: React.MutableRefObject<FormInstance | undefined> | ((actionRef: FormInstance) => void);
 }
 
-const FromInputRender: React.FC<{
+export const FromInputRender: React.FC<{
   item: ProColumns<any>;
   value?: any;
   type: 'form' | 'list' | 'table' | 'cardList' | undefined;
