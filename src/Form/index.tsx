@@ -574,7 +574,20 @@ const FormSearch = <T, U = {}>({
   const domList = columnsList
     .filter((_, index) => (collapse && type !== 'form' ? index < (rowNumber - 1 || 1) : true))
     .map(item => {
-      const { valueType, dataIndex, valueEnum, initialValue, ...rest } = item;
+      const {
+        valueType,
+        dataIndex,
+        valueEnum,
+        renderFormItem,
+        render,
+        hideInForm,
+        hideInSearch,
+        hideInTable,
+        renderText,
+        order,
+        initialValue,
+        ...rest
+      } = item;
       const key = genColumnKey(rest.key, dataIndex);
       return (
         <Col {...colConfig} key={key}>
