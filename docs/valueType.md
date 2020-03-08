@@ -50,6 +50,7 @@ const columns = {
 ### 支持的返回值
 
 ### progress
+#### progress
 
 ```js
 return { type: 'progress', status: 'success' | 'exception' | 'normal' | 'active' };
