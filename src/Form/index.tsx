@@ -536,7 +536,7 @@ const FormSearch = <T, U = {}>({
       tempMap[genColumnKey(item.key, item.dataIndex) || 'null'] = item;
     });
     setProColumnsMap(tempMap);
-  }, counter.proColumns);
+  }, [counter.proColumns]);
 
   const columnsList = counter.proColumns
     .filter(item => {
