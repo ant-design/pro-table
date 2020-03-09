@@ -15,6 +15,9 @@
     align-items: center;
     &-item {
       margin-right: 8px;
+      a {
+        padding: 0;
+      }
     }
   }
   .@{ant-prefix}-pagination {
@@ -25,5 +28,12 @@
   }
   .@{ant-prefix}-table-thead tr:first-child > th:first-child {
     padding-left: 24px;
+  }
+
+  td.@{ant-prefix}-table-cell {
+    a {
+      padding: 0 8px;
+      font-size: 14px;
+    }
   }
 }

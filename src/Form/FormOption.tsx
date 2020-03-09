@@ -1,12 +1,12 @@
 import React from 'react';
-import { FormInstance } from 'antd/es/form';
+import { FormComponentProps } from '@ant-design/compatible/es/form';
 import { Button } from 'antd';
 import { SearchConfig } from './index';
 
 export interface FormOptionProps {
   searchConfig: SearchConfig;
   type?: 'form' | 'list' | 'table' | 'cardList' | undefined;
-  form: FormInstance;
+  form: FormComponentProps['form'];
   submit: () => void;
   collapse: boolean;
   setCollapse: (collapse: boolean) => void;

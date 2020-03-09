@@ -135,7 +135,7 @@ export interface TableFormItem<T> extends Omit<FormItemProps, 'children'> {
     | ((actionRef: FormComponentProps['form']) => void);
 }
 
-const FromInputRender: React.FC<{
+export const FromInputRender: React.FC<{
   item: ProColumns<any>;
   value?: any;
   type: 'form' | 'list' | 'table' | 'cardList' | undefined;
@@ -539,7 +539,7 @@ const FormSearch = <T, U = {}>({
       tempMap[genColumnKey(item.key, item.dataIndex) || 'null'] = item;
     });
     setProColumnsMap(tempMap);
-  }, counter.proColumns);
+  }, [counter.proColumns]);
 
   const columnsList = counter.proColumns
     .filter(item => {
@@ -577,7 +577,20 @@ const FormSearch = <T, U = {}>({
   const domList = columnsList
     .filter((_, index) => (collapse && type !== 'form' ? index < (rowNumber - 1 || 1) : true))
     .map(item => {
-      const { valueType, dataIndex, ...rest } = item;
+      const {
+        valueType,
+        dataIndex,
+        valueEnum,
+        renderFormItem,
+        render,
+        hideInForm,
+        hideInSearch,
+        hideInTable,
+        renderText,
+        order,
+        initialValue,
+        ...rest
+      } = item;
       const key = genColumnKey(rest.key, dataIndex);
       return (
         <Col {...colConfig} key={key}>
@@ -630,15 +643,11 @@ const FormSearch = <T, U = {}>({
                     >
                       <Form.Item label={isForm && ' '}>
                         <FormOption
-                          showCollapseButton={columnsList.length > rowNumber - 1}
+                          showCollapseButton={columnsList.length > rowNumber - 1 && !isForm}
                           searchConfig={searchConfig}
                           submit={submit}
-                          form={{
-                            ...form,
-                            submit: () => {
-                              submit();
-                            },
-                          }}
+                          form={form}
+                          type={type}
                           collapse={collapse}
                           setCollapse={setCollapse}
                         />

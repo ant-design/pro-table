@@ -44,6 +44,8 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 | valueType | 值的类型 | `'money' \| 'option' \| 'date' \| 'dateTime' \| 'time' \| 'text'\| 'index' \| 'indexBorder'` | 'text' |
 | hideInSearch | 在查询表单中不展示此项 | boolean | - |
 | hideInTable | 在 Table 中不展示此列 | boolean | - |
+| hideInForm | 在 Form 模式下 中不展示此列 | boolean | - |
+| order | 决定在 查询表单中的顺序，越大越在前面 | number | - |
 | formItemProps | 查询表单的 props，会透传给表单项 | `{ [prop: string]: any }` | - |
 
 ### ActionType

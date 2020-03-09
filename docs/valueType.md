@@ -29,7 +29,7 @@ Pro-Table 封装了一些常用的值类型来减少重复的 `render` 操作，
 | indexBorder | 带 border 的序号列 | - |
 | progress | 进度条 | - |
 | digit | 单纯的数字，form 转化时会转为 inputNumber | - |
-| progress | 进度条 | - |
+| percent | 百分比 | +1.12 |
 
 ## 传入 function
 
@@ -49,6 +49,8 @@ const columns = {
 
 ### 支持的返回值
 
+### progress
+
 #### progress
 
 ```js
@@ -59,6 +61,12 @@ return { type: 'progress', status: 'success' | 'exception' | 'normal' | 'active'
 
 ```js
 return { type: 'money', locale: 'en-Us' };
+```
+
+### percent
+
+```js
+return { type: 'percent', showSymbol: true | false, precision: 2 };
 ```
 
 ## valueEnum
