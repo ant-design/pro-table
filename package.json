@@ -1,6 +1,6 @@
 {
   "name": "@ant-design/pro-table",
-  "version": "1.0.44",
+  "version": "1.0.45",
   "description": "🏆 Use Ant Design Table like a Pro!",
   "repository": "https://github.com/ant-design/pro-table",
   "license": "MIT",
@@ -52,7 +52,6 @@
     "use-merge-value": "^1.0.1"
   },
   "devDependencies": {
-    "@types/react-responsive": "^8.0.2",
     "@babel/core": "^7.8.3",
     "@babel/plugin-proposal-object-rest-spread": "^7.8.3",
     "@babel/preset-env": "^7.8.3",
@@ -65,6 +64,7 @@
     "@types/lodash.tonumber": "^4.0.3",
     "@types/node": "^12.12.8",
     "@types/react": "^16.9.11",
+    "@types/react-responsive": "^8.0.2",
     "@umijs/fabric": "^2.0.0",
     "babel-plugin-import": "^1.12.2",
     "css-loader": "^3.4.2",
