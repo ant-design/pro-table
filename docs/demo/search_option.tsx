@@ -170,12 +170,12 @@ export default () => (
     headerTitle="查询 Table"
     search={{
       collapsed: false,
-      optionRender: ({ searchText, resetText }, { form }) => {
+      optionRender: ({ searchText, resetText }, { form, submit }) => {
         return (
           <>
             <a
               onClick={() => {
-                form.submit();
+                submit();
               }}
             >
               {searchText}
