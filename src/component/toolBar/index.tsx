@@ -154,17 +154,18 @@ const ToolBar = <T, U = {}>({
     <div className={className}>
       <div className={`${className}-title`}>{headerTitle}</div>
       <div className={`${className}-option`}>
-        {actions
-          .filter(item => item)
-          .map((node, index) => (
-            <div
-              // eslint-disable-next-line react/no-array-index-key
-              key={index}
-              className={`${className}-item`}
-            >
-              {node}
-            </div>
-          ))}
+        {
+          React.Children.map(actions, (node) => {
+            return (
+              <div
+                // eslint-disable-next-line react/no-array-index-key
+                className={`${className}-item`}
+              >
+                {node}
+              </div>
+            );
+          })
+        }
         <div className={`${className}-default-option`}>
           {optionDom.length > 0 && actions.length > 0 && <Divider type="vertical" />}
           {optionDom}
