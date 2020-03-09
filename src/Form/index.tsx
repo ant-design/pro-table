@@ -654,7 +654,7 @@ const FormSearch = <T, U = {}>({
                     >
                       <Form.Item label={isForm && ' '}>
                         <FormOption
-                          showCollapseButton={columnsList.length > rowNumber - 1}
+                          showCollapseButton={columnsList.length > rowNumber - 1 && !isForm}
                           searchConfig={searchConfig}
                           submit={submit}
                           form={{
@@ -664,6 +664,7 @@ const FormSearch = <T, U = {}>({
                               form.submit();
                             },
                           }}
+                          type={type}
                           collapse={collapse}
                           setCollapse={setCollapse}
                         />
