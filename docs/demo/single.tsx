@@ -143,7 +143,6 @@ const columns: ProColumns<GithubIssueItem>[] = [
 export default () => {
   const actionRef = useRef<ActionType>();
   const [visible, setVisible] = useState(false);
-  const [page, setPage] = useState(9);
   return (
     <>
       <Drawer width={600} onClose={() => setVisible(false)} visible={visible}>
@@ -202,21 +201,10 @@ export default () => {
           };
         }}
         rowKey="id"
-        pagination={{
-          showSizeChanger: true,
-          pageSize: 5,
-          current: page,
-        }}
         dateFormatter="string"
         headerTitle="基础 Table"
         toolBarRender={() => [
-          <Button
-            key="3"
-            type="primary"
-            onClick={() => {
-              setPage(10);
-            }}
-          >
+          <Button key="3" type="primary">
             <PlusOutlined />
             新建
           </Button>,
