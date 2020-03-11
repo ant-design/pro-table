@@ -14,6 +14,7 @@ import {
   itITIntl,
   jaJPIntl,
   esESIntl,
+  ruRUIntl,
 } from './component/intlContext';
 import Search from './Form';
 import { ProColumnsValueType } from './defaultRender';
@@ -38,6 +39,7 @@ export {
   itITIntl,
   jaJPIntl,
   esESIntl,
+  ruRUIntl,
   ColumnsState,
 };
 
