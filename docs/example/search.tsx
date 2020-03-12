@@ -75,9 +75,9 @@ const columns: ProColumns<TableListItem>[] = [
 ];
 
 export default () => {
-  const [keyWord, setKeyWord] = useState();
+  const [keyWord, setKeyWord] = useState<string>();
   return (
-    <ProTable<TableListItem>
+    <ProTable<TableListItem, { keyWord?: string }>
       columns={columns}
       request={(params = {}) =>
         Promise.resolve({

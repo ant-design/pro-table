@@ -545,7 +545,7 @@ const ProTable = <T extends {}, U extends object>(
    */
   useDeepCompareEffect(() => {
     counter.setProColumns(propsColumns);
-  }, propsColumns);
+  }, [propsColumns]);
 
   counter.setAction(action);
 
