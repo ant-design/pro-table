@@ -75,6 +75,7 @@ const columns: ProColumns<TableListItem>[] = [
     dataIndex: 'status',
     initialValue: 'all',
     width: 100,
+    ellipsis: true,
     valueEnum: {
       all: { text: '全部', status: 'Default' },
       close: { text: '关闭', status: 'Default' },

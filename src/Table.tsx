@@ -362,7 +362,11 @@ const columRender = <T, U = any>({ item, text, row, index }: ColumRenderInterfac
   const renderTextStr = renderText(parsingText(text, valueEnum), row, index, action.current);
   const textDom = defaultRenderText<T, {}>(renderTextStr, item.valueType || 'text', index, row);
 
-  const dom: React.ReactNode = genEllipsis(genCopyable(textDom, item), item, renderTextStr);
+  const dom: React.ReactNode = genEllipsis(
+    genCopyable(textDom, item),
+    item,
+    renderText(parsingText(text, valueEnum, true), row, index, action.current),
+  );
 
   if (item.render) {
     const renderDom = item.render(dom, row, index, action.current);
@@ -541,7 +545,7 @@ const ProTable = <T extends {}, U extends object>(
    */
   useDeepCompareEffect(() => {
     counter.setProColumns(propsColumns);
-  }, propsColumns);
+  }, [propsColumns]);
 
   counter.setAction(action);
 

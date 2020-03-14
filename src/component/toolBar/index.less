@@ -31,7 +31,7 @@
 
     &-title {
       flex: 1;
-      color: #000;
+      color: @label-color;
       font-size: 16px;
       line-height: 24px;
       opacity: 0.85;
@@ -56,8 +56,11 @@
         width: 100%;
       }
 
-      &-item {
+      &-default-option {
+        display: flex;
         flex: 1;
+        align-items: center;
+        justify-content: flex-end;
       }
     }
   }
