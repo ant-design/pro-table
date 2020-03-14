@@ -5,8 +5,8 @@ export default {
     submit: 'Отправить',
     collapsed: 'Развернуть',
     expand: 'Свернуть',
-    inputPlaceholder: 'Пожалуйста введите',
-    selectPlaceholder: 'Пожалуйста выберите',
+    inputPlaceholder: 'Введите значение',
+    selectPlaceholder: 'Выберите значение',
   },
   alert: {
     clear: 'Очистить',
