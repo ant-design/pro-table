@@ -426,7 +426,7 @@ const getDefaultSearch = (
     },
     searchText: intl.getMessage('tableFrom.search', defaultSearch.searchText || '查询'),
     resetText: intl.getMessage('tableFrom.reset', defaultSearch.resetText || '重置'),
-    submitText: intl.getMessage('tableFrom.submit', defaultSearch.resetText || '提交'),
+    submitText: intl.getMessage('tableFrom.submit', defaultSearch.submitText || '提交'),
     span: isFrom ? defaultFromColConfig : defaultColConfig,
   };
 
