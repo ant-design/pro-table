@@ -38,8 +38,8 @@ for (let i = 0; i < 10; i += 1) {
     progress: Math.ceil(Math.random() * 100) + 1,
     percent:
       Math.random() > 0.5
-        ? (i + 1) * 10 + Math.random()
-        : -((i + 1) * 10 + Math.random()).toFixed(5),
+        ? ((i + 1) * 10 + Math.random()).toFixed(3)
+        : -((i + 1) * 10 + Math.random()).toFixed(2),
   });
 }
 
@@ -136,8 +136,6 @@ const columns: ProColumns<TableListItem>[] = [
     dataIndex: 'percent',
     valueType: () => ({
       type: 'percent',
-      showSymbol: true,
-      precision: 3,
     }),
   },
   {

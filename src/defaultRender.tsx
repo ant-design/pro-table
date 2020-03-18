@@ -187,7 +187,7 @@ const defaultRenderText = <T, U>(
   }
   /** 百分比, 默认展示符号, 不展示小数位 */
   if (valueType === 'percent') {
-    return <Percent showSymbol value={text as number} />;
+    return <Percent value={text as number} />;
   }
 
   return text;
