@@ -76,6 +76,9 @@ ref.fetchMore();
 
 // 重置到默认值
 ref.reset();
+
+// 清空选中项
+ref.clearSelected();
 ```
 
 ### valueType
