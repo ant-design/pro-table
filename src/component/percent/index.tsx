@@ -1,5 +1,5 @@
 import React, { Fragment, ReactNode, useMemo } from 'react';
-import tonumber from 'lodash.tonumber';
+import toNumber from 'lodash.tonumber';
 
 import { getColorByRealValue, getSymbolByRealValue, getRealTextWithPrecision } from './util';
 
@@ -23,8 +23,8 @@ const Percent: React.SFC<PercentPropInt> = ({
   const realValue = useMemo(
     () =>
       typeof value === 'string' && value.includes('%')
-        ? tonumber(value.replace('%', ''))
-        : tonumber(value),
+        ? toNumber(value.replace('%', ''))
+        : toNumber(value),
     [value],
   );
   /** 颜色有待确定, 根据提供 colors: ['正', '负'] | boolean */
