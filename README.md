@@ -35,7 +35,8 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 | beforeSearchSubmit | 搜索之前进行一些修改 | `(params:T)=>T` | - |
 | onSizeChange | table 尺寸发生改变 | `(size: 'default' | 'middle' | 'small' | undefined) => void` | - |
 | columnsStateMap | columns 的状态枚举 | `{[key: string]: { show:boolean, fixed: "right"|"left"} }` | - |
-| onColumnsStateChange | columns 状态发生改变 | `(props: {[key: string]: { show:boolean, fixed: "right"|"left"} }) => void` | - |
+| onColumnsStateChange | columns 状态发生改变 | `(props: {[key: string]: { show:boolean, fixed: "right"|"left"} }) => void` | - | ` |
+| form | search From 配置 type="form" 和 搜索表单 的 Form 配置 基本配置与 antd Form 相同 但是劫持了 form 的配置,可用来初始化 formData | `Omit<FormProps, 'form'>` | - |
 
 ### Columns
 

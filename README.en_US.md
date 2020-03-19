@@ -36,6 +36,7 @@ pro-table is encapsulated in an antd table, supports some presets, and encapsula
 | onSizeChange | table size changes | `(size: 'default' | 'middle' | 'small' | undefined) => void` | - |
 | columnsStateMap | columns status | `{[key: string]: { show:boolean, fixed: "right"|"left"} }` | - |
 | onColumnsStateChange | columns status changed | `(props: {[key: string]: { show:boolean, fixed: "right"|"left"} }) => void` | - |
+| form | search From config type="form" and search form's Form config ,the config data like antd Form | `Omit<FormProps, 'form'>` | - |
 
 ### Columns
 
