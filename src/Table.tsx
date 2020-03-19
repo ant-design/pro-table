@@ -549,6 +549,11 @@ const ProTable = <T extends {}, U extends object>(
   };
 
   /**
+   * 数据源更新时 取消所有选中项
+   */
+  useEffect(onCleanSelected, [props.dataSource, action.dataSource]);
+
+  /**
    *  保存一下 propsColumns
    *  生成 from 需要用
    */
