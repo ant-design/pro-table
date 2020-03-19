@@ -658,8 +658,16 @@ const ProTable = <T extends {}, U extends object>(
       return;
     }
     const tableKey = rest.rowKey;
+    // 筛选数据源是request获取的还是dataSource传入的
+    let dataSource: T[] = [];
+    if (action.dataSource && (action.dataSource as T[]).length > 0) {
+      dataSource = action.dataSource as T[];
+    } else if (props.dataSource && props.dataSource.length > 0) {
+      dataSource = props.dataSource as T[];
+    }
+
     setSelectedRows(
-      ((action.dataSource as T[]) || []).filter((item, index) => {
+      dataSource.filter((item, index) => {
         if (!tableKey) {
           return (selectedRowKeys as any).includes(index);
         }
