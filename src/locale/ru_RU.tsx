@@ -28,6 +28,6 @@ export default {
     densityDefault: 'По умолчанию',
     densityLarger: 'Большой',
     densityMiddle: 'Средний',
-    densitySmall: 'Маленький',
+    densitySmall: 'Сжатый',
   },
 };

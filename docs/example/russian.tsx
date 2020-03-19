@@ -156,7 +156,7 @@ export default () => {
             }
           }}
         >
-          reload
+          Обновить
         </Button>
         <Button
           onClick={() => {
@@ -165,7 +165,7 @@ export default () => {
             }
           }}
         >
-          reset
+          Сброс
         </Button>
       </Drawer>
       <IntlProvider value={ruRUIntl}>
