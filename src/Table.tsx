@@ -552,7 +552,7 @@ const ProTable = <T extends {}, U extends object>(
   useEffect(() => {
     // 数据源更新时 取消所有选中项
     onCleanSelected();
-    setDataSource(props.dataSource || (action.dataSource as T[]));
+    setDataSource(request ? (action.dataSource as T[]) : props.dataSource || []);
   }, [props.dataSource, action.dataSource]);
 
   /**
