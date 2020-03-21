@@ -484,6 +484,7 @@ const ProTable = <T extends {}, U extends object>(
   });
   const [formSearch, setFormSearch] = useState<{}>({});
   const [selectedRows, setSelectedRows] = useState<T[]>([]);
+  const [dataSource, setDataSource] = useState<T[]>([]);
   const rootRef = useRef<HTMLDivElement>(null);
   const fullScreen = useRef<() => void>();
 
@@ -548,10 +549,11 @@ const ProTable = <T extends {}, U extends object>(
     setSelectedRows([]);
   };
 
-  /**
-   * 数据源更新时 取消所有选中项
-   */
-  useEffect(onCleanSelected, [props.dataSource, action.dataSource]);
+  useEffect(() => {
+    // 数据源更新时 取消所有选中项
+    onCleanSelected();
+    setDataSource(props.dataSource || (action.dataSource as T[]));
+  }, [props.dataSource, action.dataSource]);
 
   /**
    *  保存一下 propsColumns
@@ -663,14 +665,6 @@ const ProTable = <T extends {}, U extends object>(
       return;
     }
     const tableKey = rest.rowKey;
-    // 筛选数据源是request获取的还是dataSource传入的
-    let dataSource: T[] = [];
-    if (action.dataSource && (action.dataSource as T[]).length > 0) {
-      dataSource = action.dataSource as T[];
-    } else if (props.dataSource && props.dataSource.length > 0) {
-      dataSource = props.dataSource as T[];
-    }
-
     setSelectedRows(
       dataSource.filter((item, index) => {
         if (!tableKey) {
@@ -789,7 +783,7 @@ const ProTable = <T extends {}, U extends object>(
                 return true;
               })}
               loading={action.loading || props.loading}
-              dataSource={request ? (action.dataSource as T[]) : rest.dataSource}
+              dataSource={dataSource}
               pagination={pagination}
             />
           </Card>
