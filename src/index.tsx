@@ -17,7 +17,7 @@ import {
   ruRUIntl,
 } from './component/intlContext';
 import Search from './Form';
-import { ProColumnsValueType } from './defaultRender';
+import defaultRenderText, { ProColumnsValueType } from './defaultRender';
 
 export {
   ProColumns,
@@ -33,6 +33,7 @@ export {
   IntlConsumer,
   IntlType,
   zhCNIntl,
+  defaultRenderText,
   createIntl,
   enUSIntl,
   viVNIntl,
