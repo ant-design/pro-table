@@ -1,5 +1,5 @@
 export default {
-  tableFrom: {
+  tableForm: {
     search: 'Query',
     reset: 'Reset',
     submit: 'Submit',

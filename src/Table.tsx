@@ -14,7 +14,7 @@ import useFetchData, { UseFetchDataAction, RequestData } from './useFetchData';
 import Container from './container';
 import Toolbar, { OptionConfig, ToolBarProps } from './component/toolBar';
 import Alert from './component/alert';
-import FormSearch, { SearchConfig, TableFormItem } from './Form';
+import FormSearch, { ColConfig, SearchConfig, TableFormItem } from './Form';
 import { StatusType } from './component/status';
 
 import get, {
@@ -250,6 +250,16 @@ export interface ProTableProps<T, U extends { [key: string]: any }>
    * 支持 ProTable 的类型
    */
   type?: 'form' | 'list' | 'table' | 'cardList' | undefined;
+
+  /**
+   * type为form时 自定义表单的col属性
+   */
+  formColConfig?: ColConfig;
+
+  /**
+   * pro-table的type为form时支持禁用默认的表单按钮, 将表单放入Modal中时非常有用
+   */
+  disableFormButton?: boolean;
 
   /**
    * 提交表单时触发

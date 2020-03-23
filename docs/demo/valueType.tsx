@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button } from 'antd';
+import { Button, Modal } from 'antd';
 import ProTable, { ProColumns } from '@ant-design/pro-table';
+import { FormInstance } from 'antd/es/form';
 
 const valueEnum = {
   0: 'close',
@@ -147,42 +148,66 @@ const columns: ProColumns<TableListItem>[] = [
   },
 ];
 
-export default () => (
-  <>
-    <ProTable<TableListItem>
-      columns={columns}
-      request={() =>
-        Promise.resolve({
-          data: tableListDataSource,
-          success: true,
-        })
-      }
-      rowKey="key"
-      pagination={{
-        showSizeChanger: true,
-      }}
-      scroll={{
-        x: columns.length * 120,
-      }}
-      dateFormatter="string"
-      headerTitle="valueType 设置"
-      toolBarRender={() => [
-        <Button key="3" type="primary">
-          <PlusOutlined />
-          新建
-        </Button>,
-      ]}
-    />
-    <ProTable<TableListItem>
-      style={{
-        maxWidth: 500,
-      }}
-      type="form"
-      columns={columns}
-      onSubmit={params => {
-        // eslint-disable-next-line no-console
-        console.log(params);
-      }}
-    />
-  </>
-);
+export default () => {
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const formRef = useRef<FormInstance>();
+  return (
+    <>
+      <ProTable<TableListItem>
+        columns={columns}
+        request={() =>
+          Promise.resolve({
+            data: tableListDataSource,
+            success: true,
+          })
+        }
+        rowKey="key"
+        pagination={{
+          showSizeChanger: true,
+        }}
+        scroll={{
+          x: columns.length * 120,
+        }}
+        dateFormatter="string"
+        headerTitle="valueType 设置"
+        toolBarRender={() => [
+          <Button key="3" type="primary" onClick={() => setModalVisible(true)}>
+            <PlusOutlined />
+            新建
+          </Button>,
+        ]}
+      />
+      <ProTable<TableListItem>
+        style={{
+          maxWidth: 500,
+        }}
+        type="form"
+        columns={columns}
+        onSubmit={params => {
+          // eslint-disable-next-line no-console
+          console.log(params);
+        }}
+      />
+      <Modal
+        title="新建示例"
+        visible={modalVisible}
+        onCancel={() => setModalVisible(false)}
+        onOk={() => console.log(formRef.current!!.getFieldsValue())}
+      >
+        <ProTable<TableListItem>
+          style={{
+            maxWidth: 1000,
+          }}
+          type="form"
+          formRef={formRef}
+          form={{
+            layout: 'vertical',
+          }}
+          formColConfig={{ md: 12, lg: 12, sm: 24 }}
+          disableFormButton
+          columns={columns}
+        />
+      </Modal>
+    </>
+  );
+};

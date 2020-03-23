@@ -17,10 +17,19 @@ import { ProColumns, ProColumnsValueType } from '../index';
 import './index.less';
 import FormOption, { FormOptionProps } from './FormOption';
 
+export type ColConfig = {
+  lg?: number;
+  md?: number;
+  xxl?: number;
+  xl?: number;
+  sm?: number;
+  xs?: number;
+};
+
 /**
  * 默认的查询表单配置
  */
-const defaultColConfig = {
+const defaultColConfig: ColConfig = {
   lg: 8,
   md: 12,
   xxl: 6,
@@ -32,7 +41,7 @@ const defaultColConfig = {
 /**
  * 默认的新建表单配置
  */
-const defaultFromColConfig = {
+const defaultFormColConfig: ColConfig = {
   lg: 24,
   md: 24,
   xxl: 24,
@@ -127,15 +136,20 @@ export interface TableFormItem<T> extends Omit<FormItemProps, 'children'> {
   dateFormatter?: 'string' | 'number' | false;
   search?: boolean | SearchConfig;
   formRef?: React.MutableRefObject<FormInstance | undefined> | ((actionRef: FormInstance) => void);
+  formColConfig?: ColConfig;
+  /**
+   * pro-table的type为form时支持禁用默认的表单按钮, 将表单放入Modal中时非常有用
+   */
+  disableFormButton?: boolean;
 }
 
-export const FromInputRender: React.FC<{
+export const FormInputRender: React.FC<{
   item: ProColumns<any>;
   value?: any;
   type: 'form' | 'list' | 'table' | 'cardList' | undefined;
   onChange?: (value: any) => void;
 }> = React.forwardRef(({ item, ...rest }, ref: any) => {
-  const { valueType } = item;
+  const { valueType, title } = item;
   const intl = useIntl();
   /**
    * 自定义 render
@@ -148,7 +162,7 @@ export const FromInputRender: React.FC<{
     if (valueEnum) {
       return (
         <Select
-          placeholder={intl.getMessage('tableFrom.selectPlaceholder', '请选择')}
+          placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择') + title}
           ref={ref}
           {...rest}
           {...item.formItemProps}
@@ -163,7 +177,7 @@ export const FromInputRender: React.FC<{
     }
     return (
       <Input
-        placeholder={intl.getMessage('tableFrom.inputPlaceholder', '请输入')}
+        placeholder={intl.getMessage('tableFrom.inputPlaceholder', '请输入') + title}
         {...rest}
         {...item.formItemProps}
       />
@@ -173,7 +187,7 @@ export const FromInputRender: React.FC<{
     return (
       <DatePicker
         ref={ref}
-        placeholder={intl.getMessage('tableFrom.selectPlaceholder', '请选择')}
+        placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择') + title}
         style={{
           width: '100%',
         }}
@@ -188,7 +202,7 @@ export const FromInputRender: React.FC<{
       <DatePicker
         showTime
         ref={ref}
-        placeholder={intl.getMessage('tableFrom.selectPlaceholder', '请选择')}
+        placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择') + title}
         style={{
           width: '100%',
         }}
@@ -203,8 +217,8 @@ export const FromInputRender: React.FC<{
       <DatePicker.RangePicker
         ref={ref}
         placeholder={[
-          intl.getMessage('tableFrom.selectPlaceholder', '请选择'),
-          intl.getMessage('tableFrom.selectPlaceholder', '请选择'),
+          intl.getMessage('tableForm.selectPlaceholder', '请选择'),
+          intl.getMessage('tableForm.selectPlaceholder', '请选择'),
         ]}
         style={{
           width: '100%',
@@ -220,8 +234,8 @@ export const FromInputRender: React.FC<{
         ref={ref}
         showTime
         placeholder={[
-          intl.getMessage('tableFrom.selectPlaceholder', '请选择'),
-          intl.getMessage('tableFrom.selectPlaceholder', '请选择'),
+          intl.getMessage('tableForm.selectPlaceholder', '请选择'),
+          intl.getMessage('tableForm.selectPlaceholder', '请选择'),
         ]}
         style={{
           width: '100%',
@@ -236,7 +250,7 @@ export const FromInputRender: React.FC<{
     return (
       <TimePicker
         ref={ref}
-        placeholder={intl.getMessage('tableFrom.selectPlaceholder', '请选择')}
+        placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择') + title}
         style={{
           width: '100%',
         }}
@@ -249,7 +263,7 @@ export const FromInputRender: React.FC<{
     return (
       <InputNumber
         ref={ref}
-        placeholder={intl.getMessage('tableFrom.inputPlaceholder', '请输入')}
+        placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入') + title}
         style={{
           width: '100%',
         }}
@@ -271,7 +285,7 @@ export const FromInputRender: React.FC<{
           return '';
         }}
         parser={value => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
-        placeholder={intl.getMessage('tableFrom.inputPlaceholder', '请输入')}
+        placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入') + title}
         style={{
           width: '100%',
         }}
@@ -283,7 +297,7 @@ export const FromInputRender: React.FC<{
   if (valueType === 'textarea' && rest.type === 'form') {
     return (
       <Input.TextArea
-        placeholder={intl.getMessage('tableFrom.inputPlaceholder', '请输入')}
+        placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入') + title}
         ref={ref}
         {...rest}
         {...item.formItemProps}
@@ -292,7 +306,7 @@ export const FromInputRender: React.FC<{
   }
   return (
     <Input
-      placeholder={intl.getMessage('tableFrom.inputPlaceholder', '请输入')}
+      placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入') + title}
       ref={ref}
       {...rest}
       {...item.formItemProps}
@@ -393,14 +407,15 @@ const conversionValue = (
 const getDefaultSearch = (
   search: boolean | SearchConfig | undefined,
   intl: IntlType,
-  isFrom: boolean,
+  isForm: boolean,
+  formColConfig?: ColConfig,
 ): SearchConfig => {
   const config = {
     collapseRender: (collapsed: boolean) => {
       if (collapsed) {
         return (
           <>
-            {intl.getMessage('tableFrom.collapsed', '展开')}
+            {intl.getMessage('tableForm.collapsed', '展开')}
             <DownOutlined
               style={{
                 marginLeft: '0.5em',
@@ -413,7 +428,7 @@ const getDefaultSearch = (
       }
       return (
         <>
-          {intl.getMessage('tableFrom.expand', '收起')}
+          {intl.getMessage('tableForm.expand', '收起')}
           <DownOutlined
             style={{
               marginLeft: '0.5em',
@@ -424,10 +439,10 @@ const getDefaultSearch = (
         </>
       );
     },
-    searchText: intl.getMessage('tableFrom.search', defaultSearch.searchText || '查询'),
-    resetText: intl.getMessage('tableFrom.reset', defaultSearch.resetText || '重置'),
-    submitText: intl.getMessage('tableFrom.submit', defaultSearch.submitText || '提交'),
-    span: isFrom ? defaultFromColConfig : defaultColConfig,
+    searchText: intl.getMessage('tableForm.search', defaultSearch.searchText || '查询'),
+    resetText: intl.getMessage('tableForm.reset', defaultSearch.resetText || '重置'),
+    submitText: intl.getMessage('tableForm.submit', defaultSearch.submitText || '提交'),
+    span: isForm ? formColConfig || defaultFormColConfig : defaultColConfig,
   };
 
   if (search === undefined || search === true) {
@@ -453,7 +468,7 @@ const getSpanConfig = (
     ...defaultColConfig,
     ...span,
   };
-  return config[size];
+  return config[size]!!;
 };
 
 const FormSearch = <T, U = {}>({
@@ -463,10 +478,12 @@ const FormSearch = <T, U = {}>({
   search: propsSearch,
   type,
   form: formConfig = {},
+  formColConfig,
+  disableFormButton,
 }: TableFormItem<T>) => {
   const [form] = Form.useForm();
   const intl = useIntl();
-  const searchConfig = getDefaultSearch(propsSearch, intl, type === 'form');
+  const searchConfig = getDefaultSearch(propsSearch, intl, type === 'form', formColConfig);
   const { span } = searchConfig;
 
   const counter = Container.useContainer();
@@ -593,7 +610,7 @@ const FormSearch = <T, U = {}>({
       return (
         <Col {...colConfig} key={key}>
           <Form.Item labelAlign="right" label={rest.title} name={key} {...(isForm && rest)}>
-            <FromInputRender item={item} type={type} />
+            <FormInputRender item={item} type={type} />
           </Form.Item>
         </Col>
       );
@@ -645,32 +662,35 @@ const FormSearch = <T, U = {}>({
                 >
                   <Row gutter={16} justify="end">
                     {domList}
-                    <Col
-                      {...colConfig}
-                      offset={getOffset(domList.length, colSize)}
-                      key="option"
-                      className={classNames(`${className}-option`, {
-                        [`${className}-form-option`]: isForm,
-                      })}
-                    >
-                      <Form.Item label={isForm && ' '}>
-                        <FormOption
-                          showCollapseButton={columnsList.length > rowNumber - 1 && !isForm}
-                          searchConfig={searchConfig}
-                          submit={submit}
-                          form={{
-                            ...form,
-                            submit: () => {
-                              submit();
-                              form.submit();
-                            },
-                          }}
-                          type={type}
-                          collapse={collapse}
-                          setCollapse={setCollapse}
-                        />
-                      </Form.Item>
-                    </Col>
+                    {/* 表单模式时,用户可选择禁用自带按钮 */}
+                    {isForm && disableFormButton ? null : (
+                      <Col
+                        {...colConfig}
+                        offset={getOffset(domList.length, colSize)}
+                        key="option"
+                        className={classNames(`${className}-option`, {
+                          [`${className}-form-option`]: isForm,
+                        })}
+                      >
+                        <Form.Item label={isForm && ' '}>
+                          <FormOption
+                            showCollapseButton={columnsList.length > rowNumber - 1 && !isForm}
+                            searchConfig={searchConfig}
+                            submit={submit}
+                            form={{
+                              ...form,
+                              submit: () => {
+                                submit();
+                                form.submit();
+                              },
+                            }}
+                            type={type}
+                            collapse={collapse}
+                            setCollapse={setCollapse}
+                          />
+                        </Form.Item>
+                      </Col>
+                    )}
                   </Row>
                 </Form>
               </div>
