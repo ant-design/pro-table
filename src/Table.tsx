@@ -5,7 +5,7 @@ import { Table, ConfigProvider, Card, Typography, Empty, Tooltip } from 'antd';
 import classNames from 'classnames';
 import useMergeValue from 'use-merge-value';
 import { stringify } from 'use-json-comparison';
-import { ColumnsType, TablePaginationConfig, TableProps } from 'antd/es/table';
+import { ColumnsType, TablePaginationConfig, TableProps, ColumnType } from 'antd/es/table';
 import { FormItemProps, FormProps } from 'antd/es/form';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
 
@@ -45,8 +45,8 @@ export interface ColumnsState {
   fixed?: 'right' | 'left' | undefined;
 }
 
-export interface ProColumns<T = unknown>
-  extends Omit<ColumnsType<T>[number], 'render' | 'children'>,
+export interface ProColumn<T = unknown>
+  extends Omit<ColumnType<T>, 'render' | 'children'>,
     Partial<Omit<FormItemProps, 'children'>> {
   /**
    * 自定义 render
@@ -100,8 +100,6 @@ export interface ProColumns<T = unknown>
    */
   valueType?: ProColumnsValueType | ProColumnsValueTypeFunction<T>;
 
-  children?: ProColumns<T>[];
-
   /**
    * 值的枚举，如果存在枚举，Search 中会生成 select
    */
@@ -134,6 +132,12 @@ export interface ProColumns<T = unknown>
    */
   order?: number;
 }
+
+export interface ProColumnGroupType<RecordType> extends ProColumn<RecordType> {
+  children: ProColumns<RecordType>;
+}
+
+export type ProColumns<T> = ProColumnGroupType<T> | ProColumn<T>;
 
 export interface ProTableProps<T, U extends { [key: string]: any }>
   extends Omit<TableProps<T>, 'columns' | 'rowSelection'> {
@@ -427,6 +431,7 @@ const genColumnList = <T, U = {}>(
         ellipsis: false,
         fixed: config.fixed,
         width: item.width || (item.fixed ? 200 : undefined),
+        // @ts-ignore
         children: item.children ? genColumnList(item.children, map) : undefined,
         render: (text: any, row: T, index: number) => columRender<T>({ item, text, row, index }),
       };
