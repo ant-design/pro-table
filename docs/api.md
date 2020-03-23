@@ -30,6 +30,8 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 | onSizeChange | table 尺寸发生改变 | `(size: 'default' | 'middle' | 'small' | undefined) => void` | - |
 | columnsStateMap | columns 的状态枚举 | `{[key: string]: { show:boolean, fixed: "right"|"left"} }` | - |
 | onColumnsStateChange | columns 状态发生改变 | `(props: {[key: string]: { show:boolean, fixed: "right"|"left"} }) => void` | - |
+| formColConfig | 当 type 为 form 时 支持自定义包裹表单 Col 的属性 | {lg?:number; md?:number; xxl?:number; xl?:number; sm?:number; xs?:number;} | {lg:24, md:24, xxl:24, xl:24, sm:24, xs:24} |
+| disableFormButton | type 为 form 时支持禁用默认的表单按钮, 将表单放入 Modal 中时非常有用 | boolean | - |
 
 ## Columns
 
@@ -57,6 +59,7 @@ interface ActionType {
   reload: () => void;
   fetchMore: () => void;
   reset: () => void;
+  clearSelected: () => void;
 }
 
 const ref = useRef<ActionType>();

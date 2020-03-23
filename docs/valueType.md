@@ -50,6 +50,7 @@ const columns = {
 ### 支持的返回值
 
 ### progress
+
 #### progress
 
 ```js
@@ -70,7 +71,7 @@ return { type: 'percent', showSymbol: true | false, precision: 2 };
 
 ## valueEnum
 
-valueEnum 需要传入一个枚举，Pro-Table 会自动根据值获取响应的枚举，并且在 from 中生成一个下拉框。看起来是这样的：
+valueEnum 需要传入一个枚举，Pro-Table 会自动根据值获取响应的枚举，并且在 form 中生成一个下拉框。看起来是这样的：
 
 ```ts | pure
 const valueEnum = {
@@ -109,7 +110,7 @@ const valueEnum = row =>
       };
 ```
 
-> 这里值得注意的是在 from 中并没有 row，所以传入了一个 null，你可以根据这个来判断要在 from 中显示什么选项。
+> 这里值得注意的是在 form 中并没有 row，所以传入了一个 null，你可以根据这个来判断要在 form 中显示什么选项。
 
 ## 示例
 

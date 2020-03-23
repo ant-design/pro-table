@@ -36,7 +36,7 @@ pro-table is encapsulated in an antd table, supports some presets, and encapsula
 | onSizeChange | table size changes | `(size: 'default' | 'middle' | 'small' | undefined) => void` | - |
 | columnsStateMap | columns status | `{[key: string]: { show:boolean, fixed: "right"|"left"} }` | - |
 | onColumnsStateChange | columns status changed | `(props: {[key: string]: { show:boolean, fixed: "right"|"left"} }) => void` | - |
-| form | search From config type="form" and search form's Form config ,the config data like antd Form | `Omit<FormProps, 'form'>` | - |
+| form | search Form config type="form" and search form's Form config ,the config data like antd Form | `Omit<FormProps, 'form'>` | - |
 
 ### Columns
 
@@ -52,6 +52,8 @@ pro-table is encapsulated in an antd table, supports some presets, and encapsula
 | hideInSearch | Do not show this in the query form | boolean | - |
 | hideInTable | Do not show this column in Table | boolean | - |
 | formItemProps | Props passed into query form item | `{ [prop: string]: any }` | - |
+| formColConfig | When type is form, it supports custom wrapped form Col properties | {lg?:number; md?:number; xxl?:number; xl?:number; sm?:number; xs?:number;} | {lg:24, md:24, xxl:24, xl:24, sm:24, xs:24} |
+| disableFormButton | Support to disable the default form button when type is form, very useful when putting form into Modal | boolean | - |
 
 ### ActionType
 
@@ -62,6 +64,7 @@ interface ActionType {
   reload: () => void;
   fetchMore: () => void;
   reset: () => void;
+  clearSelected: () => void;
 }
 
 const ref = useRef<ActionType>();
