@@ -76,6 +76,9 @@ ref.fetchMore();
 
 // Reset to reset value
 ref.reset();
+
+// clear selected
+ref.clearSelected();
 ```
 
 ### valueType

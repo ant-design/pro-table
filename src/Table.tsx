@@ -37,6 +37,7 @@ export interface ActionType {
   reload: () => void;
   fetchMore: () => void;
   reset: () => void;
+  clearSelected: () => void;
 }
 
 export interface ColumnsState {
@@ -482,6 +483,10 @@ const ProTable = <T extends {}, U extends object>(
     value: propsRowSelection ? propsRowSelection.selectedRowKeys : undefined,
   });
   const [formSearch, setFormSearch] = useState<{}>({});
+  const [selectedRows, setSelectedRows] = useState<T[]>([]);
+  const [dataSource, setDataSource] = useState<T[]>([]);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const fullScreen = useRef<() => void>();
 
   /**
    * 需要初始化 不然默认可能报错
@@ -517,9 +522,6 @@ const ProTable = <T extends {}, U extends object>(
     },
   );
 
-  const rootRef = useRef<HTMLDivElement>(null);
-
-  const fullScreen = useRef<() => void>();
   useEffect(() => {
     fullScreen.current = () => {
       if (!rootRef.current || !document.fullscreenEnabled) {
@@ -538,6 +540,20 @@ const ProTable = <T extends {}, U extends object>(
   const pagination = propsPagination !== false && mergePagination<T[], {}>(propsPagination, action);
 
   const counter = Container.useContainer();
+
+  const onCleanSelected = () => {
+    if (propsRowSelection && propsRowSelection.onChange) {
+      propsRowSelection.onChange([], []);
+    }
+    setSelectedRowKeys([]);
+    setSelectedRows([]);
+  };
+
+  useEffect(() => {
+    // 数据源更新时 取消所有选中项
+    onCleanSelected();
+    setDataSource(request ? (action.dataSource as T[]) : props.dataSource || []);
+  }, [props.dataSource, action.dataSource]);
 
   /**
    *  保存一下 propsColumns
@@ -584,6 +600,7 @@ const ProTable = <T extends {}, U extends object>(
         }
         current.reset();
       },
+      clearSelected: onCleanSelected,
     };
     if (actionRef && typeof actionRef === 'function') {
       actionRef(userAction);
@@ -642,8 +659,6 @@ const ProTable = <T extends {}, U extends object>(
     }
   }, [propsPagination]);
 
-  const [selectedRows, setSelectedRows] = useState<T[]>([]);
-
   // 映射 selectedRowKeys 与 selectedRow
   useEffect(() => {
     if (action.loading !== false || propsRowSelection === false) {
@@ -651,7 +666,7 @@ const ProTable = <T extends {}, U extends object>(
     }
     const tableKey = rest.rowKey;
     setSelectedRows(
-      ((action.dataSource as T[]) || []).filter((item, index) => {
+      dataSource.filter((item, index) => {
         if (!tableKey) {
           return (selectedRowKeys as any).includes(index);
         }
@@ -743,13 +758,7 @@ const ProTable = <T extends {}, U extends object>(
               <Alert<T>
                 selectedRowKeys={selectedRowKeys}
                 selectedRows={selectedRows}
-                onCleanSelected={() => {
-                  if (propsRowSelection && propsRowSelection.onChange) {
-                    propsRowSelection.onChange([], []);
-                  }
-                  setSelectedRowKeys([]);
-                  setSelectedRows([]);
-                }}
+                onCleanSelected={onCleanSelected}
                 alertOptionRender={rest.tableAlertOptionRender}
                 alertInfoRender={tableAlertRender}
               />
@@ -774,7 +783,7 @@ const ProTable = <T extends {}, U extends object>(
                 return true;
               })}
               loading={action.loading || props.loading}
-              dataSource={request ? (action.dataSource as T[]) : rest.dataSource}
+              dataSource={dataSource}
               pagination={pagination}
             />
           </Card>
