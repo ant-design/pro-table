@@ -45,7 +45,7 @@ export interface ColumnsState {
   fixed?: 'right' | 'left' | undefined;
 }
 
-export interface ProColumn<T = unknown>
+export interface ProColumnType<T = unknown>
   extends Omit<ColumnType<T>, 'render' | 'children'>,
     Partial<Omit<FormItemProps, 'children'>> {
   /**
@@ -133,11 +133,11 @@ export interface ProColumn<T = unknown>
   order?: number;
 }
 
-export interface ProColumnGroupType<RecordType> extends ProColumn<RecordType> {
+export interface ProColumnGroupType<RecordType> extends ProColumnType<RecordType> {
   children: ProColumns<RecordType>;
 }
 
-export type ProColumns<T> = ProColumnGroupType<T> | ProColumn<T>;
+export type ProColumns<T> = ProColumnGroupType<T> | ProColumnType<T>;
 
 export interface ProTableProps<T, U extends { [key: string]: any }>
   extends Omit<TableProps<T>, 'columns' | 'rowSelection'> {
@@ -409,7 +409,7 @@ const genColumnList = <T, U = {}>(
     [key: string]: ColumnsState;
   },
 ): (ColumnsType<T>[number] & { index?: number })[] =>
-  columns
+  (columns
     .map((item, columnsIndex) => {
       const { key, dataIndex } = item;
       const columnKey = genColumnKey(key, dataIndex);
@@ -438,12 +438,18 @@ const genColumnList = <T, U = {}>(
       if (!tempColumns.children || !tempColumns.children.length) {
         delete tempColumns.children;
       }
+      if (!tempColumns.dataIndex) {
+        delete tempColumns.dataIndex;
+      }
       if (!tempColumns.filters || !tempColumns.filters.length) {
         delete tempColumns.filters;
       }
       return tempColumns;
     })
-    .filter(item => !item.hideInTable);
+    .filter(item => !item.hideInTable) as unknown) as ColumnsType<T>[number] &
+    {
+      index?: number;
+    }[];
 
 /**
  * 🏆 Use Ant Design Table like a Pro!
@@ -625,7 +631,7 @@ const ProTable = <T extends {}, U extends object>(
       // 重新生成key的字符串用于排序
       counter.setSortKeyColumns(
         tableColumn.map((item, index) => {
-          const key = genColumnKey(item.key, item.dataIndex) || `${index}`;
+          const key = genColumnKey(item.key, (item as ProColumnType).dataIndex) || `${index}`;
           return `${key}_${item.index}`;
         }),
       );
@@ -642,8 +648,8 @@ const ProTable = <T extends {}, U extends object>(
       // 用于可视化的排序
       tableColumn = tableColumn.sort((a, b) => {
         // 如果没有index，在 dataIndex 或者 key 不存在的时候他会报错
-        const aKey = `${genColumnKey(a.key, a.dataIndex) || a.index}_${a.index}`;
-        const bKey = `${genColumnKey(b.key, b.dataIndex) || b.index}_${b.index}`;
+        const aKey = `${genColumnKey(a.key, (a as ProColumnType).dataIndex) || a.index}_${a.index}`;
+        const bKey = `${genColumnKey(b.key, (b as ProColumnType).dataIndex) || b.index}_${b.index}`;
         return keys.indexOf(aKey) - keys.indexOf(bKey);
       });
     }
