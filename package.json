@@ -14,7 +14,7 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "father build && webpack",
-    "lint": "npm run lint-eslint && npm run lint:style",
+    "lint": "npm run lint-eslint && npm run lint:style && tsc --noEmit",
     "lint-eslint": "eslint --cache --ext .js,.jsx,.ts,.tsx --format=pretty ./src",
     "lint:fix": "eslint --fix --cache --ext .js,.jsx,.ts,.tsx --format=pretty ./**/src ./tests && npm run lint:style",
     "lint:style": "stylelint --fix  \"src/**/*.less\"  --syntax less",

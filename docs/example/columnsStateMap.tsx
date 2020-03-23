@@ -85,7 +85,7 @@ export default () => {
   return (
     <>
       <code>{JSON.stringify(columnsStateMap)}</code>
-      <ProTable<TableListItem>
+      <ProTable<TableListItem, { keyWord?: string }>
         columns={columns}
         request={(params = {}) =>
           Promise.resolve({
