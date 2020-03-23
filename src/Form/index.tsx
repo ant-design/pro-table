@@ -149,7 +149,7 @@ export const FormInputRender: React.FC<{
   type: 'form' | 'list' | 'table' | 'cardList' | undefined;
   onChange?: (value: any) => void;
 }> = React.forwardRef(({ item, ...rest }, ref: any) => {
-  const { valueType, title } = item;
+  const { valueType } = item;
   const intl = useIntl();
   /**
    * 自定义 render
@@ -162,7 +162,7 @@ export const FormInputRender: React.FC<{
     if (valueEnum) {
       return (
         <Select
-          placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择') + title}
+          placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择')}
           ref={ref}
           {...rest}
           {...item.formItemProps}
@@ -177,7 +177,7 @@ export const FormInputRender: React.FC<{
     }
     return (
       <Input
-        placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入') + title}
+        placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入')}
         {...rest}
         {...item.formItemProps}
       />
@@ -187,7 +187,7 @@ export const FormInputRender: React.FC<{
     return (
       <DatePicker
         ref={ref}
-        placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择') + title}
+        placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择')}
         style={{
           width: '100%',
         }}
@@ -202,7 +202,7 @@ export const FormInputRender: React.FC<{
       <DatePicker
         showTime
         ref={ref}
-        placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择') + title}
+        placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择')}
         style={{
           width: '100%',
         }}
@@ -250,7 +250,7 @@ export const FormInputRender: React.FC<{
     return (
       <TimePicker
         ref={ref}
-        placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择') + title}
+        placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择')}
         style={{
           width: '100%',
         }}
@@ -263,7 +263,7 @@ export const FormInputRender: React.FC<{
     return (
       <InputNumber
         ref={ref}
-        placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入') + title}
+        placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入')}
         style={{
           width: '100%',
         }}
@@ -285,7 +285,7 @@ export const FormInputRender: React.FC<{
           return '';
         }}
         parser={value => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
-        placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入') + title}
+        placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入')}
         style={{
           width: '100%',
         }}
@@ -297,7 +297,7 @@ export const FormInputRender: React.FC<{
   if (valueType === 'textarea' && rest.type === 'form') {
     return (
       <Input.TextArea
-        placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入') + title}
+        placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入')}
         ref={ref}
         {...rest}
         {...item.formItemProps}
@@ -306,7 +306,7 @@ export const FormInputRender: React.FC<{
   }
   return (
     <Input
-      placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入') + title}
+      placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入')}
       ref={ref}
       {...rest}
       {...item.formItemProps}
