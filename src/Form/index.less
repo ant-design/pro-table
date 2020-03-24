@@ -1,11 +1,11 @@
 @import '~antd/es/style/themes/default.less';
 @import '~antd/es/style/mixins/index.less';
 
-@table-search-prefix-cls: ~'@{ant-prefix}-pro-table-search';
+@pro-table-search-prefix-cls: ~'@{ant-prefix}-pro-table-search';
 
-@table-form-prefix-cls: ~'@{ant-prefix}-pro-table-form';
+@pro-table-form-prefix-cls: ~'@{ant-prefix}-pro-table-form';
 
-.@{table-search-prefix-cls} {
+.@{pro-table-search-prefix-cls} {
   .clearfix;
 
   margin-bottom: 24px;
@@ -13,7 +13,7 @@
   padding-bottom: 0;
   background: @component-background;
 
-  &.@{table-form-prefix-cls} {
+  &.@{pro-table-form-prefix-cls} {
     margin: 0;
     padding: 0 16px;
     overflow: unset;
@@ -60,7 +60,7 @@
 }
 
 @media (max-width: 575px) {
-  .@{table-search-prefix-cls} {
+  .@{pro-table-search-prefix-cls} {
     .@{ant-prefix}-form-item {
       display: inline;
     }
