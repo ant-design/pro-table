@@ -138,10 +138,11 @@ const defaultRenderText = <T, U>(
    *如果是日期范围的值
    */
   if (valueType === 'dateRange' && text && Array.isArray(text) && text.length === 2) {
+    // 值不存在的时候显示 "-"
     return (
       <div>
-        <div>{moment(text[0]).format('YYYY-MM-DD')}</div>
-        <div>{moment(text[1]).format('YYYY-MM-DD')}</div>
+        <div>{text[0] ? moment(text[0]).format('YYYY-MM-DD') : '-'}</div>
+        <div>{text[1] ? moment(text[1]).format('YYYY-MM-DD') : '-'}</div>
       </div>
     );
   }
@@ -157,10 +158,11 @@ const defaultRenderText = <T, U>(
    *如果是日期加时间类型的值的值
    */
   if (valueType === 'dateTimeRange' && text && Array.isArray(text) && text.length === 2) {
+    // 值不存在的时候显示 "-"
     return (
       <div>
-        <div>{moment(text[0]).format('YYYY-MM-DD HH:mm:ss')}</div>
-        <div>{moment(text[1]).format('YYYY-MM-DD HH:mm:ss')}</div>
+        <div>{text[0] ? moment(text[0]).format('YYYY-MM-DD HH:mm:ss') : '-'}</div>
+        <div>{text[1] ? moment(text[1]).format('YYYY-MM-DD HH:mm:ss') : '-'}</div>
       </div>
     );
   }
