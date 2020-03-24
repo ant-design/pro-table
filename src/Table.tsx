@@ -66,7 +66,7 @@ export interface ProColumnType<T = unknown>
     record: T,
     index: number,
     action: UseFetchDataAction<RequestData<T>>,
-  ) => string;
+  ) => any;
 
   /**
    * 自定义搜索 form 的输入
