@@ -4,7 +4,7 @@ import ProTable, {
   ProColumns,
   TableDropdown,
   IntlProvider,
-  jaJPIntl,
+  msMYIntl,
   ActionType,
 } from '@ant-design/pro-table';
 import request from 'umi-request';
@@ -166,7 +166,7 @@ export default () => {
           reset
         </Button>
       </Drawer>
-      <IntlProvider value={jaJPIntl}>
+      <IntlProvider value={msMYIntl}>
         <ProTable<GithubIssueItem>
           columns={columns}
           actionRef={actionRef}
