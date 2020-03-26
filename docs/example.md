@@ -10,26 +10,6 @@ nav:
 
 这里将会提供一些常用的功能示例，方便大家直接拷贝。
 
-## English
-
-<code src="./example/english.tsx" />
-
-## Italiano
-
-<code src="./example/italian.tsx" />
-
-## Tiếng Việt
-
-<code src="./example/vietnamese.tsx" />
-
-## 日本語
-
-<code src="./example/japanese.tsx" />
-
-## Русский
-
-<code src="./example/russian.tsx" />
-
 ## toolbar 搜索
 
 <code src="./example/search.tsx" />
