@@ -32,7 +32,7 @@ const defaultColConfig = {
 /**
  * 默认的新建表单配置
  */
-const defaultFromColConfig = {
+const defaultFormColConfig = {
   lg: 24,
   md: 24,
   xxl: 24,
@@ -129,7 +129,7 @@ export interface TableFormItem<T> extends Omit<FormItemProps, 'children'> {
   formRef?: React.MutableRefObject<FormInstance | undefined> | ((actionRef: FormInstance) => void);
 }
 
-export const FromInputRender: React.FC<{
+export const FormInputRender: React.FC<{
   item: ProColumns<any>;
   value?: any;
   type: 'form' | 'list' | 'table' | 'cardList' | undefined;
@@ -148,7 +148,7 @@ export const FromInputRender: React.FC<{
     if (valueEnum) {
       return (
         <Select
-          placeholder={intl.getMessage('tableFrom.selectPlaceholder', '请选择')}
+          placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择')}
           ref={ref}
           {...rest}
           {...item.formItemProps}
@@ -163,7 +163,7 @@ export const FromInputRender: React.FC<{
     }
     return (
       <Input
-        placeholder={intl.getMessage('tableFrom.inputPlaceholder', '请输入')}
+        placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入')}
         {...rest}
         {...item.formItemProps}
       />
@@ -173,7 +173,7 @@ export const FromInputRender: React.FC<{
     return (
       <DatePicker
         ref={ref}
-        placeholder={intl.getMessage('tableFrom.selectPlaceholder', '请选择')}
+        placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择')}
         style={{
           width: '100%',
         }}
@@ -188,7 +188,7 @@ export const FromInputRender: React.FC<{
       <DatePicker
         showTime
         ref={ref}
-        placeholder={intl.getMessage('tableFrom.selectPlaceholder', '请选择')}
+        placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择')}
         style={{
           width: '100%',
         }}
@@ -203,8 +203,8 @@ export const FromInputRender: React.FC<{
       <DatePicker.RangePicker
         ref={ref}
         placeholder={[
-          intl.getMessage('tableFrom.selectPlaceholder', '请选择'),
-          intl.getMessage('tableFrom.selectPlaceholder', '请选择'),
+          intl.getMessage('tableForm.selectPlaceholder', '请选择'),
+          intl.getMessage('tableForm.selectPlaceholder', '请选择'),
         ]}
         style={{
           width: '100%',
@@ -220,8 +220,8 @@ export const FromInputRender: React.FC<{
         ref={ref}
         showTime
         placeholder={[
-          intl.getMessage('tableFrom.selectPlaceholder', '请选择'),
-          intl.getMessage('tableFrom.selectPlaceholder', '请选择'),
+          intl.getMessage('tableForm.selectPlaceholder', '请选择'),
+          intl.getMessage('tableForm.selectPlaceholder', '请选择'),
         ]}
         style={{
           width: '100%',
@@ -236,7 +236,7 @@ export const FromInputRender: React.FC<{
     return (
       <TimePicker
         ref={ref}
-        placeholder={intl.getMessage('tableFrom.selectPlaceholder', '请选择')}
+        placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择')}
         style={{
           width: '100%',
         }}
@@ -249,7 +249,7 @@ export const FromInputRender: React.FC<{
     return (
       <InputNumber
         ref={ref}
-        placeholder={intl.getMessage('tableFrom.inputPlaceholder', '请输入')}
+        placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入')}
         style={{
           width: '100%',
         }}
@@ -271,7 +271,7 @@ export const FromInputRender: React.FC<{
           return '';
         }}
         parser={value => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
-        placeholder={intl.getMessage('tableFrom.inputPlaceholder', '请输入')}
+        placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入')}
         style={{
           width: '100%',
         }}
@@ -283,7 +283,7 @@ export const FromInputRender: React.FC<{
   if (valueType === 'textarea' && rest.type === 'form') {
     return (
       <Input.TextArea
-        placeholder={intl.getMessage('tableFrom.inputPlaceholder', '请输入')}
+        placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入')}
         ref={ref}
         {...rest}
         {...item.formItemProps}
@@ -292,7 +292,7 @@ export const FromInputRender: React.FC<{
   }
   return (
     <Input
-      placeholder={intl.getMessage('tableFrom.inputPlaceholder', '请输入')}
+      placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入')}
       ref={ref}
       {...rest}
       {...item.formItemProps}
@@ -393,14 +393,14 @@ const conversionValue = (
 const getDefaultSearch = (
   search: boolean | SearchConfig | undefined,
   intl: IntlType,
-  isFrom: boolean,
+  isForm: boolean,
 ): SearchConfig => {
   const config = {
     collapseRender: (collapsed: boolean) => {
       if (collapsed) {
         return (
           <>
-            {intl.getMessage('tableFrom.collapsed', '展开')}
+            {intl.getMessage('tableForm.collapsed', '展开')}
             <DownOutlined
               style={{
                 marginLeft: '0.5em',
@@ -413,7 +413,7 @@ const getDefaultSearch = (
       }
       return (
         <>
-          {intl.getMessage('tableFrom.expand', '收起')}
+          {intl.getMessage('tableForm.expand', '收起')}
           <DownOutlined
             style={{
               marginLeft: '0.5em',
@@ -424,10 +424,10 @@ const getDefaultSearch = (
         </>
       );
     },
-    searchText: intl.getMessage('tableFrom.search', defaultSearch.searchText || '查询'),
-    resetText: intl.getMessage('tableFrom.reset', defaultSearch.resetText || '重置'),
-    submitText: intl.getMessage('tableFrom.submit', defaultSearch.submitText || '提交'),
-    span: isFrom ? defaultFromColConfig : defaultColConfig,
+    searchText: intl.getMessage('tableForm.search', defaultSearch.searchText || '查询'),
+    resetText: intl.getMessage('tableForm.reset', defaultSearch.resetText || '重置'),
+    submitText: intl.getMessage('tableForm.submit', defaultSearch.submitText || '提交'),
+    span: isForm ? defaultFormColConfig : defaultColConfig,
   };
 
   if (search === undefined || search === true) {
@@ -593,7 +593,7 @@ const FormSearch = <T, U = {}>({
       return (
         <Col {...colConfig} key={key}>
           <Form.Item labelAlign="right" label={rest.title} name={key} {...(isForm && rest)}>
-            <FromInputRender item={item} type={type} />
+            <FormInputRender item={item} type={type} />
           </Form.Item>
         </Col>
       );

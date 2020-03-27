@@ -1,5 +1,5 @@
 export default {
-  tableFrom: {
+  tableForm: {
     search: 'Найти',
     reset: 'Сброс',
     submit: 'Отправить',

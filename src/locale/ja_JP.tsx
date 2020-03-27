@@ -1,5 +1,5 @@
 export default {
-  tableFrom: {
+  tableForm: {
     search: '検索',
     reset: 'リセット',
     submit: '提交',

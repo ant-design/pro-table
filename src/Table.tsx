@@ -568,7 +568,7 @@ const ProTable = <T extends {}, U extends object>(
 
   /**
    *  保存一下 propsColumns
-   *  生成 from 需要用
+   *  生成 form 需要用
    */
   useDeepCompareEffect(() => {
     counter.setProColumns(propsColumns);

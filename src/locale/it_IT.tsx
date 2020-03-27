@@ -1,5 +1,5 @@
 export default {
-  tableFrom: {
+  tableForm: {
     search: 'Filtra',
     reset: 'Pulisci',
     submit: 'Submit',
