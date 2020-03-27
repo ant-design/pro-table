@@ -1,5 +1,5 @@
 export default {
-  tableFrom: {
+  tableForm: {
     search: 'Tìm kiếm',
     reset: 'Làm lại',
     submit: '提交',

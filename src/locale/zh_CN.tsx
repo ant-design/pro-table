@@ -1,5 +1,5 @@
 export default {
-  tableFrom: {
+  tableForm: {
     search: '查询',
     reset: '重置',
     submit: '提交',
