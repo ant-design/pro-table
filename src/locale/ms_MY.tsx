@@ -1,5 +1,5 @@
 export default {
-  tableFrom: {
+  tableForm: {
     search: 'Cari',
     reset: 'Menetapkan semula',
     submit: 'Hantar',
