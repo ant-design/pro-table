@@ -107,7 +107,7 @@ const defaultRenderText = <T, U>(
   if (typeof valueType === 'function' && item) {
     const value = valueType(item);
     if (typeof value === 'string') {
-      return defaultRenderText(text, valueType, index);
+      return defaultRenderText(text, value, index);
     }
     if (typeof value === 'object') {
       return defaultRenderTextByObject(text as string, value);
