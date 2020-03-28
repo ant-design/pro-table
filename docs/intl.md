@@ -79,3 +79,7 @@ const enUSIntl = createIntl('en_US', enUS);
 ### Русский
 
 <code src="./example/russian.tsx" />
+
+## Malay
+
+<code src="./example/malay.tsx" />
