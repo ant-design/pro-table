@@ -69,16 +69,16 @@ const ref = useRef<ActionType>();
 <ProTable actionRef={ref} />;
 
 // Load more
-ref.reload();
+ref.current.reload();
 
 // 加载更多
-ref.fetchMore();
+ref.current.fetchMore();
 
 // Reset to reset value
-ref.reset();
+ref.current.reset();
 
 // clear selected
-ref.clearSelected();
+ref.current.clearSelected();
 ```
 
 ### valueType
