@@ -1,6 +1,7 @@
 ---
 title: 例子
 order: 0
+sidemenu: false
 nav:
   title: 例子
   order: 9

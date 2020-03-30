@@ -1,6 +1,7 @@
 ---
 title: 国际化
 order: 8
+sidemenu: false
 nav:
   title: 国际化
   order: 2

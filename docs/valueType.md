@@ -1,6 +1,7 @@
 ---
 title: 值类型
 order: 7
+sidemenu: false
 nav:
   title: 默认值类型
   order: 5
@@ -50,6 +51,7 @@ const columns = {
 ### 支持的返回值
 
 ### progress
+
 #### progress
 
 ```js

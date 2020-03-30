@@ -49,7 +49,7 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
   },
 ): UseFetchDataAction<T> => {
   const {
-    defaultPageSize = 10,
+    defaultPageSize = 20,
     defaultCurrent = 1,
     onLoad = () => null,
     onRequestError = () => null,

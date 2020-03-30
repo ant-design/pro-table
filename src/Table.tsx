@@ -274,6 +274,8 @@ const mergePagination = <T extends any[], U>(
     defaultPagination = {};
   }
   return {
+    showTotal: (all, range) => `第 ${range[0]}-${range[1]} 条/总共 ${all} 条`,
+    showSizeChanger: true,
     total: action.total,
     ...(defaultPagination as TablePaginationConfig),
     current,
@@ -293,9 +295,10 @@ const mergePagination = <T extends any[], U>(
 
       const { onChange } = pagination as TablePaginationConfig;
       if (onChange) {
-        onChange(page, newPageSize || 10);
+        onChange(page, newPageSize || 20);
       }
     },
+
     onShowSizeChange: (page: number, showPageSize: number) => {
       action.setPageInfo({
         pageSize: showPageSize,
@@ -303,7 +306,7 @@ const mergePagination = <T extends any[], U>(
       });
       const { onShowSizeChange } = pagination as TablePaginationConfig;
       if (onShowSizeChange) {
-        onShowSizeChange(page, showPageSize || 10);
+        onShowSizeChange(page, showPageSize || 20);
       }
     },
   };
@@ -507,7 +510,7 @@ const ProTable = <T extends {}, U extends object>(
   const fetchPagination =
     typeof propsPagination === 'object'
       ? (propsPagination as TablePaginationConfig)
-      : { defaultCurrent: 1, defaultPageSize: 10, pageSize: 10, current: 1 };
+      : { defaultCurrent: 1, defaultPageSize: 20, pageSize: 20, current: 1 };
 
   const action = useFetchData(
     async ({ pageSize, current }) => {
@@ -702,7 +705,7 @@ const ProTable = <T extends {}, U extends object>(
   };
 
   useEffect(() => {
-    counter.setTableSize(rest.size || 'large');
+    counter.setTableSize(rest.size || 'middle');
   }, [rest.size]);
 
   if (counter.columns.length < 1) {
