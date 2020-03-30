@@ -587,6 +587,7 @@ const FormSearch = <T, U = {}>({
         order,
         initialValue,
         ellipsis,
+        formItemProps,
         ...rest
       } = item;
       const key = genColumnKey(rest.key, dataIndex);
