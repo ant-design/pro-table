@@ -274,6 +274,8 @@ const mergePagination = <T extends any[], U>(
     defaultPagination = {};
   }
   return {
+    showTotal: (all, range) => `第 ${range[0]}-${range[1]} 条/总共 ${all} 条`,
+    showSizeChanger: true,
     total: action.total,
     ...(defaultPagination as TablePaginationConfig),
     current,
@@ -296,6 +298,7 @@ const mergePagination = <T extends any[], U>(
         onChange(page, newPageSize || 20);
       }
     },
+
     onShowSizeChange: (page: number, showPageSize: number) => {
       action.setPageInfo({
         pageSize: showPageSize,

@@ -1,6 +1,7 @@
 ---
 title: API
 order: 9
+sidemenu: false
 nav:
   title: API
   order: 2

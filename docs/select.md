@@ -1,6 +1,7 @@
 ---
 title: 批量操作
 order: 6
+sidemenu: false
 nav:
   title: 批量操作
   order: 5

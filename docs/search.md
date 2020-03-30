@@ -1,6 +1,7 @@
 ---
 title: 搜索表单
 order: 8
+sidemenu: false
 nav:
   title: 搜索表单
   order: 2
