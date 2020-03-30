@@ -293,7 +293,7 @@ const mergePagination = <T extends any[], U>(
 
       const { onChange } = pagination as TablePaginationConfig;
       if (onChange) {
-        onChange(page, newPageSize || 10);
+        onChange(page, newPageSize || 20);
       }
     },
     onShowSizeChange: (page: number, showPageSize: number) => {
@@ -303,7 +303,7 @@ const mergePagination = <T extends any[], U>(
       });
       const { onShowSizeChange } = pagination as TablePaginationConfig;
       if (onShowSizeChange) {
-        onShowSizeChange(page, showPageSize || 10);
+        onShowSizeChange(page, showPageSize || 20);
       }
     },
   };
@@ -507,7 +507,7 @@ const ProTable = <T extends {}, U extends object>(
   const fetchPagination =
     typeof propsPagination === 'object'
       ? (propsPagination as TablePaginationConfig)
-      : { defaultCurrent: 1, defaultPageSize: 10, pageSize: 10, current: 1 };
+      : { defaultCurrent: 1, defaultPageSize: 20, pageSize: 20, current: 1 };
 
   const action = useFetchData(
     async ({ pageSize, current }) => {

@@ -24,7 +24,7 @@ function useCounter(props: UseCounterProps = {}) {
   const [sortKeyColumns, setSortKeyColumns] = useState<(string | number)[]>([]);
   const [proColumns, setProColumns] = useState<ProColumns<any>[]>([]);
 
-  const [tableSize, setTableSize] = useMergeValue<DensitySize>(props.size || 'large', {
+  const [tableSize, setTableSize] = useMergeValue<DensitySize>(props.size || 'middle', {
     value: props.size,
     onChange: props.onSizeChange,
   });
