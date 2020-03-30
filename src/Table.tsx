@@ -702,7 +702,7 @@ const ProTable = <T extends {}, U extends object>(
   };
 
   useEffect(() => {
-    counter.setTableSize(rest.size || 'large');
+    counter.setTableSize(rest.size || 'middle');
   }, [rest.size]);
 
   if (counter.columns.length < 1) {
