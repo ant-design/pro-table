@@ -158,8 +158,8 @@ export default () => (
     }}
     rowKey="id"
     rowSelection={{}}
-    tableAlertRender={(keys, rows) =>
-      `当前共选中${keys.length} 项，共有 ${rows.reduce((pre, item) => {
+    tableAlertRender={({ selectedRowKeys, selectedRows }) =>
+      `当前共选中${selectedRowKeys.length} 项，共有 ${selectedRows.reduce((pre, item) => {
         if (item.state === 'open') {
           return pre + 1;
         }

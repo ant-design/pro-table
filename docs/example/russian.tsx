@@ -201,7 +201,7 @@ export default () => {
           pagination={{
             showSizeChanger: true,
           }}
-          tableAlertRender={keys => `Выбрано ${keys.length} строк`}
+          tableAlertRender={({ selectedRowKeys }) => `Выбрано ${selectedRowKeys.length} строк`}
           dateFormatter="string"
           headerTitle="Простая таблица"
           toolBarRender={() => [

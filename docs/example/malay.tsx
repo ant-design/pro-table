@@ -199,7 +199,7 @@ export default () => {
           pagination={{
             showSizeChanger: true,
           }}
-          tableAlertRender={keys => `selected ${keys.length} rows`}
+          tableAlertRender={({ selectedRowKeys }) => `selected ${selectedRowKeys.length} rows`}
           dateFormatter="string"
           headerTitle="Basic Table"
           toolBarRender={() => [

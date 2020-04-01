@@ -237,7 +237,13 @@ export interface ProTableProps<T, U extends { [key: string]: any }>
    * 自定义 table 的 alert
    * 设置或者返回false 即可关闭
    */
-  tableAlertRender?: ((keys: (string | number)[], rows: T[]) => React.ReactNode) | false;
+  tableAlertRender?:
+    | ((props: {
+        intl: IntlType;
+        selectedRowKeys: (string | number)[];
+        selectedRows: T[];
+      }) => React.ReactNode)
+    | false;
   /**
    * 自定义 table 的 alert 的操作
    * 设置或者返回false 即可关闭
