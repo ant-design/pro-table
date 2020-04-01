@@ -345,7 +345,7 @@ const conversionValue = (
 
     // 如果值是 "all"，或者不存在直接删除
     // 下拉框里选 all，会删除
-    if (!itemValue || (itemValue === 'all' && column.valueEnum)) {
+    if (itemValue === undefined || (itemValue === 'all' && column.valueEnum)) {
       return;
     }
 
