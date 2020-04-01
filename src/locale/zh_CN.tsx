@@ -10,6 +10,8 @@ export default {
   },
   alert: {
     clear: '清空',
+    selected: '已选择',
+    item: '项',
   },
   tableToolBar: {
     leftPin: '固定到左边',

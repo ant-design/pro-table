@@ -27,7 +27,9 @@ const TableAlert = <T, U = {}>({
   selectedRows = [],
   alertInfoRender = () => (
     <span>
-      已选择 <a style={{ fontWeight: 600 }}>{selectedRowKeys.length}</a> 项&nbsp;&nbsp;
+      {intl.getMessage('alert.selected', '已选择')}
+      <a style={{ fontWeight: 600 }}>{selectedRowKeys.length}</a>
+      {intl.getMessage('alert.item', '项')}&nbsp;&nbsp;
     </span>
   ),
   alertOptionRender = defaultAlertOptionRender,

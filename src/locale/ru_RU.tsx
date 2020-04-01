@@ -10,6 +10,8 @@ export default {
   },
   alert: {
     clear: 'Очистить',
+    selected: 'выбранный',
+    item: 'предмет',
   },
   tableToolBar: {
     leftPin: 'Закрепить слева',
