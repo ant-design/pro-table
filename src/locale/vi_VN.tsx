@@ -10,6 +10,8 @@ export default {
   },
   alert: {
     clear: 'Xóa',
+    selected: 'đã chọn',
+    item: 'mục',
   },
   tableToolBar: {
     leftPin: 'Ghim trái',

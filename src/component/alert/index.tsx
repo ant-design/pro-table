@@ -8,7 +8,11 @@ export interface TableAlertProps<T> {
   selectedRowKeys: (number | string)[];
   selectedRows: T[];
   alertInfoRender?:
-    | ((selectedRowKeys: (number | string)[], selectedRows: T[]) => React.ReactNode)
+    | ((props: {
+        intl: IntlType;
+        selectedRowKeys: (number | string)[];
+        selectedRows: T[];
+      }) => React.ReactNode)
     | false;
   onCleanSelected: () => void;
   alertOptionRender?:
@@ -18,16 +22,22 @@ export interface TableAlertProps<T> {
 
 const defaultAlertOptionRender = (props: { intl: IntlType; onCleanSelected: () => void }) => {
   const { intl, onCleanSelected } = props;
-  return [<a onClick={onCleanSelected} key="0">{intl.getMessage('alert.clear', '清空')}</a>];
+  return [
+    <a onClick={onCleanSelected} key="0">
+      {intl.getMessage('alert.clear', '清空')}
+    </a>,
+  ];
 };
 
 const TableAlert = <T, U = {}>({
   selectedRowKeys = [],
   onCleanSelected,
   selectedRows = [],
-  alertInfoRender = () => (
+  alertInfoRender = ({ intl }) => (
     <span>
-      已选择 <a style={{ fontWeight: 600 }}>{selectedRowKeys.length}</a> 项&nbsp;&nbsp;
+      {intl.getMessage('alert.selected', '已选择')}
+      <a style={{ fontWeight: 600 }}>{selectedRowKeys.length}</a>
+      {intl.getMessage('alert.item', '项')}&nbsp;&nbsp;
     </span>
   ),
   alertOptionRender = defaultAlertOptionRender,
@@ -47,7 +57,7 @@ const TableAlert = <T, U = {}>({
         if (alertInfoRender === false) {
           return null;
         }
-        const dom = alertInfoRender(selectedRowKeys, selectedRows);
+        const dom = alertInfoRender({ intl, selectedRowKeys, selectedRows });
         if (dom === false) {
           return null;
         }

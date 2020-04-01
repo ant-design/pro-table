@@ -10,6 +10,8 @@ export default {
   },
   alert: {
     clear: 'Limpiar',
+    selected: 'Seleccionado',
+    item: 'Articulo',
   },
   tableToolBar: {
     leftPin: 'Pin a la izquierda',

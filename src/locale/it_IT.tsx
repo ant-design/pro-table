@@ -10,6 +10,8 @@ export default {
   },
   alert: {
     clear: 'Rimuovi',
+    selected: 'Selezionato',
+    item: 'Articolo',
   },
   tableToolBar: {
     leftPin: 'Fissa a sinistra',

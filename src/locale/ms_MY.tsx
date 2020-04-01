@@ -10,6 +10,8 @@ export default {
   },
   alert: {
     clear: 'Padam',
+    selected: 'Dipilih',
+    item: 'Item',
   },
   tableToolBar: {
     leftPin: 'Pin ke kiri',

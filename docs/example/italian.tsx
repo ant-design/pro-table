@@ -201,7 +201,7 @@ export default () => {
           pagination={{
             showSizeChanger: true,
           }}
-          tableAlertRender={keys => `Selezionate ${keys.length} righe`}
+          tableAlertRender={({ selectedRowKeys }) => `Selezionate ${selectedRowKeys.length} righe`}
           dateFormatter="string"
           headerTitle="Tabella semplice"
           toolBarRender={() => [

@@ -10,6 +10,8 @@ export default {
   },
   alert: {
     clear: 'クリア',
+    selected: '選択した',
+    item: '項目',
   },
   tableToolBar: {
     leftPin: '左に固定',
