@@ -36,6 +36,7 @@ const columns: ProColumns<TableListItem>[] = [
   {
     title: '标题',
     dataIndex: 'name',
+    render: _ => <a>{_}</a>,
   },
   {
     title: '状态',
