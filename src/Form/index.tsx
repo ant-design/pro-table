@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { FormInstance, FormItemProps, FormProps } from 'antd/es/form';
 import { Input, Form, Row, Col, TimePicker, InputNumber, DatePicker, Select } from 'antd';
 import moment, { Moment } from 'moment';
@@ -13,9 +13,10 @@ import { parsingValueEnumToArray, useDeepCompareEffect, genColumnKey } from '../
 import { useIntl, IntlType } from '../component/intlContext';
 import Container from '../container';
 import { ProColumnsValueTypeFunction } from '../defaultRender';
+import { ProTableTypes } from '../Table';
 import { ProColumns, ProColumnsValueType } from '../index';
-import './index.less';
 import FormOption, { FormOptionProps } from './FormOption';
+import './index.less';
 
 /**
  * 默认的查询表单配置
@@ -123,33 +124,44 @@ export interface TableFormItem<T> extends Omit<FormItemProps, 'children'> {
   onSubmit?: (value: T) => void;
   onReset?: () => void;
   form?: Omit<FormProps, 'form'>;
-  type?: 'form' | 'list' | 'table' | 'cardList' | undefined;
+  type?: ProTableTypes;
   dateFormatter?: 'string' | 'number' | false;
   search?: boolean | SearchConfig;
   formRef?: React.MutableRefObject<FormInstance | undefined> | ((actionRef: FormInstance) => void);
 }
 
-export const FormInputRender: React.FC<{
+export const formInputRender: (props: {
   item: ProColumns<any>;
   value?: any;
-  type: 'form' | 'list' | 'table' | 'cardList' | undefined;
+  form: Omit<FormInstance, 'scrollToField' | '__INTERNAL__'>;
+  type: ProTableTypes;
+  intl: IntlType;
   onChange?: (value: any) => void;
-}> = React.forwardRef(({ item, ...rest }, ref: any) => {
+}) => JSX.Element | false = props => {
+  const { item, intl, form, type, ...rest } = props;
   const { valueType } = item;
-  const intl = useIntl();
   /**
    * 自定义 render
    */
   if (item.renderFormItem) {
-    return item.renderFormItem(item, rest) as any;
+    /**
+     *删除 renderFormItem 防止重复的 dom 渲染
+     */
+    const { renderFormItem, ...restItem } = item;
+    const defaultRender = (newItem: ProColumns<any>) =>
+      formInputRender({
+        ...props,
+        item: newItem,
+      }) || null;
+    return item.renderFormItem(restItem, { ...rest, type, defaultRender }, form) as any;
   }
+
   if (!valueType || valueType === 'text') {
     const { valueEnum } = item;
     if (valueEnum) {
       return (
         <Select
           placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择')}
-          ref={ref}
           {...rest}
           {...item.formItemProps}
         >
@@ -172,7 +184,6 @@ export const FormInputRender: React.FC<{
   if (valueType === 'date') {
     return (
       <DatePicker
-        ref={ref}
         placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择')}
         style={{
           width: '100%',
@@ -187,7 +198,6 @@ export const FormInputRender: React.FC<{
     return (
       <DatePicker
         showTime
-        ref={ref}
         placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择')}
         style={{
           width: '100%',
@@ -201,7 +211,6 @@ export const FormInputRender: React.FC<{
   if (valueType === 'dateRange') {
     return (
       <DatePicker.RangePicker
-        ref={ref}
         placeholder={[
           intl.getMessage('tableForm.selectPlaceholder', '请选择'),
           intl.getMessage('tableForm.selectPlaceholder', '请选择'),
@@ -217,7 +226,6 @@ export const FormInputRender: React.FC<{
   if (valueType === 'dateTimeRange') {
     return (
       <DatePicker.RangePicker
-        ref={ref}
         showTime
         placeholder={[
           intl.getMessage('tableForm.selectPlaceholder', '请选择'),
@@ -235,7 +243,6 @@ export const FormInputRender: React.FC<{
   if (valueType === 'time') {
     return (
       <TimePicker
-        ref={ref}
         placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择')}
         style={{
           width: '100%',
@@ -248,7 +255,6 @@ export const FormInputRender: React.FC<{
   if (valueType === 'digit') {
     return (
       <InputNumber
-        ref={ref}
         placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入')}
         style={{
           width: '100%',
@@ -261,7 +267,6 @@ export const FormInputRender: React.FC<{
   if (valueType === 'money') {
     return (
       <InputNumber
-        ref={ref}
         min={0}
         precision={2}
         formatter={value => {
@@ -280,11 +285,10 @@ export const FormInputRender: React.FC<{
       />
     );
   }
-  if (valueType === 'textarea' && rest.type === 'form') {
+  if (valueType === 'textarea' && type === 'form') {
     return (
       <Input.TextArea
         placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入')}
-        ref={ref}
         {...rest}
         {...item.formItemProps}
       />
@@ -293,12 +297,66 @@ export const FormInputRender: React.FC<{
   return (
     <Input
       placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入')}
-      ref={ref}
       {...rest}
       {...item.formItemProps}
     />
   );
-});
+};
+
+export const proFormItemRender: (props: {
+  item: ProColumns<any>;
+  isForm: boolean;
+  type: ProTableTypes;
+  intl: IntlType;
+  formInstance: Omit<FormInstance, 'scrollToField' | '__INTERNAL__'>;
+  colConfig:
+    | {
+        lg: number;
+        md: number;
+        xxl: number;
+        xl: number;
+        sm: number;
+        xs: number;
+      }
+    | {
+        span: number;
+      }
+    | undefined;
+}) => null | JSX.Element = ({ item, intl, formInstance, type, isForm, colConfig }) => {
+  const {
+    valueType,
+    dataIndex,
+    valueEnum,
+    renderFormItem,
+    render,
+    hideInForm,
+    hideInSearch,
+    hideInTable,
+    renderText,
+    order,
+    initialValue,
+    ellipsis,
+    formItemProps,
+    ...rest
+  } = item;
+  const key = genColumnKey(rest.key, dataIndex);
+  const dom = formInputRender({
+    item,
+    type,
+    intl,
+    form: formInstance,
+  });
+  if (!dom) {
+    return null;
+  }
+  return (
+    <Col {...colConfig} key={key}>
+      <Form.Item labelAlign="right" label={rest.title} name={key} {...(isForm && rest)}>
+        {dom}
+      </Form.Item>
+    </Col>
+  );
+};
 
 const dateFormatterMap = {
   time: 'HH:mm:ss',
@@ -464,8 +522,13 @@ const FormSearch = <T, U = {}>({
   type,
   form: formConfig = {},
 }: TableFormItem<T>) => {
-  const [form] = Form.useForm();
+  /**
+   * 为了支持 dom 的消失，支持了这个 api
+   */
   const intl = useIntl();
+
+  const [form] = Form.useForm();
+  const formInstanceRef = useRef<Omit<FormInstance, 'scrollToField' | '__INTERNAL__'>>(form);
   const searchConfig = getDefaultSearch(propsSearch, intl, type === 'form');
   const { span } = searchConfig;
 
@@ -569,36 +632,26 @@ const FormSearch = <T, U = {}>({
       }
       return 0;
     });
+
   const colConfig = typeof span === 'number' ? { span } : span;
 
+  // 这么做是为了在用户修改了输入的时候触发一下子节点的render
+  const [, updateState] = React.useState();
+  const forceUpdate = useCallback(() => updateState({}), []);
+
   const domList = columnsList
+    .map(item =>
+      proFormItemRender({
+        isForm,
+        formInstance: formInstanceRef.current,
+        item,
+        type,
+        colConfig,
+        intl,
+      }),
+    )
     .filter((_, index) => (collapse && type !== 'form' ? index < (rowNumber - 1 || 1) : true))
-    .map(item => {
-      const {
-        valueType,
-        dataIndex,
-        valueEnum,
-        renderFormItem,
-        render,
-        hideInForm,
-        hideInSearch,
-        hideInTable,
-        renderText,
-        order,
-        initialValue,
-        ellipsis,
-        formItemProps,
-        ...rest
-      } = item;
-      const key = genColumnKey(rest.key, dataIndex);
-      return (
-        <Col {...colConfig} key={key}>
-          <Form.Item labelAlign="right" label={rest.title} name={key} {...(isForm && rest)}>
-            <FormInputRender item={item} type={type} />
-          </Form.Item>
-        </Col>
-      );
-    });
+    .filter(item => !!item);
 
   return (
     <ConfigConsumer>
@@ -630,6 +683,7 @@ const FormSearch = <T, U = {}>({
                 <Form
                   {...formConfig}
                   form={form}
+                  onValuesChange={() => forceUpdate()}
                   initialValues={columnsList.reduce(
                     (pre, item) => {
                       const key = genColumnKey(item.key, item.dataIndex) || '';
@@ -644,8 +698,16 @@ const FormSearch = <T, U = {}>({
                     { ...formConfig.initialValues },
                   )}
                 >
-                  <Row gutter={16} justify="end">
-                    {domList}
+                  <Form.Item shouldUpdate noStyle>
+                    {formInstance => {
+                      formInstanceRef.current = formInstance;
+                      return null;
+                    }}
+                  </Form.Item>
+                  <Row gutter={16} justify="start">
+                    <Form.Item label={isForm && ' '} shouldUpdate noStyle>
+                      <>{domList}</>
+                    </Form.Item>
                     <Col
                       {...colConfig}
                       offset={getOffset(domList.length, colSize)}

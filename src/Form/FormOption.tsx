@@ -1,11 +1,12 @@
 import React from 'react';
 import { FormInstance } from 'antd/es/form';
 import { Button } from 'antd';
+import { ProTableTypes } from '../Table';
 import { SearchConfig } from './index';
 
 export interface FormOptionProps {
   searchConfig: SearchConfig;
-  type?: 'form' | 'list' | 'table' | 'cardList' | undefined;
+  type?: ProTableTypes;
   form: FormInstance;
   submit: () => void;
   collapse: boolean;

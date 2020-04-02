@@ -6,7 +6,7 @@ import classNames from 'classnames';
 import useMergeValue from 'use-merge-value';
 import { stringify } from 'use-json-comparison';
 import { ColumnsType, TablePaginationConfig, TableProps, ColumnType } from 'antd/es/table';
-import { FormItemProps, FormProps } from 'antd/es/form';
+import { FormItemProps, FormProps, FormInstance } from 'antd/es/form';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
 
 import { IntlProvider, IntlConsumer, IntlType } from './component/intlContext';
@@ -73,8 +73,14 @@ export interface ProColumnType<T = unknown>
    */
   renderFormItem?: (
     item: ProColumns<T>,
-    config: { value?: any; onChange?: (value: any) => void },
-  ) => React.ReactNode;
+    config: {
+      value?: any;
+      onChange?: (value: any) => void;
+      type: ProTableTypes;
+      defaultRender: (newItem: ProColumns<any>) => JSX.Element | null;
+    },
+    form: Omit<FormInstance, 'scrollToField' | '__INTERNAL__'>,
+  ) => JSX.Element | false | null;
 
   /**
    * 搜索表单的 props
@@ -138,6 +144,9 @@ export interface ProColumnGroupType<RecordType> extends ProColumnType<RecordType
 }
 
 export type ProColumns<T> = ProColumnGroupType<T> | ProColumnType<T>;
+
+// table 支持的变形，还未完全支持完毕
+export type ProTableTypes = 'form' | 'list' | 'table' | 'cardList' | undefined;
 
 export interface ProTableProps<T, U extends { [key: string]: any }>
   extends Omit<TableProps<T>, 'columns' | 'rowSelection'> {
@@ -259,7 +268,7 @@ export interface ProTableProps<T, U extends { [key: string]: any }>
   /**
    * 支持 ProTable 的类型
    */
-  type?: 'form' | 'list' | 'table' | 'cardList' | undefined;
+  type?: ProTableTypes;
 
   /**
    * 提交表单时触发
