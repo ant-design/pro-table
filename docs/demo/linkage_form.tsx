@@ -101,15 +101,15 @@ const columns: ProColumns<GithubIssueItem>[] = [
       asc: '正序',
       desc: '倒序',
     },
-    renderFormItem: (_, { type, ...rest }, form) => {
+    renderFormItem: (_, { type, defaultRender, ...rest }, form) => {
       if (type === 'form') {
         return null;
       }
       const status = form.getFieldValue('state');
       if (status !== 'open') {
-        return <Input {...rest} />;
+        return <Input {...rest} placeholder="请输入" />;
       }
-      return null;
+      return defaultRender(_);
     },
   },
   {

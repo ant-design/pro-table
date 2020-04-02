@@ -73,9 +73,14 @@ export interface ProColumnType<T = unknown>
    */
   renderFormItem?: (
     item: ProColumns<T>,
-    config: { value?: any; onChange?: (value: any) => void; type: ProTableTypes },
+    config: {
+      value?: any;
+      onChange?: (value: any) => void;
+      type: ProTableTypes;
+      defaultRender: (newItem: ProColumns<any>) => JSX.Element | null;
+    },
     form: Omit<FormInstance, 'scrollToField' | '__INTERNAL__'>,
-  ) => React.ReactNode | false;
+  ) => JSX.Element | false | null;
 
   /**
    * 搜索表单的 props

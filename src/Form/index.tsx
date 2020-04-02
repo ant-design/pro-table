@@ -144,7 +144,16 @@ export const formInputRender: (props: {
    * 自定义 render
    */
   if (item.renderFormItem) {
-    return item.renderFormItem(item, { ...rest, type }, form) as any;
+    /**
+     *删除 renderFormItem 防止重复的 dom 渲染
+     */
+    const { renderFormItem, ...restItem } = item;
+    const defaultRender = (newItem: ProColumns<any>) =>
+      formInputRender({
+        ...props,
+        item: newItem,
+      }) || null;
+    return item.renderFormItem(restItem, { ...rest, type, defaultRender }, form) as any;
   }
 
   if (!valueType || valueType === 'text') {
