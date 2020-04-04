@@ -16,6 +16,7 @@ import {
   esESIntl,
   ruRUIntl,
   msMYIntl,
+  zhTWIntl,
 } from './component/intlContext';
 import Search from './Form';
 import defaultRenderText, { ProColumnsValueType } from './defaultRender';
@@ -43,6 +44,7 @@ export {
   esESIntl,
   ruRUIntl,
   msMYIntl,
+  zhTWIntl,
   ColumnsState,
 };
 
