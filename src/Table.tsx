@@ -443,7 +443,7 @@ const genColumnList = <T, U = {}>(
         },
         index: columnsIndex,
         filters: parsingValueEnumToArray(item.valueEnum).filter(
-          valueItem => valueItem && valueItem.value !== 'all',
+          (valueItem) => valueItem && valueItem.value !== 'all',
         ),
         ...item,
         ellipsis: false,
@@ -464,7 +464,7 @@ const genColumnList = <T, U = {}>(
       }
       return tempColumns;
     })
-    .filter(item => !item.hideInTable) as unknown) as ColumnsType<T>[number] &
+    .filter((item) => !item.hideInTable) as unknown) as ColumnsType<T>[number] &
     {
       index?: number;
     }[];
@@ -738,7 +738,7 @@ const ProTable = <T extends {}, U extends object>(
             {...rest}
             type={props.type}
             formRef={formRef}
-            onSubmit={value => {
+            onSubmit={(value) => {
               if (type !== 'form') {
                 setFormSearch(
                   beforeSearchSubmit({
@@ -773,7 +773,8 @@ const ProTable = <T extends {}, U extends object>(
               padding: 0,
             }}
           >
-            {toolBarRender !== false && (
+            {toolBarRender !== false && (options !== false || headerTitle || toolBarRender) && (
+              // if options= false & headerTitle=== false, hide Toolbar
               <Toolbar<T>
                 options={options}
                 headerTitle={headerTitle}
@@ -798,7 +799,7 @@ const ProTable = <T extends {}, U extends object>(
               rowSelection={propsRowSelection === false ? undefined : rowSelection}
               className={tableClassName}
               style={tableStyle}
-              columns={counter.columns.filter(item => {
+              columns={counter.columns.filter((item) => {
                 // 删掉不应该显示的
                 const { key, dataIndex } = item;
                 const columnKey = genColumnKey(key, dataIndex);
@@ -832,7 +833,7 @@ const ProviderWarp = <T, U extends { [key: string]: any } = {}>(props: ProTableP
     <ConfigConsumer>
       {({ getPrefixCls }: ConfigConsumerProps) => (
         <IntlConsumer>
-          {value => (
+          {(value) => (
             <IntlProvider value={value}>
               <ProTable defaultClassName={getPrefixCls('pro-table')} {...props} />
             </IntlProvider>

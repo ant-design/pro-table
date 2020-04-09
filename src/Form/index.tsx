@@ -137,7 +137,7 @@ export const formInputRender: (props: {
   type: ProTableTypes;
   intl: IntlType;
   onChange?: (value: any) => void;
-}) => JSX.Element | false = props => {
+}) => JSX.Element | false = (props) => {
   const { item, intl, form, type, ...rest } = props;
   const { valueType } = item;
   /**
@@ -269,13 +269,13 @@ export const formInputRender: (props: {
       <InputNumber
         min={0}
         precision={2}
-        formatter={value => {
+        formatter={(value) => {
           if (value) {
             return `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
           }
           return '';
         }}
-        parser={value => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
+        parser={(value) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
         placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入')}
         style={{
           width: '100%',
@@ -396,7 +396,7 @@ const conversionValue = (
 ) => {
   const tmpValue = {};
 
-  Object.keys(value).forEach(key => {
+  Object.keys(value).forEach((key) => {
     const column = proColumnsMap[key || 'null'] || {};
     const valueType = column.valueType || 'text';
     const itemValue = value[key];
@@ -595,14 +595,14 @@ const FormSearch = <T, U = {}>({
 
   useDeepCompareEffect(() => {
     const tempMap = {};
-    counter.proColumns.forEach(item => {
+    counter.proColumns.forEach((item) => {
       tempMap[genColumnKey(item.key, item.dataIndex) || 'null'] = item;
     });
     setProColumnsMap(tempMap);
   }, [counter.proColumns]);
 
   const columnsList = counter.proColumns
-    .filter(item => {
+    .filter((item) => {
       const { valueType } = item;
       if (item.hideInSearch && type !== 'form') {
         return false;
@@ -640,7 +640,7 @@ const FormSearch = <T, U = {}>({
   const forceUpdate = useCallback(() => updateState({}), []);
 
   const domList = columnsList
-    .map(item =>
+    .map((item) =>
       proFormItemRender({
         isForm,
         formInstance: formInstanceRef.current,
@@ -651,8 +651,7 @@ const FormSearch = <T, U = {}>({
       }),
     )
     .filter((_, index) => (collapse && type !== 'form' ? index < (rowNumber - 1 || 1) : true))
-    .filter(item => !!item);
-
+    .filter((item) => !!item);
   return (
     <ConfigConsumer>
       {({ getPrefixCls }: ConfigConsumerProps) => {
@@ -699,7 +698,7 @@ const FormSearch = <T, U = {}>({
                   )}
                 >
                   <Form.Item shouldUpdate noStyle>
-                    {formInstance => {
+                    {(formInstance) => {
                       formInstanceRef.current = formInstance;
                       return null;
                     }}
