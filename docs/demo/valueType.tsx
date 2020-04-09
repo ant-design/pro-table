@@ -151,12 +151,13 @@ export default () => (
   <>
     <ProTable<TableListItem>
       columns={columns}
-      request={() =>
-        Promise.resolve({
+      request={() => {
+        return Promise.resolve({
+          total: 200,
           data: tableListDataSource,
           success: true,
-        })
-      }
+        });
+      }}
       rowKey="key"
       pagination={{
         showSizeChanger: true,
