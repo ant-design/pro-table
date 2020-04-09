@@ -337,9 +337,10 @@ export const proFormItemRender: (props: {
     initialValue,
     ellipsis,
     formItemProps,
+    index,
     ...rest
   } = item;
-  const key = genColumnKey(rest.key, dataIndex);
+  const key = genColumnKey(rest.key, dataIndex, index);
   const dom = formInputRender({
     item,
     type,
@@ -596,7 +597,7 @@ const FormSearch = <T, U = {}>({
   useDeepCompareEffect(() => {
     const tempMap = {};
     counter.proColumns.forEach((item) => {
-      tempMap[genColumnKey(item.key, item.dataIndex) || 'null'] = item;
+      tempMap[genColumnKey(item.key, item.dataIndex, item.index) || 'null'] = item;
     });
     setProColumnsMap(tempMap);
   }, [counter.proColumns]);
@@ -652,6 +653,7 @@ const FormSearch = <T, U = {}>({
     )
     .filter((_, index) => (collapse && type !== 'form' ? index < (rowNumber - 1 || 1) : true))
     .filter((item) => !!item);
+
   return (
     <ConfigConsumer>
       {({ getPrefixCls }: ConfigConsumerProps) => {
@@ -685,7 +687,7 @@ const FormSearch = <T, U = {}>({
                   onValuesChange={() => forceUpdate()}
                   initialValues={columnsList.reduce(
                     (pre, item) => {
-                      const key = genColumnKey(item.key, item.dataIndex) || '';
+                      const key = genColumnKey(item.key, item.dataIndex, item.index) || '';
                       if (item.initialValue) {
                         return {
                           ...pre,
