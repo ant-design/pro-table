@@ -48,6 +48,7 @@ export interface ColumnsState {
 export interface ProColumnType<T = unknown>
   extends Omit<ColumnType<T>, 'render' | 'children'>,
     Partial<Omit<FormItemProps, 'children'>> {
+  index?: number;
   /**
    * 自定义 render
    */
@@ -430,7 +431,7 @@ const genColumnList = <T, U = {}>(
   (columns
     .map((item, columnsIndex) => {
       const { key, dataIndex } = item;
-      const columnKey = genColumnKey(key, dataIndex);
+      const columnKey = genColumnKey(key, dataIndex, columnsIndex);
       const config = columnKey ? map[columnKey] || { fixed: item.fixed } : { fixed: item.fixed };
       const tempColumns = {
         onFilter: (value: string, record: T) => {
@@ -649,7 +650,8 @@ const ProTable = <T extends {}, U extends object>(
       // 重新生成key的字符串用于排序
       counter.setSortKeyColumns(
         tableColumn.map((item, index) => {
-          const key = genColumnKey(item.key, (item as ProColumnType).dataIndex) || `${index}`;
+          const key =
+            genColumnKey(item.key, (item as ProColumnType).dataIndex, index) || `${index}`;
           return `${key}_${item.index}`;
         }),
       );
@@ -665,9 +667,23 @@ const ProTable = <T extends {}, U extends object>(
     if (keys.length > 0) {
       // 用于可视化的排序
       tableColumn = tableColumn.sort((a, b) => {
+        const { fixed: aFixed, index: aIndex } = a;
+        const { fixed: bFixed, index: bIndex } = b;
+        if (
+          (aFixed === 'left' && bFixed !== 'left') ||
+          (bFixed === 'right' && aFixed !== 'right')
+        ) {
+          return -2;
+        }
+        if (
+          (bFixed === 'left' && aFixed !== 'left') ||
+          (aFixed === 'right' && bFixed !== 'right')
+        ) {
+          return 2;
+        }
         // 如果没有index，在 dataIndex 或者 key 不存在的时候他会报错
-        const aKey = `${genColumnKey(a.key, (a as ProColumnType).dataIndex) || a.index}_${a.index}`;
-        const bKey = `${genColumnKey(b.key, (b as ProColumnType).dataIndex) || b.index}_${b.index}`;
+        const aKey = `${genColumnKey(a.key, (a as ProColumnType).dataIndex, aIndex)}_${aIndex}`;
+        const bKey = `${genColumnKey(b.key, (b as ProColumnType).dataIndex, bIndex)}_${bIndex}`;
         return keys.indexOf(aKey) - keys.indexOf(bKey);
       });
     }
@@ -724,7 +740,11 @@ const ProTable = <T extends {}, U extends object>(
   }, [rest.size]);
 
   if (counter.columns.length < 1) {
-    return <Empty />;
+    return (
+      <Card bordered={false} bodyStyle={{ padding: 50 }}>
+        <Empty />
+      </Card>
+    );
   }
 
   const className = classNames(defaultClassName, propsClassName);

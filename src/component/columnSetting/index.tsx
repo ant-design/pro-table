@@ -139,7 +139,7 @@ const CheckboxList: React.FC<{
   };
 
   const listDom = list.map(({ key, dataIndex, title, fixed, ...rest }, index) => {
-    const columnKey = genColumnKey(key, dataIndex || rest.index);
+    const columnKey = genColumnKey(key, dataIndex, rest.index);
     return (
       <DnDItem
         index={index}
@@ -224,8 +224,8 @@ const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
    */
   const setAllSelectAction = (show: boolean = true) => {
     const columnKeyMap = {};
-    localColumns.forEach(({ key, fixed, dataIndex }) => {
-      const columnKey = genColumnKey(key, dataIndex);
+    localColumns.forEach(({ key, fixed, dataIndex, index }) => {
+      const columnKey = genColumnKey(key, dataIndex, index);
       if (columnKey) {
         columnKeyMap[columnKey] = {
           show,

@@ -118,10 +118,15 @@ export function getProgressStatus(text: number): 'success' | 'exception' | 'norm
 
 /**
  *  根据 key 和 dataIndex 生成唯一 id
- * @param key
- * @param dataIndex
+ * @param key 用户设置的 key
+ * @param dataIndex 在对象中的数据
+ * @param index 序列号，理论上唯一
  */
-export const genColumnKey = (key?: React.ReactText | undefined, dataIndex?: DataIndex) => {
+export const genColumnKey = (
+  key?: React.ReactText | undefined,
+  dataIndex?: DataIndex,
+  index?: number,
+) => {
   if (key) {
     return key;
   }
@@ -131,7 +136,7 @@ export const genColumnKey = (key?: React.ReactText | undefined, dataIndex?: Data
     }
     return dataIndex;
   }
-  return undefined;
+  return `${index}`;
 };
 
 export default function get(entity: any, path: ReactText | ReactText[]) {
