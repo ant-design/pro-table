@@ -184,12 +184,12 @@ export default () => {
       })}
       rowKey="name"
       params={{ keywords }}
-      toolBarRender={action => [
+      toolBarRender={(action) => [
         <Input.Search
           style={{
             width: 200,
           }}
-          onSearch={value => setKeywords(value)}
+          onSearch={(value) => setKeywords(value)}
         />,
       ]}
       pagination={{

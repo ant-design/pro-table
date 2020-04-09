@@ -58,7 +58,7 @@ const columns: ProColumns<TableListItem>[] = [
     title: '进度',
     key: 'progress',
     dataIndex: 'progress',
-    valueType: item => ({
+    valueType: (item) => ({
       type: 'progress',
       status: item.status !== 'error' ? 'active' : 'exception',
     }),

@@ -74,7 +74,7 @@ const renderDefaultOption = <T, U = {}>(
 ) =>
   options &&
   Object.keys(options)
-    .filter(item => item)
+    .filter((item) => item)
     .map((key, index) => {
       const value = options[key];
       if (!value) {
@@ -122,7 +122,7 @@ const renderDefaultOption = <T, U = {}>(
       }
       return null;
     })
-    .filter(item => item);
+    .filter((item) => item);
 
 const ToolBar = <T, U = {}>({
   headerTitle,
@@ -155,7 +155,7 @@ const ToolBar = <T, U = {}>({
       <div className={`${className}-title`}>{headerTitle}</div>
       <div className={`${className}-option`}>
         {actions
-          .filter(item => item)
+          .filter((item) => item)
           .map((node, index) => (
             <div
               // eslint-disable-next-line react/no-array-index-key

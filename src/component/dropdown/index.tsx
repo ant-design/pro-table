@@ -30,8 +30,8 @@ const DropdownButton: React.FC<DropdownProps> = ({
     {({ getPrefixCls }: ConfigConsumerProps) => {
       const tempClassName = getPrefixCls('pro-table-dropdown');
       const menu = (
-        <Menu onClick={params => onSelect && onSelect(params.key)}>
-          {menus.map(item => (
+        <Menu onClick={(params) => onSelect && onSelect(params.key)}>
+          {menus.map((item) => (
             <Menu.Item key={item.key}>{item.name}</Menu.Item>
           ))}
         </Menu>
@@ -57,8 +57,8 @@ const TableDropdown: React.FC<DropdownProps> & { Button: typeof DropdownButton }
     {({ getPrefixCls }: ConfigConsumerProps) => {
       const className = getPrefixCls('pro-table-dropdown');
       const menu = (
-        <Menu onClick={params => onSelect && onSelect(params.key)}>
-          {menus.map(item => (
+        <Menu onClick={(params) => onSelect && onSelect(params.key)}>
+          {menus.map((item) => (
             <Menu.Item key={item.key}>{item.name}</Menu.Item>
           ))}
         </Menu>

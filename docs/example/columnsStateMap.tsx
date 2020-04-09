@@ -89,7 +89,7 @@ export default () => {
         columns={columns}
         request={(params = {}) =>
           Promise.resolve({
-            data: tableListDataSource.filter(item => {
+            data: tableListDataSource.filter((item) => {
               if (!params.keyWord) {
                 return true;
               }
@@ -106,7 +106,7 @@ export default () => {
           showSizeChanger: true,
         }}
         columnsStateMap={columnsStateMap}
-        onColumnsStateChange={map => setColumnsStateMap(map)}
+        onColumnsStateChange={(map) => setColumnsStateMap(map)}
         search={false}
         dateFormatter="string"
         headerTitle="受控模式"

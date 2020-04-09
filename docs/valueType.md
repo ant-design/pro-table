@@ -87,7 +87,7 @@ const valueEnum = {
 };
 
 // 也可以设置为一个function
-const valueEnum = row =>
+const valueEnum = (row) =>
   row.isMe
     ? {
         open: {

@@ -61,7 +61,7 @@ export const parsingValueEnumToArray = (
   value: string;
   text: string;
 }[] =>
-  Object.keys(valueEnum).map(key => {
+  Object.keys(valueEnum).map((key) => {
     const value =
       (valueEnum[key] as {
         text: string;

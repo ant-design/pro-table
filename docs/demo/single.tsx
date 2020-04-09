@@ -170,7 +170,7 @@ export default () => {
         <ProTable<GithubIssueItem>
           columns={columns}
           type="form"
-          onSubmit={params => console.log(params)}
+          onSubmit={(params) => console.log(params)}
         />
       </Drawer>
       <ProTable<GithubIssueItem>

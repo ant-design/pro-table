@@ -34,7 +34,7 @@ for (let i = 0; i < 20; i += 1) {
 }
 
 const timeAwait = (waitTime: number) =>
-  new Promise(res =>
+  new Promise((res) =>
     window.setTimeout(() => {
       res();
     }, waitTime),
@@ -65,7 +65,7 @@ const columns: ProColumns<TableListItem>[] = [
     title: '进度',
     key: 'progress',
     dataIndex: 'progress',
-    valueType: item => ({
+    valueType: (item) => ({
       type: 'progress',
       status: item.status !== 'error' ? 'active' : 'exception',
     }),
