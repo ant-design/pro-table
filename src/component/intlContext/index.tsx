@@ -51,7 +51,6 @@ const ruRUIntl = createIntl('ru_RU', ruRU);
 const msMYIntl = createIntl('ms_MY', msMY);
 const zhTWIntl = createIntl('zh_TW', zhTW);
 
-
 export { enUSIntl, zhCNIntl, viVNIntl, itITIntl, jaJPIntl, esESIntl, ruRUIntl, msMYIntl, zhTWIntl };
 
 const IntlContext = React.createContext<IntlType>(zhCNIntl);

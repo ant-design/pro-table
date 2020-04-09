@@ -18,7 +18,7 @@ export interface FormOptionProps {
  * FormFooter 的组件，可以自动进行一些配置
  * @param props
  */
-const FormOption: React.FC<FormOptionProps> = props => {
+const FormOption: React.FC<FormOptionProps> = (props) => {
   const { searchConfig, setCollapse, collapse, type, form, submit, showCollapseButton } = props;
   const isForm = type === 'form';
   const { searchText, submitText, resetText, collapseRender, optionRender } = searchConfig;

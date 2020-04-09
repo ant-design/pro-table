@@ -119,7 +119,7 @@ const columns: ProColumns<GithubIssueItem>[] = [
         查看
       </a>,
       <TableDropdown
-        onSelect={key => window.alert(key)}
+        onSelect={(key) => window.alert(key)}
         menus={[
           { key: 'copy', name: '复制' },
           { key: 'delete', name: '删除' },
@@ -166,7 +166,7 @@ export default () => (
         return pre;
       }, 0)} 项未解决 `
     }
-    tableAlertOptionRender={props => {
+    tableAlertOptionRender={(props) => {
       const { onCleanSelected } = props;
       return [
         <a

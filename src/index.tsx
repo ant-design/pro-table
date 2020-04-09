@@ -21,19 +21,23 @@ import {
 import Search from './Form';
 import defaultRenderText, { ProColumnsValueType } from './defaultRender';
 
-export {
-  ProColumns,
-  ProColumnsValueType,
+export type {
   ProTableProps,
-  IndexColumn,
+  IntlType,
+  ColumnsState,
+  ProColumnsValueType,
+  ProColumns,
   ActionType,
   RequestData,
+};
+
+export {
+  IndexColumn,
   TableDropdown,
   TableStatus,
   Search,
   IntlProvider,
   IntlConsumer,
-  IntlType,
   zhCNIntl,
   defaultRenderText,
   createIntl,
@@ -45,7 +49,6 @@ export {
   ruRUIntl,
   msMYIntl,
   zhTWIntl,
-  ColumnsState,
 };
 
 export default ProTable;

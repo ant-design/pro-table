@@ -172,7 +172,7 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
       });
     },
     pageSize: pageInfo.pageSize,
-    setPageInfo: info =>
+    setPageInfo: (info) =>
       setPageInfo({
         ...pageInfo,
         ...info,
