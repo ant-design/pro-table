@@ -139,7 +139,9 @@ export const formInputRender: (props: {
   onChange?: (value: any) => void;
 }) => JSX.Element | false = (props) => {
   const { item, intl, form, type, ...rest } = props;
-  const { valueType } = item;
+  const { valueType: itemValueType } = item;
+  // if function， run it
+  const valueType = typeof itemValueType === 'function' ? itemValueType({}) : itemValueType;
   /**
    * 自定义 render
    */
@@ -640,19 +642,25 @@ const FormSearch = <T, U = {}>({
   const [, updateState] = React.useState();
   const forceUpdate = useCallback(() => updateState({}), []);
 
-  const domList = columnsList
-    .map((item) =>
-      proFormItemRender({
-        isForm,
-        formInstance: formInstanceRef.current,
-        item,
-        type,
-        colConfig,
-        intl,
-      }),
-    )
-    .filter((_, index) => (collapse && type !== 'form' ? index < (rowNumber - 1 || 1) : true))
-    .filter((item) => !!item);
+  const [domList, setDomList] = useState<(JSX.Element | null)[]>([]);
+
+  // less render
+  useDeepCompareEffect(() => {
+    const list = columnsList
+      .map((item) =>
+        proFormItemRender({
+          isForm,
+          formInstance: formInstanceRef.current,
+          item,
+          type,
+          colConfig,
+          intl,
+        }),
+      )
+      .filter((_, index) => (collapse && type !== 'form' ? index < (rowNumber - 1 || 1) : true))
+      .filter((item) => !!item);
+    setDomList(list);
+  }, columnsList);
 
   return (
     <ConfigConsumer>
