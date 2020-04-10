@@ -133,7 +133,7 @@ export interface TableFormItem<T> extends Omit<FormItemProps, 'children'> {
 export const formInputRender: (props: {
   item: ProColumns<any>;
   value?: any;
-  form: Omit<FormInstance, 'scrollToField' | '__INTERNAL__'>;
+  form?: Omit<FormInstance, 'scrollToField' | '__INTERNAL__'>;
   type: ProTableTypes;
   intl: IntlType;
   onChange?: (value: any) => void;
@@ -155,7 +155,7 @@ export const formInputRender: (props: {
         ...props,
         item: newItem,
       }) || null;
-    return item.renderFormItem(restItem, { ...rest, type, defaultRender }, form) as any;
+    return item.renderFormItem(restItem, { ...rest, type, defaultRender }, form as any) as any;
   }
 
   if (!valueType || valueType === 'text') {
@@ -310,7 +310,7 @@ export const proFormItemRender: (props: {
   isForm: boolean;
   type: ProTableTypes;
   intl: IntlType;
-  formInstance: Omit<FormInstance, 'scrollToField' | '__INTERNAL__'>;
+  formInstance?: Omit<FormInstance, 'scrollToField' | '__INTERNAL__'>;
   colConfig:
     | {
         lg: number;
@@ -531,7 +531,9 @@ const FormSearch = <T, U = {}>({
   const intl = useIntl();
 
   const [form] = Form.useForm();
-  const formInstanceRef = useRef<Omit<FormInstance, 'scrollToField' | '__INTERNAL__'>>(form);
+  const formInstanceRef = useRef<
+    Omit<FormInstance, 'scrollToField' | '__INTERNAL__'> | undefined
+  >();
   const searchConfig = getDefaultSearch(propsSearch, intl, type === 'form');
   const { span } = searchConfig;
 
@@ -642,25 +644,21 @@ const FormSearch = <T, U = {}>({
   const [, updateState] = React.useState();
   const forceUpdate = useCallback(() => updateState({}), []);
 
-  const [domList, setDomList] = useState<(JSX.Element | null)[]>([]);
-
-  // less render
-  useDeepCompareEffect(() => {
-    const list = columnsList
-      .map((item) =>
-        proFormItemRender({
-          isForm,
-          formInstance: formInstanceRef.current,
-          item,
-          type,
-          colConfig,
-          intl,
-        }),
-      )
-      .filter((_, index) => (collapse && type !== 'form' ? index < (rowNumber - 1 || 1) : true))
-      .filter((item) => !!item);
-    setDomList(list);
-  }, columnsList);
+  const domList = formInstanceRef.current
+    ? columnsList
+        .map((item) =>
+          proFormItemRender({
+            isForm,
+            formInstance: formInstanceRef.current,
+            item,
+            type,
+            colConfig,
+            intl,
+          }),
+        )
+        .filter((_, index) => (collapse && type !== 'form' ? index < (rowNumber - 1 || 1) : true))
+        .filter((item) => !!item)
+    : [];
 
   return (
     <ConfigConsumer>
@@ -709,7 +707,9 @@ const FormSearch = <T, U = {}>({
                 >
                   <Form.Item shouldUpdate noStyle>
                     {(formInstance) => {
-                      formInstanceRef.current = formInstance;
+                      setTimeout(() => {
+                        formInstanceRef.current = formInstance;
+                      }, 0);
                       return null;
                     }}
                   </Form.Item>
