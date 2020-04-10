@@ -1,14 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-
-const usePrevious = <T, U = T>(state: T): T | undefined => {
-  const ref = useRef<T>();
-
-  useEffect(() => {
-    ref.current = state;
-  });
-
-  return ref.current;
-};
+import { useState, useEffect } from 'react';
+import { usePrevious, useDebounceFn } from './component/util';
 
 export interface RequestData<T> {
   data: T[];
@@ -37,7 +28,7 @@ interface PageInfo {
   total: number;
 }
 
-const useFetchData = <T extends RequestData<any>, U = {}>(
+const useFetchData = <T extends RequestData<any>>(
   getData: (params: { pageSize: number; current: number }) => Promise<T>,
   defaultData?: Partial<T['data']>,
   options?: {
@@ -107,6 +98,8 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
     }
   };
 
+  const fetchListDebounce = useDebounceFn(fetchList, [], 200);
+
   const fetchMore = () => {
     // 如果没有更多的就忽略掉
     if (pageInfo.hasMore) {
@@ -122,7 +115,7 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
     // 如果上次的页码为空或者两次页码等于是没必要查询的
     // 如果 pageSize 发生变化是需要查询的，所以又加了 prePageSize
     if ((!prePage || prePage === page) && (!prePageSize || prePageSize === pageSize)) {
-      return;
+      return () => undefined;
     }
     // 如果 list 的长度大于 pageSize 的长度
     // 说明是一个假分页
@@ -130,17 +123,20 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
     // 在第一页大于 10
     // 第二页也应该是大于 10
     if (page !== undefined && list.length <= pageSize) {
-      fetchList();
+      fetchListDebounce.run();
+      return () => fetchListDebounce.cancel();
     }
+    return () => undefined;
   }, [pageInfo.page]);
 
   // pageSize 修改后返回第一页
   useEffect(() => {
     if (!prePageSize) {
-      return;
+      return () => undefined;
     }
     setPageInfo({ ...pageInfo, page: 1 });
-    fetchList();
+    fetchListDebounce.run();
+    return () => fetchListDebounce.cancel();
   }, [pageInfo.pageSize]);
 
   /**
@@ -151,13 +147,14 @@ const useFetchData = <T extends RequestData<any>, U = {}>(
   };
 
   useEffect(() => {
-    fetchList();
+    fetchListDebounce.run();
+    return () => fetchListDebounce.cancel();
   }, effects);
 
   return {
     dataSource: list,
     loading,
-    reload: fetchList,
+    reload: async () => fetchListDebounce.run(),
     fetchMore,
     total: pageInfo.total,
     hasMore: pageInfo.hasMore,
