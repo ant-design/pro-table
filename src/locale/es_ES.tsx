@@ -1,5 +1,5 @@
 export default {
-  tableFrom: {
+  tableForm: {
     search: 'Buscar',
     reset: 'Limpiar',
     submit: 'Submit',
@@ -10,6 +10,8 @@ export default {
   },
   alert: {
     clear: 'Limpiar',
+    selected: 'Seleccionado',
+    item: 'Articulo',
   },
   tableToolBar: {
     leftPin: 'Pin a la izquierda',

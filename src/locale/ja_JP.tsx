@@ -1,5 +1,5 @@
 export default {
-  tableFrom: {
+  tableForm: {
     search: '検索',
     reset: 'リセット',
     submit: '提交',
@@ -10,6 +10,8 @@ export default {
   },
   alert: {
     clear: 'クリア',
+    selected: '選択した',
+    item: '項目',
   },
   tableToolBar: {
     leftPin: '左に固定',

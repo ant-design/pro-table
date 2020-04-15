@@ -16,7 +16,7 @@ describe('BasicTable', () => {
         pagination={{
           defaultCurrent: 10,
         }}
-        toolBarRender={action => [
+        toolBarRender={(action) => [
           <Input.Search
             style={{
               width: 200,

@@ -1,6 +1,6 @@
 import React from 'react';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Tag } from 'antd';
+import { Button, Tag, Input } from 'antd';
 import ProTable, { ProColumns, TableDropdown } from '@ant-design/pro-table';
 import request from 'umi-request';
 
@@ -63,6 +63,12 @@ interface User {
 
 const columns: ProColumns<GithubIssueItem>[] = [
   {
+    title: '序号',
+    dataIndex: 'index',
+    valueType: 'indexBorder',
+    width: 72,
+  },
+  {
     title: '标题',
     dataIndex: 'title',
     copyable: true,
@@ -84,6 +90,26 @@ const columns: ProColumns<GithubIssueItem>[] = [
         text: '已解决',
         status: 'Success',
       },
+    },
+  },
+  {
+    title: '排序方式',
+    key: 'direction',
+    hideInTable: true,
+    dataIndex: 'direction',
+    valueEnum: {
+      asc: '正序',
+      desc: '倒序',
+    },
+    renderFormItem: (_, { type, defaultRender, ...rest }, form) => {
+      if (type === 'form') {
+        return null;
+      }
+      const status = form.getFieldValue('state');
+      if (status !== 'open') {
+        return <Input {...rest} placeholder="请输入" />;
+      }
+      return defaultRender(_);
     },
   },
   {
@@ -109,7 +135,6 @@ const columns: ProColumns<GithubIssueItem>[] = [
     dataIndex: 'created_at',
     valueType: 'dateTime',
   },
-
   {
     title: 'option',
     valueType: 'option',
@@ -143,62 +168,43 @@ export default () => (
           },
         },
       );
-      const totalObj = await request(
-        'https://api.github.com/repos/ant-design/ant-design-pro/issues?per_page=1',
-        {
-          params,
-        },
-      );
       return {
         data,
         page: params.current,
         success: true,
-        total: ((totalObj[0] || { number: 0 }).number - 56) as number,
+        total: 5713,
       };
     }}
     rowKey="id"
-    rowSelection={{}}
-    tableAlertRender={({ selectedRowKeys, selectedRows }) =>
-      `当前共选中${selectedRowKeys.length} 项，共有 ${selectedRows.reduce((pre, item) => {
-        if (item.state === 'open') {
-          return pre + 1;
-        }
-        return pre;
-      }, 0)} 项未解决 `
-    }
-    tableAlertOptionRender={(props) => {
-      const { onCleanSelected } = props;
-      return [
-        <a
-          key="1"
-          style={{
-            marginRight: 8,
-          }}
-        >
-          自定义
-        </a>,
-        <a key="2" onClick={onCleanSelected}>
-          清空
-        </a>,
-      ];
-    }}
     dateFormatter="string"
-    headerTitle="批量操作"
-    toolBarRender={(_, { selectedRowKeys }) => [
+    headerTitle="查询 Table"
+    search={{
+      collapsed: false,
+      optionRender: ({ searchText, resetText }, { form }) => (
+        <>
+          <a
+            onClick={() => {
+              form.submit();
+            }}
+          >
+            {searchText}
+          </a>{' '}
+          <a
+            onClick={() => {
+              form.resetFields();
+            }}
+          >
+            {resetText}
+          </a>{' '}
+          <a>导出</a>
+        </>
+      ),
+    }}
+    toolBarRender={() => [
       <Button key="3" type="primary">
         <PlusOutlined />
         新建
       </Button>,
-      selectedRowKeys && selectedRowKeys.length && (
-        <Button
-          key="3"
-          onClick={() => {
-            window.alert(selectedRowKeys.join('-'));
-          }}
-        >
-          批量删除
-        </Button>
-      ),
     ]}
   />
 );

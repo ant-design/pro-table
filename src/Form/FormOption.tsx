@@ -1,12 +1,13 @@
 import React from 'react';
 import { FormComponentProps } from '@ant-design/compatible/es/form';
 import { Button } from 'antd';
+import { ProTableTypes } from '../Table';
 import { SearchConfig } from './index';
 
 export interface FormOptionProps {
   searchConfig: SearchConfig;
-  type?: 'form' | 'list' | 'table' | 'cardList' | undefined;
-  form: FormComponentProps['form'];
+  type?: ProTableTypes;
+  form: FormComponentProps['form'] & { submit: () => void };
   submit: () => void;
   collapse: boolean;
   setCollapse: (collapse: boolean) => void;
@@ -17,7 +18,7 @@ export interface FormOptionProps {
  * FormFooter 的组件，可以自动进行一些配置
  * @param props
  */
-const FormOption: React.FC<FormOptionProps> = props => {
+const FormOption: React.FC<FormOptionProps> = (props) => {
   const { searchConfig, setCollapse, collapse, type, form, submit, showCollapseButton } = props;
   const isForm = type === 'form';
   const { searchText, submitText, resetText, collapseRender, optionRender } = searchConfig;

@@ -14,31 +14,41 @@ import {
   itITIntl,
   jaJPIntl,
   esESIntl,
+  ruRUIntl,
+  msMYIntl,
+  zhTWIntl,
 } from './component/intlContext';
 import Search from './Form';
-import { ProColumnsValueType } from './defaultRender';
+import defaultRenderText, { ProColumnsValueType } from './defaultRender';
 
-export {
-  ProColumns,
-  ProColumnsValueType,
+export type {
   ProTableProps,
-  IndexColumn,
+  IntlType,
+  ColumnsState,
+  ProColumnsValueType,
+  ProColumns,
   ActionType,
   RequestData,
+};
+
+export {
+  IndexColumn,
   TableDropdown,
   TableStatus,
   Search,
   IntlProvider,
   IntlConsumer,
-  IntlType,
   zhCNIntl,
+  defaultRenderText,
   createIntl,
   enUSIntl,
   viVNIntl,
   itITIntl,
   jaJPIntl,
   esESIntl,
-  ColumnsState,
+  ruRUIntl,
+  msMYIntl,
+  zhTWIntl,
 };
 
 export default ProTable;

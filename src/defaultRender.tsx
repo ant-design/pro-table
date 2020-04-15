@@ -57,6 +57,8 @@ const moneyIntl = new Intl.NumberFormat('zh-Hans-CN', {
 });
 
 const enMoneyIntl = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+const ruMoneyIntl = new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB' });
+const msMoneyIntl = new Intl.NumberFormat('ms-MY', { style: 'currency', currency: 'MYR' });
 
 /**
  * render valueType object
@@ -77,6 +79,14 @@ const defaultRenderTextByObject = (text: string | number, value: ProColumnsValue
     // english
     if (value.locale === 'en_US') {
       return enMoneyIntl.format(text as number);
+    }
+    // russian
+    if (value.locale === 'ru_RU') {
+      return ruMoneyIntl.format(text as number);
+    }
+    // malay
+    if (value.locale === 'ms_MY') {
+      return msMoneyIntl.format(text as number);
     }
     return moneyIntl.format(text as number);
   }
@@ -102,7 +112,7 @@ const defaultRenderText = <T, U>(
   if (typeof valueType === 'function' && item) {
     const value = valueType(item);
     if (typeof value === 'string') {
-      return defaultRenderText(text, valueType, index);
+      return defaultRenderText(text, value, index);
     }
     if (typeof value === 'object') {
       return defaultRenderTextByObject(text as string, value);
@@ -133,10 +143,11 @@ const defaultRenderText = <T, U>(
    *如果是日期范围的值
    */
   if (valueType === 'dateRange' && text && Array.isArray(text) && text.length === 2) {
+    // 值不存在的时候显示 "-"
     return (
       <div>
-        <div>{moment(text[0]).format('YYYY-MM-DD')}</div>
-        <div>{moment(text[1]).format('YYYY-MM-DD')}</div>
+        <div>{text[0] ? moment(text[0]).format('YYYY-MM-DD') : '-'}</div>
+        <div>{text[1] ? moment(text[1]).format('YYYY-MM-DD') : '-'}</div>
       </div>
     );
   }
@@ -152,10 +163,11 @@ const defaultRenderText = <T, U>(
    *如果是日期加时间类型的值的值
    */
   if (valueType === 'dateTimeRange' && text && Array.isArray(text) && text.length === 2) {
+    // 值不存在的时候显示 "-"
     return (
       <div>
-        <div>{moment(text[0]).format('YYYY-MM-DD HH:mm:ss')}</div>
-        <div>{moment(text[1]).format('YYYY-MM-DD HH:mm:ss')}</div>
+        <div>{text[0] ? moment(text[0]).format('YYYY-MM-DD HH:mm:ss') : '-'}</div>
+        <div>{text[1] ? moment(text[1]).format('YYYY-MM-DD HH:mm:ss') : '-'}</div>
       </div>
     );
   }
@@ -182,7 +194,7 @@ const defaultRenderText = <T, U>(
   }
   /** 百分比, 默认展示符号, 不展示小数位 */
   if (valueType === 'percent') {
-    return <Percent showSymbol value={text as number} />;
+    return <Percent value={text as number} />;
   }
 
   return text;

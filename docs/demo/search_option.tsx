@@ -134,7 +134,7 @@ const columns: ProColumns<GithubIssueItem>[] = [
         查看
       </a>,
       <TableDropdown
-        onSelect={key => window.alert(key)}
+        onSelect={(key) => window.alert(key)}
         menus={[
           { key: 'copy', name: '复制' },
           { key: 'delete', name: '删除' },

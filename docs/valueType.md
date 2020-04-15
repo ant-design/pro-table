@@ -1,6 +1,7 @@
 ---
 title: 值类型
 order: 7
+sidemenu: false
 nav:
   title: 默认值类型
   order: 5
@@ -86,7 +87,7 @@ const valueEnum = {
 };
 
 // 也可以设置为一个function
-const valueEnum = row =>
+const valueEnum = (row) =>
   row.isMe
     ? {
         open: {

@@ -1,5 +1,5 @@
 export default {
-  tableFrom: {
+  tableForm: {
     search: 'Tìm kiếm',
     reset: 'Làm lại',
     submit: '提交',
@@ -10,6 +10,8 @@ export default {
   },
   alert: {
     clear: 'Xóa',
+    selected: 'đã chọn',
+    item: 'mục',
   },
   tableToolBar: {
     leftPin: 'Ghim trái',

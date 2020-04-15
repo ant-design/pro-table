@@ -36,6 +36,7 @@ const columns: ProColumns<TableListItem>[] = [
   {
     title: '标题',
     dataIndex: 'name',
+    render: (_) => <a>{_}</a>,
   },
   {
     title: '状态',
@@ -75,13 +76,13 @@ const columns: ProColumns<TableListItem>[] = [
 ];
 
 export default () => {
-  const [keyWord, setKeyWord] = useState();
+  const [keyWord, setKeyWord] = useState<string>();
   return (
-    <ProTable<TableListItem>
+    <ProTable<TableListItem, { keyWord?: string }>
       columns={columns}
       request={(params = {}) =>
         Promise.resolve({
-          data: tableListDataSource.filter(item => {
+          data: tableListDataSource.filter((item) => {
             if (!params.keyWord) {
               return true;
             }
@@ -103,7 +104,7 @@ export default () => {
       dateFormatter="string"
       headerTitle="简单搜索"
       toolBarRender={() => [
-        <Input.Search placeholder="请输入" onSearch={value => setKeyWord(value)} />,
+        <Input.Search placeholder="请输入" onSearch={(value) => setKeyWord(value)} />,
       ]}
     />
   );

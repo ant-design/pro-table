@@ -85,11 +85,11 @@ export default () => {
   return (
     <>
       <code>{JSON.stringify(columnsStateMap)}</code>
-      <ProTable<TableListItem>
+      <ProTable<TableListItem, { keyWord?: string }>
         columns={columns}
         request={(params = {}) =>
           Promise.resolve({
-            data: tableListDataSource.filter(item => {
+            data: tableListDataSource.filter((item) => {
               if (!params.keyWord) {
                 return true;
               }
@@ -106,10 +106,10 @@ export default () => {
           showSizeChanger: true,
         }}
         columnsStateMap={columnsStateMap}
-        onColumnsStateChange={map => setColumnsStateMap(map)}
+        onColumnsStateChange={(map) => setColumnsStateMap(map)}
         search={false}
         dateFormatter="string"
-        headerTitle="简单搜索"
+        headerTitle="受控模式"
         toolBarRender={() => [<Input.Search placeholder="请输入" />]}
       />
     </>

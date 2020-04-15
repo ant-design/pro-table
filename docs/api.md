@@ -1,6 +1,7 @@
 ---
 title: API
 order: 9
+sidemenu: false
 nav:
   title: API
   order: 2
@@ -24,12 +25,24 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 | tableClassName | 封装的 table 的 className | string | - |
 | tableStyle | 封装的 table 的 style | CSSProperties | - |
 | options | table 的默认操作，设置为 false 可以关闭它 | `{{ fullScreen: boolean \| function, reload: boolean \| function,setting: true }}` | `{ fullScreen: true, reload:true, setting: true}` |
-| search | 是否显示搜索表单，传入对象时为搜索表单的配置 | `boolean \| { span?: number \| DefaultColConfig,searchText?: string, resetText?: string, collapseRender?: (collapsed: boolean) => React.ReactNode, collapsed:boolean, onCollapse: (collapsed:boolean)=> void }` | true |
+| search | 是否显示搜索表单，传入对象时为搜索表单的配置 | [search config](#search) | true |
 | dateFormatter | moment 的格式化方式 | `"string" \| "number" \| false` | string |
 | beforeSearchSubmit | 搜索之前进行一些修改 | `(params:T)=>T` | - |
 | onSizeChange | table 尺寸发生改变 | `(size: 'default' | 'middle' | 'small' | undefined) => void` | - |
 | columnsStateMap | columns 的状态枚举 | `{[key: string]: { show:boolean, fixed: "right"|"left"} }` | - |
 | onColumnsStateChange | columns 状态发生改变 | `(props: {[key: string]: { show:boolean, fixed: "right"|"left"} }) => void` | - |
+
+### search
+
+| 属性 | 描述 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| searchText | 查询按钮的文本 | string | 查询 |
+| resetText | 重置按钮的文本 | string | 重置 |
+| submitText | 查询按钮的文本 | string | 重置 |
+| collapseRender | 收起按钮的 render | `(collapsed: boolean,showCollapseButton?: boolean,) => React.ReactNode` | - |
+| collapsed | 是否收起 | boolean | - |
+| onCollapse | 收起按钮的事件 | `(collapsed: boolean) => void;` | - |
+| optionRender | 操作栏的 render | `(( searchConfig: Omit<SearchConfig, 'optionRender'>, props: Omit<FormOptionProps, 'searchConfig'>, ) => React.ReactNode) \| false;` | - |
 
 ## Columns
 
@@ -64,13 +77,16 @@ const ref = useRef<ActionType>();
 <ProTable actionRef={ref} />;
 
 // 刷新
-ref.reload();
+ref.current.reload();
 
 // 加载更多
-ref.fetchMore();
+ref.current.fetchMore();
 
 // 重置到默认值
-ref.reset();
+ref.current.reset();
+
+// 清空选中项
+ref.current.clearSelected();
 ```
 
 ## valueType

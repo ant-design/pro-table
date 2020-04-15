@@ -5,6 +5,9 @@ import viVN from '../../locale/vi_VN';
 import itIT from '../../locale/it_IT';
 import jaJP from '../../locale/ja_JP';
 import esES from '../../locale/es_ES';
+import ruRU from '../../locale/ru_RU';
+import msMY from '../../locale/ms_MY';
+import zhTW from '../../locale/zh_TW';
 
 export interface IntlType {
   locale: string;
@@ -44,8 +47,11 @@ const viVNIntl = createIntl('vi_VN', viVN);
 const itITIntl = createIntl('it_IT', itIT);
 const jaJPIntl = createIntl('ja_JP', jaJP);
 const esESIntl = createIntl('es_ES', esES);
+const ruRUIntl = createIntl('ru_RU', ruRU);
+const msMYIntl = createIntl('ms_MY', msMY);
+const zhTWIntl = createIntl('zh_TW', zhTW);
 
-export { enUSIntl, zhCNIntl, viVNIntl, itITIntl, jaJPIntl, esESIntl };
+export { enUSIntl, zhCNIntl, viVNIntl, itITIntl, jaJPIntl, esESIntl, ruRUIntl, msMYIntl, zhTWIntl };
 
 const IntlContext = React.createContext<IntlType>(zhCNIntl);
 

@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { Button } from 'antd';
 import ProTable, { ProColumns } from '@ant-design/pro-table';
-import { FormInstance } from 'antd/lib/form';
+import { FormComponentProps } from 'antd/lib/form';
 
 const valueEnum = {
   0: 'close',
@@ -66,7 +66,7 @@ const columns: ProColumns<TableListItem>[] = [
 ];
 
 export default () => {
-  const ref = useRef<FormInstance>();
+  const ref = useRef<FormComponentProps['form']>();
   const [collapsed, setCollapsed] = useState(false);
 
   return (
@@ -101,7 +101,7 @@ export default () => {
         </Button>,
       ]}
       dateFormatter="string"
-      headerTitle="简单搜索"
+      headerTitle="表单赋值"
     />
   );
 };

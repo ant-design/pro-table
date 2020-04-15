@@ -36,6 +36,7 @@ pro-table is encapsulated in an antd table, supports some presets, and encapsula
 | onSizeChange | table size changes | `(size: 'default' | 'middle' | 'small' | undefined) => void` | - |
 | columnsStateMap | columns status | `{[key: string]: { show:boolean, fixed: "right"|"left"} }` | - |
 | onColumnsStateChange | columns status changed | `(props: {[key: string]: { show:boolean, fixed: "right"|"left"} }) => void` | - |
+| form | search From config type="form" and search form's Form config ,the config data like antd Form | `Omit<FormProps, 'form'>` | - |
 
 ### Columns
 
@@ -68,13 +69,16 @@ const ref = useRef<ActionType>();
 <ProTable actionRef={ref} />;
 
 // Load more
-ref.reload();
+ref.current.reload();
 
 // 加载更多
-ref.fetchMore();
+ref.current.fetchMore();
 
 // Reset to reset value
-ref.reset();
+ref.current.reset();
+
+// clear selected
+ref.current.clearSelected();
 ```
 
 ### valueType
@@ -178,12 +182,12 @@ export default () => {
       })}
       rowKey="name"
       params={{ keywords }}
-      toolBarRender={action => [
+      toolBarRender={(action) => [
         <Input.Search
           style={{
             width: 200,
           }}
-          onSearch={value => setKeywords(value)}
+          onSearch={(value) => setKeywords(value)}
         />,
       ]}
       pagination={{

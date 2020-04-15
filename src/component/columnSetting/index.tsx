@@ -58,7 +58,7 @@ const CheckboxListItem: React.FC<{
   return (
     <span className={`${className}-list-item`} key={columnKey}>
       <Checkbox
-        onChange={e => {
+        onChange={(e) => {
           if (columnKey) {
             const tempConfig = columnsMap[columnKey || ''] || {};
             const newSetting = { ...tempConfig };
@@ -126,7 +126,7 @@ const CheckboxList: React.FC<{
   const move = (id: string, targetIndex: number) => {
     const newColumns = [...sortKeyColumns];
 
-    const findIndex = newColumns.findIndex(columnKey => columnKey === id);
+    const findIndex = newColumns.findIndex((columnKey) => columnKey === id);
 
     const key = newColumns[findIndex];
     newColumns.splice(findIndex, 1);
@@ -139,7 +139,7 @@ const CheckboxList: React.FC<{
   };
 
   const listDom = list.map(({ key, dataIndex, title, fixed, ...rest }, index) => {
-    const columnKey = genColumnKey(key, dataIndex || rest.index);
+    const columnKey = genColumnKey(key, dataIndex, rest.index);
     return (
       <DnDItem
         index={index}
@@ -176,7 +176,7 @@ const GroupCheckboxList: React.FC<{
   const leftList: (ProColumns<any> & { index?: number })[] = [];
   const list: (ProColumns<any> & { index?: number })[] = [];
   const intl = useIntl();
-  localColumns.forEach(item => {
+  localColumns.forEach((item) => {
     const { fixed } = item;
     if (fixed === 'left') {
       leftList.push(item);
@@ -224,8 +224,8 @@ const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
    */
   const setAllSelectAction = (show: boolean = true) => {
     const columnKeyMap = {};
-    localColumns.forEach(({ key, fixed, dataIndex }) => {
-      const columnKey = genColumnKey(key, dataIndex);
+    localColumns.forEach(({ key, fixed, dataIndex, index }) => {
+      const columnKey = genColumnKey(key, dataIndex, index);
       if (columnKey) {
         columnKeyMap[columnKey] = {
           show,
@@ -236,7 +236,7 @@ const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
     setColumnsMap(columnKeyMap);
   };
 
-  const selectKeys = Object.values(columnsMap).filter(value => !value || value.show === false);
+  const selectKeys = Object.values(columnsMap).filter((value) => !value || value.show === false);
 
   const indeterminate = selectKeys.length > 0 && selectKeys.length !== localColumns.length;
 
@@ -254,7 +254,7 @@ const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
                 <Checkbox
                   indeterminate={indeterminate}
                   checked={selectKeys.length === 0 && selectKeys.length !== localColumns.length}
-                  onChange={e => {
+                  onChange={(e) => {
                     if (e.target.checked) {
                       setAllSelectAction();
                     } else {

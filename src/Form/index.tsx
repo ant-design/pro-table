@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FormItemProps, FormProps } from 'antd/es/form';
-import { Form } from '@ant-design/compatible';
-import '@ant-design/compatible/assets/index.css';
-import { Input, Row, Col, TimePicker, InputNumber, DatePicker, Select } from 'antd';
+import { Input, Form, Row, Col, TimePicker, InputNumber, DatePicker, Select } from 'antd';
 import moment, { Moment } from 'moment';
 import RcResizeObserver from 'rc-resize-observer';
 import useMediaQuery from 'use-media-antd-query';
@@ -13,12 +11,13 @@ import classNames from 'classnames';
 import { FormComponentProps } from '@ant-design/compatible/lib/form/Form';
 
 import { parsingValueEnumToArray, useDeepCompareEffect, genColumnKey } from '../component/util';
-import { ProColumnsValueTypeFunction } from '../defaultRender';
 import { useIntl, IntlType } from '../component/intlContext';
 import Container from '../container';
+import { ProColumnsValueTypeFunction } from '../defaultRender';
+import { ProTableTypes } from '../Table';
 import { ProColumns, ProColumnsValueType } from '../index';
-import './index.less';
 import FormOption, { FormOptionProps } from './FormOption';
+import './index.less';
 
 /**
  * 默认的查询表单配置
@@ -35,7 +34,7 @@ const defaultColConfig = {
 /**
  * 默认的新建表单配置
  */
-const defaultFromColConfig = {
+const defaultFormColConfig = {
   lg: 24,
   md: 24,
   xxl: 24,
@@ -126,36 +125,49 @@ export interface TableFormItem<T> extends Omit<FormItemProps, 'children'> {
   onSubmit?: (value: T) => void;
   onReset?: () => void;
   formConfig?: Omit<FormProps, 'form'>;
-  type?: 'form' | 'list' | 'table' | 'cardList' | undefined;
+  type?: ProTableTypes;
+  form: FormComponentProps['form'];
   dateFormatter?: 'string' | 'number' | false;
   search?: boolean | SearchConfig;
-  form: FormComponentProps['form'];
   formRef?:
     | React.MutableRefObject<FormComponentProps['form'] | undefined>
     | ((actionRef: FormComponentProps['form']) => void);
 }
 
-export const FromInputRender: React.FC<{
+export const formInputRender: (props: {
   item: ProColumns<any>;
   value?: any;
-  type: 'form' | 'list' | 'table' | 'cardList' | undefined;
+  form?: FormComponentProps['form'];
+  type: ProTableTypes;
+  intl: IntlType;
   onChange?: (value: any) => void;
-}> = React.forwardRef(({ item, ...rest }, ref: any) => {
-  const { valueType } = item;
-  const intl = useIntl();
+}) => JSX.Element | false = (props) => {
+  const { item, intl, form, type, ...rest } = props;
+  const { valueType: itemValueType } = item;
+  // if function， run it
+  const valueType = typeof itemValueType === 'function' ? itemValueType({}) : itemValueType;
   /**
    * 自定义 render
    */
   if (item.renderFormItem) {
-    return item.renderFormItem(item, rest) as any;
+    /**
+     *删除 renderFormItem 防止重复的 dom 渲染
+     */
+    const { renderFormItem, ...restItem } = item;
+    const defaultRender = (newItem: ProColumns<any>) =>
+      formInputRender({
+        ...props,
+        item: newItem,
+      }) || null;
+    return item.renderFormItem(restItem, { ...rest, type, defaultRender }, form as any) as any;
   }
+
   if (!valueType || valueType === 'text') {
     const { valueEnum } = item;
     if (valueEnum) {
       return (
         <Select
-          placeholder={intl.getMessage('tableFrom.selectPlaceholder', '请选择')}
-          ref={ref}
+          placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择')}
           {...rest}
           {...item.formItemProps}
         >
@@ -169,7 +181,7 @@ export const FromInputRender: React.FC<{
     }
     return (
       <Input
-        placeholder={intl.getMessage('tableFrom.inputPlaceholder', '请输入')}
+        placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入')}
         {...rest}
         {...item.formItemProps}
       />
@@ -178,8 +190,7 @@ export const FromInputRender: React.FC<{
   if (valueType === 'date') {
     return (
       <DatePicker
-        ref={ref}
-        placeholder={intl.getMessage('tableFrom.selectPlaceholder', '请选择')}
+        placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择')}
         style={{
           width: '100%',
         }}
@@ -193,8 +204,7 @@ export const FromInputRender: React.FC<{
     return (
       <DatePicker
         showTime
-        ref={ref}
-        placeholder={intl.getMessage('tableFrom.selectPlaceholder', '请选择')}
+        placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择')}
         style={{
           width: '100%',
         }}
@@ -207,10 +217,9 @@ export const FromInputRender: React.FC<{
   if (valueType === 'dateRange') {
     return (
       <DatePicker.RangePicker
-        ref={ref}
         placeholder={[
-          intl.getMessage('tableFrom.selectPlaceholder', '请选择'),
-          intl.getMessage('tableFrom.selectPlaceholder', '请选择'),
+          intl.getMessage('tableForm.selectPlaceholder', '请选择'),
+          intl.getMessage('tableForm.selectPlaceholder', '请选择'),
         ]}
         style={{
           width: '100%',
@@ -223,11 +232,10 @@ export const FromInputRender: React.FC<{
   if (valueType === 'dateTimeRange') {
     return (
       <DatePicker.RangePicker
-        ref={ref}
         showTime
         placeholder={[
-          intl.getMessage('tableFrom.selectPlaceholder', '请选择'),
-          intl.getMessage('tableFrom.selectPlaceholder', '请选择'),
+          intl.getMessage('tableForm.selectPlaceholder', '请选择'),
+          intl.getMessage('tableForm.selectPlaceholder', '请选择'),
         ]}
         style={{
           width: '100%',
@@ -241,8 +249,7 @@ export const FromInputRender: React.FC<{
   if (valueType === 'time') {
     return (
       <TimePicker
-        ref={ref}
-        placeholder={intl.getMessage('tableFrom.selectPlaceholder', '请选择')}
+        placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择')}
         style={{
           width: '100%',
         }}
@@ -254,8 +261,7 @@ export const FromInputRender: React.FC<{
   if (valueType === 'digit') {
     return (
       <InputNumber
-        ref={ref}
-        placeholder={intl.getMessage('tableFrom.inputPlaceholder', '请输入')}
+        placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入')}
         style={{
           width: '100%',
         }}
@@ -267,17 +273,16 @@ export const FromInputRender: React.FC<{
   if (valueType === 'money') {
     return (
       <InputNumber
-        ref={ref}
         min={0}
         precision={2}
-        formatter={value => {
+        formatter={(value) => {
           if (value) {
             return `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
           }
           return '';
         }}
-        parser={value => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
-        placeholder={intl.getMessage('tableFrom.inputPlaceholder', '请输入')}
+        parser={(value) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
+        placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入')}
         style={{
           width: '100%',
         }}
@@ -286,11 +291,10 @@ export const FromInputRender: React.FC<{
       />
     );
   }
-  if (valueType === 'textarea' && rest.type === 'form') {
+  if (valueType === 'textarea' && type === 'form') {
     return (
       <Input.TextArea
-        placeholder={intl.getMessage('tableFrom.inputPlaceholder', '请输入')}
-        ref={ref}
+        placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入')}
         {...rest}
         {...item.formItemProps}
       />
@@ -298,18 +302,75 @@ export const FromInputRender: React.FC<{
   }
   return (
     <Input
-      placeholder={intl.getMessage('tableFrom.inputPlaceholder', '请输入')}
-      ref={ref}
+      placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入')}
       {...rest}
       {...item.formItemProps}
     />
   );
-});
+};
+
+export const proFormItemRender: (props: {
+  item: ProColumns<any>;
+  isForm: boolean;
+  type: ProTableTypes;
+  intl: IntlType;
+  formInstance?: FormComponentProps['form'];
+  colConfig:
+    | {
+        lg: number;
+        md: number;
+        xxl: number;
+        xl: number;
+        sm: number;
+        xs: number;
+      }
+    | {
+        span: number;
+      }
+    | undefined;
+}) => null | JSX.Element = ({ item, intl, formInstance, type, isForm, colConfig }) => {
+  const {
+    valueType,
+    dataIndex,
+    valueEnum,
+    renderFormItem,
+    render,
+    hideInForm,
+    hideInSearch,
+    hideInTable,
+    renderText,
+    order,
+    initialValue,
+    ellipsis,
+    formItemProps,
+    index,
+    ...rest
+  } = item;
+  const key = genColumnKey(rest.key, dataIndex, index);
+  const dom = formInputRender({
+    item,
+    type,
+    intl,
+    form: formInstance,
+  });
+  if (!dom) {
+    return null;
+  }
+  return (
+    <Col {...colConfig} key={key}>
+      <Form.Item labelAlign="right" label={rest.title}>
+        {formInstance?.getFieldDecorator(key, { ...(isForm ? (rest as any) : {}) })(dom)}
+      </Form.Item>
+    </Col>
+  );
+};
 
 const dateFormatterMap = {
   time: 'HH:mm:ss',
   date: 'YYYY-MM-DD',
   dateTime: 'YYYY-MM-DD HH:mm:ss',
+  dateRange: 'YYYY-MM-DD',
+  dateTimeRange: 'HH:mm:ss',
 };
 
 /**
@@ -344,14 +405,14 @@ const conversionValue = (
 ) => {
   const tmpValue = {};
 
-  Object.keys(value).forEach(key => {
+  Object.keys(value).forEach((key) => {
     const column = proColumnsMap[key || 'null'] || {};
     const valueType = column.valueType || 'text';
     const itemValue = value[key];
 
     // 如果值是 "all"，或者不存在直接删除
     // 下拉框里选 all，会删除
-    if (!itemValue || (itemValue === 'all' && column.valueEnum)) {
+    if (itemValue === undefined || (itemValue === 'all' && column.valueEnum)) {
       return;
     }
 
@@ -399,14 +460,14 @@ const conversionValue = (
 const getDefaultSearch = (
   search: boolean | SearchConfig | undefined,
   intl: IntlType,
-  isFrom: boolean,
+  isForm: boolean,
 ): SearchConfig => {
   const config = {
     collapseRender: (collapsed: boolean) => {
       if (collapsed) {
         return (
           <>
-            {intl.getMessage('tableFrom.collapsed', '展开')}
+            {intl.getMessage('tableForm.collapsed', '展开')}
             <DownOutlined
               style={{
                 marginLeft: '0.5em',
@@ -419,7 +480,7 @@ const getDefaultSearch = (
       }
       return (
         <>
-          {intl.getMessage('tableFrom.expand', '收起')}
+          {intl.getMessage('tableForm.expand', '收起')}
           <DownOutlined
             style={{
               marginLeft: '0.5em',
@@ -430,10 +491,10 @@ const getDefaultSearch = (
         </>
       );
     },
-    searchText: intl.getMessage('tableFrom.search', defaultSearch.searchText || '查询'),
-    resetText: intl.getMessage('tableFrom.reset', defaultSearch.resetText || '重置'),
-    submitText: intl.getMessage('tableFrom.submit', defaultSearch.resetText || '提交'),
-    span: isFrom ? defaultFromColConfig : defaultColConfig,
+    searchText: intl.getMessage('tableForm.search', defaultSearch.searchText || '查询'),
+    resetText: intl.getMessage('tableForm.reset', defaultSearch.resetText || '重置'),
+    submitText: intl.getMessage('tableForm.submit', defaultSearch.submitText || '提交'),
+    span: isForm ? defaultFormColConfig : defaultColConfig,
   };
 
   if (search === undefined || search === true) {
@@ -471,7 +532,11 @@ const FormSearch = <T, U = {}>({
   form,
   formConfig = {},
 }: TableFormItem<T>) => {
+  /**
+   * 为了支持 dom 的消失，支持了这个 api
+   */
   const intl = useIntl();
+
   const searchConfig = getDefaultSearch(propsSearch, intl, type === 'form');
   const { span } = searchConfig;
 
@@ -535,14 +600,14 @@ const FormSearch = <T, U = {}>({
 
   useDeepCompareEffect(() => {
     const tempMap = {};
-    counter.proColumns.forEach(item => {
-      tempMap[genColumnKey(item.key, item.dataIndex) || 'null'] = item;
+    counter.proColumns.forEach((item) => {
+      tempMap[genColumnKey(item.key, item.dataIndex, item.index) || 'null'] = item;
     });
     setProColumnsMap(tempMap);
   }, [counter.proColumns]);
 
   const columnsList = counter.proColumns
-    .filter(item => {
+    .filter((item) => {
       const { valueType } = item;
       if (item.hideInSearch && type !== 'form') {
         return false;
@@ -572,36 +637,22 @@ const FormSearch = <T, U = {}>({
       }
       return 0;
     });
+
   const colConfig = typeof span === 'number' ? { span } : span;
 
   const domList = columnsList
+    .map((item) =>
+      proFormItemRender({
+        isForm,
+        formInstance: form,
+        item,
+        type,
+        colConfig,
+        intl,
+      }),
+    )
     .filter((_, index) => (collapse && type !== 'form' ? index < (rowNumber - 1 || 1) : true))
-    .map(item => {
-      const {
-        valueType,
-        dataIndex,
-        valueEnum,
-        renderFormItem,
-        render,
-        hideInForm,
-        hideInSearch,
-        hideInTable,
-        renderText,
-        order,
-        initialValue,
-        ...rest
-      } = item;
-      const key = genColumnKey(rest.key, dataIndex);
-      return (
-        <Col {...colConfig} key={key}>
-          <Form.Item labelAlign="right" label={item.title} {...(isForm && rest)}>
-            {form.getFieldDecorator(`${key}`, {
-              initialValue: item.initialValue,
-            })(<FromInputRender item={item} type={type} />)}
-          </Form.Item>
-        </Col>
-      );
-    });
+    .filter((item) => !!item);
 
   return (
     <ConfigConsumer>
@@ -631,7 +682,7 @@ const FormSearch = <T, U = {}>({
             >
               <div>
                 <Form {...formConfig} form={form}>
-                  <Row gutter={16} justify="end">
+                  <Row gutter={16} justify="start">
                     {domList}
                     <Col
                       {...colConfig}
@@ -646,7 +697,7 @@ const FormSearch = <T, U = {}>({
                           showCollapseButton={columnsList.length > rowNumber - 1 && !isForm}
                           searchConfig={searchConfig}
                           submit={submit}
-                          form={form}
+                          form={{ ...form, submit }}
                           type={type}
                           collapse={collapse}
                           setCollapse={setCollapse}

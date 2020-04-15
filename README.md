@@ -35,7 +35,8 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 | beforeSearchSubmit | 搜索之前进行一些修改 | `(params:T)=>T` | - |
 | onSizeChange | table 尺寸发生改变 | `(size: 'default' | 'middle' | 'small' | undefined) => void` | - |
 | columnsStateMap | columns 的状态枚举 | `{[key: string]: { show:boolean, fixed: "right"|"left"} }` | - |
-| onColumnsStateChange | columns 状态发生改变 | `(props: {[key: string]: { show:boolean, fixed: "right"|"left"} }) => void` | - |
+| onColumnsStateChange | columns 状态发生改变 | `(props: {[key: string]: { show:boolean, fixed: "right"|"left"} }) => void` | - | ` |
+| form | search From 配置 type="form" 和 搜索表单 的 Form 配置 基本配置与 antd Form 相同 但是劫持了 form 的配置,可用来初始化 formData | `Omit<FormProps, 'form'>` | - |
 
 ### Columns
 
@@ -68,13 +69,16 @@ const ref = useRef<ActionType>();
 <ProTable actionRef={ref} />;
 
 // 刷新
-ref.reload();
+ref.current.reload();
 
 // 加载更多
-ref.fetchMore();
+ref.current.fetchMore();
 
 // 重置到默认值
-ref.reset();
+ref.current.reset();
+
+// 清空选中项
+ref.current.clearSelected();
 ```
 
 ### valueType
@@ -84,6 +88,7 @@ ref.reset();
 | money | 转化值为金额 | ¥10,000.26 |
 | date | 日期 | 2019-11-16 |
 | dateTime | 日期和时间 | 2019-11-16 12:50:00 |
+| dateTimeRange | 日期和时间区间 | 2019-11-16 12:50:00 2019-11-18 12:50:00 |
 | time | 时间 | 12:50:00 |
 | option | 操作项，会自动增加 marginRight，只支持一个数组,表单中会自动忽略 | `[<a>操作a</a>,<a>操作b</a>]` |
 | text | 默认值，不做任何处理 | - |
@@ -180,12 +185,12 @@ export default () => {
       })}
       rowKey="name"
       params={{ keywords }}
-      toolBarRender={action => [
+      toolBarRender={(action) => [
         <Input.Search
           style={{
             width: 200,
           }}
-          onSearch={value => setKeywords(value)}
+          onSearch={(value) => setKeywords(value)}
         />,
       ]}
       pagination={{
