@@ -366,7 +366,7 @@ const dateFormatterMap = {
   date: 'YYYY-MM-DD',
   dateTime: 'YYYY-MM-DD HH:mm:ss',
   dateRange: 'YYYY-MM-DD',
-  dateTimeRange: 'HH:mm:ss',
+  dateTimeRange: 'YYYY-MM-DD HH:mm:ss',
 };
 
 /**
