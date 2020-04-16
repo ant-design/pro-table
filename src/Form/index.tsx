@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FormItemProps, FormProps } from 'antd/es/form';
-import { Input, Form, Row, Col, TimePicker, InputNumber, DatePicker, Select } from 'antd';
+import { Input, Row, Col, TimePicker, InputNumber, DatePicker, Select } from 'antd';
 import moment, { Moment } from 'moment';
 import RcResizeObserver from 'rc-resize-observer';
 import useMediaQuery from 'use-media-antd-query';
@@ -8,6 +8,8 @@ import useMergeValue from 'use-merge-value';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
 import { DownOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
 import { FormComponentProps } from '@ant-design/compatible/lib/form/Form';
 
 import { parsingValueEnumToArray, useDeepCompareEffect, genColumnKey } from '../component/util';
