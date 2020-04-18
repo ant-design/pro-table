@@ -24,12 +24,12 @@ import get, {
   useDeepCompareEffect,
   genColumnKey,
 } from './component/util';
-
 import defaultRenderText, {
   ProColumnsValueType,
   ProColumnsValueTypeFunction,
 } from './defaultRender';
 import { DensitySize } from './component/toolBar/DensityIcon';
+import ErrorBoundary from './component/ErrorBoundary';
 
 type TableRowSelection = TableProps<any>['rowSelection'];
 
@@ -774,6 +774,7 @@ const ProTable = <T extends {}, U extends object>(
             search={search}
           />
         )}
+
         {type !== 'form' && (
           <Card
             bordered={false}
@@ -846,7 +847,9 @@ const ProviderWarp = <T, U extends { [key: string]: any } = {}>(props: ProTableP
         <IntlConsumer>
           {(value) => (
             <IntlProvider value={value}>
-              <ProTable defaultClassName={getPrefixCls('pro-table')} {...props} />
+              <ErrorBoundary>
+                <ProTable defaultClassName={getPrefixCls('pro-table')} {...props} />
+              </ErrorBoundary>
             </IntlProvider>
           )}
         </IntlConsumer>

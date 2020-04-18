@@ -115,10 +115,11 @@ const columns: ProColumns<GithubIssueItem>[] = [
     valueType: 'option',
     dataIndex: 'id',
     render: (text, row) => [
-      <a href={row.html_url} target="_blank" rel="noopener noreferrer">
+      <a key="1" href={row.html_url} target="_blank" rel="noopener noreferrer">
         查看
       </a>,
       <TableDropdown
+        key="2"
         onSelect={(key) => window.alert(key)}
         menus={[
           { key: 'copy', name: '复制' },
