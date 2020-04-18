@@ -707,18 +707,23 @@ const ProTable = <T extends {}, U extends object>(
       return;
     }
     const tableKey = rest.rowKey;
-    setSelectedRows(
-      dataSource.filter((item, index) => {
-        if (!tableKey) {
-          return (selectedRowKeys as any).includes(index);
-        }
-        if (typeof tableKey === 'function') {
-          const key = tableKey(item, index);
-          return (selectedRowKeys as any).includes(key);
-        }
-        return (selectedRowKeys as any).includes(item[tableKey]);
-      }),
-    );
+
+    // dataSource maybe is a null
+    // eg: api has 404 error
+    const selectedRow = Array.isArray(dataSource)
+      ? dataSource.filter((item, index) => {
+          if (!tableKey) {
+            return (selectedRowKeys as any).includes(index);
+          }
+          if (typeof tableKey === 'function') {
+            const key = tableKey(item, index);
+            return (selectedRowKeys as any).includes(key);
+          }
+          return (selectedRowKeys as any).includes(item[tableKey]);
+        })
+      : [];
+
+    setSelectedRows(selectedRow);
   }, [selectedRowKeys.join('-'), action.loading, propsRowSelection === false]);
 
   const rowSelection: TableRowSelection = {
