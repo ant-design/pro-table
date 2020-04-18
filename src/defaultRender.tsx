@@ -31,7 +31,8 @@ export type ProColumnsValueType =
   | 'indexBorder'
   | 'progress'
   | 'percent'
-  | 'digit';
+  | 'digit'
+  | 'code';
 
 // function return type
 export type ProColumnsValueObjectType = {
@@ -195,6 +196,23 @@ const defaultRenderText = <T, U>(
   /** 百分比, 默认展示符号, 不展示小数位 */
   if (valueType === 'percent') {
     return <Percent value={text as number} />;
+  }
+
+  if (valueType === 'code') {
+    return (
+      <pre
+        style={{
+          padding: 16,
+          overflow: 'auto',
+          fontSize: '85%',
+          lineHeight: 1.45,
+          backgroundColor: '#f6f8fa',
+          borderRadius: 3,
+        }}
+      >
+        <code>{text}</code>
+      </pre>
+    );
   }
 
   return text;

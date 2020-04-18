@@ -1,5 +1,5 @@
 import React from 'react';
-import ProTable, { ProColumns } from '@ant-design/pro-table';
+import ProTable from '@ant-design/pro-table';
 
 const valueEnum = {
   0: 'close',
@@ -46,64 +46,8 @@ for (let i = 0; i < 20; i += 1) {
   });
 }
 
-const columns: ProColumns<TableListItem>[] = [
-  {
-    title: '序号',
-    dataIndex: 'index',
-    valueType: 'index',
-    width: 72,
-  },
-  {
-    title: 'border 序号',
-    dataIndex: 'index',
-    key: 'indexBorder',
-    valueType: 'indexBorder',
-    width: 72,
-  },
-  {
-    title: '状态',
-    dataIndex: 'status',
-    initialValue: 'all',
-    width: 100,
-    ellipsis: true,
-    valueEnum: {
-      all: { text: '全部', status: 'Default' },
-      close: { text: '关闭', status: 'Default' },
-      running: { text: '运行中', status: 'Processing' },
-      online: { text: '已上线', status: 'Success' },
-      error: { text: '异常', status: 'Error' },
-    },
-  },
-  {
-    title: '代码',
-    key: 'code',
-    width: 120,
-    dataIndex: 'code',
-    valueType: 'code',
-  },
-  {
-    title: '操作',
-    key: 'option',
-    width: 120,
-    valueType: 'option',
-    render: () => [<a>操作</a>, <a>删除</a>],
-  },
-];
-
 export default () => (
   <>
-    <ProTable<TableListItem>
-      columns={columns}
-      request={() => {
-        return Promise.resolve({
-          total: 200,
-          data: tableListDataSource,
-          success: true,
-        });
-      }}
-      rowKey="key"
-      headerTitle="日期类"
-    />
     <ProTable<TableListItem>
       columns={[
         {

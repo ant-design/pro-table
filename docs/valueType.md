@@ -31,6 +31,7 @@ Pro-Table 封装了一些常用的值类型来减少重复的 `render` 操作，
 | progress | 进度条 | - |
 | digit | 单纯的数字，form 转化时会转为 inputNumber | - |
 | percent | 百分比 | +1.12 |
+| code | 代码块 | `const a = b` |
 
 ## 传入 function
 
@@ -114,5 +115,15 @@ const valueEnum = (row) =>
 > 这里值得注意的是在 from 中并没有 row，所以传入了一个 null，你可以根据这个来判断要在 from 中显示什么选项。
 
 ## 示例
+
+### 日期类
+
+<code src="./demo/valueTypeDate.tsx" />
+
+### 数字类
+
+<code src="./demo/valueTypeNumber.tsx" />
+
+### 样式类
 
 <code src="./demo/valueType.tsx" />
