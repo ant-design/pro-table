@@ -1,6 +1,6 @@
 import React from 'react';
 import { ReloadOutlined, SettingOutlined } from '@ant-design/icons';
-import { Divider, Tooltip } from 'antd';
+import { Divider, Space, Tooltip } from 'antd';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider/context';
 import ColumnSetting from '../columnSetting';
 import { useIntl, IntlType } from '../intlContext';
@@ -75,7 +75,7 @@ const renderDefaultOption = <T, U = {}>(
   options &&
   Object.keys(options)
     .filter((item) => item)
-    .map((key, index) => {
+    .map((key) => {
       const value = options[key];
       if (!value) {
         return null;
@@ -87,9 +87,6 @@ const renderDefaultOption = <T, U = {}>(
         return (
           <span
             key={key}
-            style={{
-              marginLeft: index === 0 ? 8 : 16,
-            }}
             className={className}
             onClick={value === true ? defaultOptions[key] : value}
           >
@@ -102,9 +99,6 @@ const renderDefaultOption = <T, U = {}>(
         return (
           <span
             key={key}
-            style={{
-              marginLeft: index === 0 ? 8 : 16,
-            }}
             className={className}
             onClick={() => {
               if (value && defaultOptions[key] !== true) {
@@ -154,20 +148,21 @@ const ToolBar = <T, U = {}>({
     <div className={className}>
       <div className={`${className}-title`}>{headerTitle}</div>
       <div className={`${className}-option`}>
-        {actions
-          .filter((item) => item)
-          .map((node, index) => (
-            <div
-              // eslint-disable-next-line react/no-array-index-key
-              key={index}
-              className={`${className}-item`}
-            >
-              {node}
-            </div>
-          ))}
+        <Space>
+          {actions
+            .filter((item) => item)
+            .map((node, index) => (
+              <div
+                // eslint-disable-next-line react/no-array-index-key
+                key={index}
+              >
+                {node}
+              </div>
+            ))}
+        </Space>
         <div className={`${className}-default-option`}>
           {optionDom.length > 0 && actions.length > 0 && <Divider type="vertical" />}
-          {optionDom}
+          <Space>{optionDom}</Space>
         </div>
       </div>
     </div>
