@@ -1,6 +1,6 @@
 import React from 'react';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider/context';
-import { Alert } from 'antd';
+import { Alert, Space } from 'antd';
 import './index.less';
 import { useIntl, IntlType } from '../intlContext';
 
@@ -34,11 +34,11 @@ const TableAlert = <T, U = {}>({
   onCleanSelected,
   selectedRows = [],
   alertInfoRender = ({ intl }) => (
-    <span>
+    <Space>
       {intl.getMessage('alert.selected', '已选择')}
       <a style={{ fontWeight: 600 }}>{selectedRowKeys.length}</a>
       {intl.getMessage('alert.item', '项')}&nbsp;&nbsp;
-    </span>
+    </Space>
   ),
   alertOptionRender = defaultAlertOptionRender,
 }: TableAlertProps<T>) => {

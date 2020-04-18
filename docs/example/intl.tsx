@@ -1,14 +1,32 @@
 import React, { useRef, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Drawer, Tag } from 'antd';
+import { Button, Tag, Select } from 'antd';
 import ProTable, {
   ProColumns,
   TableDropdown,
   IntlProvider,
+  zhCNIntl,
+  enUSIntl,
+  viVNIntl,
   itITIntl,
+  jaJPIntl,
+  esESIntl,
+  ruRUIntl,
+  msMYIntl,
   ActionType,
 } from '@ant-design/pro-table';
 import request from 'umi-request';
+
+const intlMap = {
+  zhCNIntl,
+  enUSIntl,
+  viVNIntl,
+  itITIntl,
+  jaJPIntl,
+  esESIntl,
+  ruRUIntl,
+  msMYIntl,
+};
 
 interface GithubIssueItem {
   url: string;
@@ -75,7 +93,7 @@ const columns: ProColumns<GithubIssueItem>[] = [
     width: 72,
   },
   {
-    title: 'Titolo',
+    title: 'Title',
     dataIndex: 'title',
     copyable: true,
     ellipsis: true,
@@ -83,23 +101,23 @@ const columns: ProColumns<GithubIssueItem>[] = [
     hideInSearch: true,
   },
   {
-    title: 'Stato',
+    title: 'Status',
     dataIndex: 'state',
     initialValue: 'all',
     valueEnum: {
-      all: { text: 'Tutti', status: 'Default' },
+      all: { text: 'ALL', status: 'Default' },
       open: {
-        text: 'In errore',
+        text: 'Error',
         status: 'Error',
       },
       closed: {
-        text: 'Completato',
+        text: 'Success',
         status: 'Success',
       },
     },
   },
   {
-    title: 'Etichette',
+    title: 'Labels',
     dataIndex: 'labels',
     width: 80,
     render: (_, row) =>
@@ -116,24 +134,24 @@ const columns: ProColumns<GithubIssueItem>[] = [
       )),
   },
   {
-    title: 'Data e ora creazione',
+    title: 'Created Time',
     key: 'since',
     dataIndex: 'created_at',
     valueType: 'dateTime',
   },
   {
-    title: 'Azioni',
+    title: 'option',
     valueType: 'option',
     dataIndex: 'id',
     render: (text, row, _, action) => [
       <a href={row.html_url} target="_blank" rel="noopener noreferrer">
-        Mostra
+        show
       </a>,
       <TableDropdown
         onSelect={() => action.reload()}
         menus={[
-          { key: 'copy', name: 'Copia' },
-          { key: 'delete', name: 'Elimina' },
+          { key: 'copy', name: 'copy' },
+          { key: 'delete', name: 'delete' },
         ]}
       />,
     ],
@@ -142,33 +160,18 @@ const columns: ProColumns<GithubIssueItem>[] = [
 
 export default () => {
   const actionRef = useRef<ActionType>();
-  const [visible, setVisible] = useState(false);
+  const [intl, setIntl] = useState('zhCNIntl');
   return (
     <>
-      <Drawer onClose={() => setVisible(false)} visible={visible}>
-        <Button
-          style={{
-            margin: 8,
-          }}
-          onClick={() => {
-            if (actionRef.current) {
-              actionRef.current.reload();
-            }
-          }}
-        >
-          reload
-        </Button>
-        <Button
-          onClick={() => {
-            if (actionRef.current) {
-              actionRef.current.reset();
-            }
-          }}
-        >
-          reset
-        </Button>
-      </Drawer>
-      <IntlProvider value={itITIntl}>
+      <Select<string>
+        style={{
+          width: 200,
+        }}
+        value={intl}
+        onChange={(value) => setIntl(value)}
+        options={Object.keys(intlMap).map((value) => ({ value, label: value }))}
+      />
+      <IntlProvider value={intlMap[intl]}>
         <ProTable<GithubIssueItem>
           columns={columns}
           actionRef={actionRef}
@@ -201,13 +204,12 @@ export default () => {
           pagination={{
             showSizeChanger: true,
           }}
-          tableAlertRender={({ selectedRowKeys }) => `Selezionate ${selectedRowKeys.length} righe`}
           dateFormatter="string"
-          headerTitle="Tabella semplice"
+          headerTitle="Basic Table"
           toolBarRender={() => [
-            <Button key="3" type="primary" onClick={() => setVisible(true)}>
+            <Button key="3" type="primary">
               <PlusOutlined />
-              Nuovo
+              New
             </Button>,
           ]}
         />
