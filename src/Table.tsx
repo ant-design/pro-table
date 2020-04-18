@@ -34,7 +34,7 @@ import ErrorBoundary from './component/ErrorBoundary';
 type TableRowSelection = TableProps<any>['rowSelection'];
 
 export interface ActionType {
-  reload: () => void;
+  reload: (resetPageIndex?: boolean) => void;
   fetchMore: () => void;
   reset: () => void;
   clearSelected: () => void;
@@ -592,7 +592,7 @@ const ProTable = <T extends {}, U extends object>(
    */
   useEffect(() => {
     const userAction: ActionType = {
-      reload: async () => {
+      reload: async (resetPageIndex?: boolean) => {
         const {
           action: { current },
         } = counter;
@@ -601,6 +601,12 @@ const ProTable = <T extends {}, U extends object>(
         }
         // reload 之后大概率会切换数据，清空一下选择。
         setSelectedRowKeys([]);
+        // 如果为 true，回到第一页
+        if (resetPageIndex) {
+          await current.resetPageIndex();
+          return;
+        }
+
         await current.reload();
       },
       fetchMore: async () => {
