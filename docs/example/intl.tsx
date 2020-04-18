@@ -14,6 +14,7 @@ import ProTable, {
   ruRUIntl,
   msMYIntl,
   ActionType,
+  // @ts-ignore
 } from '@ant-design/pro-table';
 import request from 'umi-request';
 
