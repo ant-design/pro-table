@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormInstance } from 'antd/es/form';
-import { Button } from 'antd';
+import { Button, Space } from 'antd';
 import { ProTableTypes } from '../Table';
 import { SearchConfig } from './index';
 
@@ -29,12 +29,11 @@ const FormOption: React.FC<FormOptionProps> = (props) => {
     return <>{optionRender(searchConfig, props)}</>;
   }
   return (
-    <>
+    <Space>
       <Button type="primary" htmlType="submit" onClick={() => submit()}>
         {isForm ? submitText : searchText}
       </Button>
       <Button
-        style={{ marginLeft: 8 }}
         onClick={() => {
           form.resetFields();
           if (!isForm) {
@@ -46,7 +45,6 @@ const FormOption: React.FC<FormOptionProps> = (props) => {
       </Button>
       {!isForm && showCollapseButton && (
         <a
-          style={{ marginLeft: 8 }}
           onClick={() => {
             setCollapse(!collapse);
           }}
@@ -54,7 +52,7 @@ const FormOption: React.FC<FormOptionProps> = (props) => {
           {collapseRender && collapseRender(collapse)}
         </a>
       )}
-    </>
+    </Space>
   );
 };
 

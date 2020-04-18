@@ -1,7 +1,7 @@
 import './index.less';
 
 import React, { useEffect, CSSProperties, useRef, useState, ReactNode } from 'react';
-import { Table, ConfigProvider, Card, Typography, Empty, Tooltip } from 'antd';
+import { Table, ConfigProvider, Card, Space, Typography, Empty, Tooltip } from 'antd';
 import classNames from 'classnames';
 import useMergeValue from 'use-merge-value';
 import { stringify } from 'use-json-comparison';
@@ -406,16 +406,7 @@ const columRender = <T, U = any>({ item, text, row, index }: ColumRenderInterfac
     }
 
     if (renderDom && item.valueType === 'option' && Array.isArray(renderDom)) {
-      return (
-        <div className="ant-pro-table-option-cell">
-          {renderDom.map((optionDom, domIndex) => (
-            // eslint-disable-next-line react/no-array-index-key
-            <div className="ant-pro-table-option-cell-item" key={`${index}-${domIndex}`}>
-              {optionDom}
-            </div>
-          ))}
-        </div>
-      );
+      return <Space>{renderDom}</Space>;
     }
     return renderDom as React.ReactNode;
   }
