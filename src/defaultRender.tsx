@@ -1,5 +1,5 @@
 import React from 'react';
-import { Progress } from 'antd';
+import { Progress, Avatar } from 'antd';
 import moment from 'moment';
 import Percent from './component/percent';
 import IndexColumn from './component/indexColumn';
@@ -32,6 +32,7 @@ export type ProColumnsValueType =
   | 'progress'
   | 'percent'
   | 'digit'
+  | 'avatar'
   | 'code';
 
 // function return type
@@ -196,6 +197,10 @@ const defaultRenderText = <T, U>(
   /** 百分比, 默认展示符号, 不展示小数位 */
   if (valueType === 'percent') {
     return <Percent value={text as number} />;
+  }
+
+  if (valueType === 'avatar' && typeof text === 'string') {
+    return <Avatar src={text as string} size={22} shape="circle" />;
   }
 
   if (valueType === 'code') {

@@ -1,5 +1,6 @@
 import React from 'react';
 import ProTable, { ProColumns } from '@ant-design/pro-table';
+import { Space } from 'antd';
 
 const valueEnum = {
   0: 'close',
@@ -19,12 +20,15 @@ export interface TableListItem {
   percent: number | string;
   createdAtRange: number[];
   code: string;
+  avatar: string;
 }
 const tableListDataSource: TableListItem[] = [];
 
-for (let i = 0; i < 20; i += 1) {
+for (let i = 0; i < 2; i += 1) {
   tableListDataSource.push({
     key: i,
+    avatar:
+      'https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg',
     name: `TradeCode ${i}`,
     status: valueEnum[Math.floor(Math.random() * 10) % 4],
     updatedAt: Date.now() - Math.floor(Math.random() * 1000),
@@ -82,6 +86,21 @@ const columns: ProColumns<TableListItem>[] = [
     valueType: 'code',
   },
   {
+    title: '头像',
+    dataIndex: 'avatar',
+    key: 'avatar',
+    valueType: 'avatar',
+    width: 150,
+    render: (dom) => (
+      <Space>
+        <span>{dom}</span>
+        <a href="https://github.com/chenshuai2144" target="_blank" rel="noopener noreferrer">
+          chenshuai2144
+        </a>
+      </Space>
+    ),
+  },
+  {
     title: '操作',
     key: 'option',
     width: 120,
@@ -103,52 +122,7 @@ export default () => (
         });
       }}
       rowKey="key"
-      headerTitle="日期类"
-    />
-    <ProTable<TableListItem>
-      columns={[
-        {
-          title: '进度',
-          key: 'progress',
-          dataIndex: 'progress',
-          valueType: (item) => ({
-            type: 'progress',
-            status: item.status !== 'error' ? 'active' : 'exception',
-          }),
-          width: 200,
-        },
-        {
-          title: '金额',
-          dataIndex: 'money',
-          valueType: 'money',
-          width: 150,
-        },
-        {
-          title: '数字',
-          dataIndex: 'money',
-          key: 'digit',
-          valueType: 'digit',
-          width: 150,
-        },
-        {
-          title: '百分比',
-          key: 'percent',
-          width: 120,
-          dataIndex: 'percent',
-          valueType: () => ({
-            type: 'percent',
-          }),
-        },
-      ]}
-      request={() => {
-        return Promise.resolve({
-          total: 200,
-          data: tableListDataSource,
-          success: true,
-        });
-      }}
-      rowKey="key"
-      headerTitle="数字类"
+      headerTitle="样式类"
     />
   </>
 );
