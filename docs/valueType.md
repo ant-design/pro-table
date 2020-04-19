@@ -32,6 +32,7 @@ Pro-Table 封装了一些常用的值类型来减少重复的 `render` 操作，
 | digit | 单纯的数字，form 转化时会转为 inputNumber | - |
 | percent | 百分比 | +1.12 |
 | code | 代码块 | `const a = b` |
+| avatar | 头像 | 展示一个头像 |
 
 ## 传入 function
 
