@@ -39,7 +39,9 @@ export const parsingText = (
     }
     const { status } = domText;
     const Status = TableStatus[status || 'Init'];
-    return <Status>{domText.text}</Status>;
+    if (Status) {
+      return <Status>{domText.text}</Status>;
+    }
   }
   return domText.text || domText;
 };
