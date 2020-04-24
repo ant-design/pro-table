@@ -203,7 +203,7 @@ const defaultRenderText = <T, U>(
     return <Avatar src={text as string} size={22} shape="circle" />;
   }
 
-  if (valueType === 'code') {
+  if (valueType === 'code' && text) {
     return (
       <pre
         style={{
@@ -218,6 +218,10 @@ const defaultRenderText = <T, U>(
         <code>{text}</code>
       </pre>
     );
+  }
+  // @ts-ignore
+  if (text !== false && !text) {
+    return '-';
   }
 
   return text;
