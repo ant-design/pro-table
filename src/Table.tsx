@@ -604,7 +604,6 @@ const ProTable = <T extends {}, U extends object>(
         // 如果为 true，回到第一页
         if (resetPageIndex) {
           await current.resetPageIndex();
-          return;
         }
 
         await current.reload();
