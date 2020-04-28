@@ -33,6 +33,8 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 | onColumnsStateChange | columns 状态发生改变 | `(props: {[key: string]: { show:boolean, fixed: "right"|"left"} }) => void` | - |
 | type | pro-table 类型 | `"form"` | - |
 | form | antd form 的配置 | `FormProps` | - |
+| onSubmit | 提交表单时触发 | `(params: U) => void` | - |
+| onReset | 重置表单时触发 | `() => void` | - |
 
 ### search
 

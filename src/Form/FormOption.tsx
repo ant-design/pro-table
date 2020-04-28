@@ -12,6 +12,7 @@ export interface FormOptionProps {
   collapse: boolean;
   setCollapse: (collapse: boolean) => void;
   showCollapseButton: boolean;
+  onReset?: () => void;
 }
 
 /**
@@ -19,7 +20,7 @@ export interface FormOptionProps {
  * @param props
  */
 const FormOption: React.FC<FormOptionProps> = (props) => {
-  const { searchConfig, setCollapse, collapse, type, form, submit, showCollapseButton } = props;
+  const { searchConfig, setCollapse, collapse, type, form, submit, showCollapseButton, onReset = () => { } } = props;
   const isForm = type === 'form';
   const { searchText, submitText, resetText, collapseRender, optionRender } = searchConfig;
   if (optionRender === false) {
@@ -36,6 +37,7 @@ const FormOption: React.FC<FormOptionProps> = (props) => {
       <Button
         onClick={() => {
           form.resetFields();
+          onReset();
           if (!isForm) {
             submit();
           }
