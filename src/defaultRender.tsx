@@ -220,7 +220,7 @@ const defaultRenderText = <T, U>(
     );
   }
   // @ts-ignore
-  if (text !== false && !text) {
+  if (text !== false && typeof text !== 'number' && !text) {
     return '-';
   }
 
