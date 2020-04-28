@@ -47,7 +47,7 @@ export interface ColumnsState {
 
 export interface ProColumnType<T = unknown>
   extends Omit<ColumnType<T>, 'render' | 'children'>,
-    Partial<Omit<FormItemProps, 'children'>> {
+  Partial<Omit<FormItemProps, 'children'>> {
   index?: number;
   /**
    * 自定义 render
@@ -112,11 +112,11 @@ export interface ProColumnType<T = unknown>
    */
   valueEnum?: {
     [key: string]:
-      | {
-          text: ReactNode;
-          status: StatusType;
-        }
-      | ReactNode;
+    | {
+      text: ReactNode;
+      status: StatusType;
+    }
+    | ReactNode;
   };
 
   /**
@@ -248,19 +248,19 @@ export interface ProTableProps<T, U extends { [key: string]: any }>
    * 设置或者返回false 即可关闭
    */
   tableAlertRender?:
-    | ((props: {
-        intl: IntlType;
-        selectedRowKeys: (string | number)[];
-        selectedRows: T[];
-      }) => React.ReactNode)
-    | false;
+  | ((props: {
+    intl: IntlType;
+    selectedRowKeys: (string | number)[];
+    selectedRows: T[];
+  }) => React.ReactNode)
+  | false;
   /**
    * 自定义 table 的 alert 的操作
    * 设置或者返回false 即可关闭
    */
   tableAlertOptionRender?:
-    | ((props: { intl: IntlType; onCleanSelected: () => void }) => React.ReactNode)
-    | false;
+  | ((props: { intl: IntlType; onCleanSelected: () => void }) => React.ReactNode)
+  | false;
 
   rowSelection?: TableProps<T>['rowSelection'] | false;
 
@@ -275,6 +275,11 @@ export interface ProTableProps<T, U extends { [key: string]: any }>
    * 提交表单时触发
    */
   onSubmit?: (params: U) => void;
+
+  /**
+   * 重置表单时触发
+   */
+  onReset?: () => void;
 }
 
 const mergePagination = <T extends any[], U>(
@@ -457,9 +462,9 @@ const genColumnList = <T, U = {}>(
       return tempColumns;
     })
     .filter((item) => !item.hideInTable) as unknown) as ColumnsType<T>[number] &
-    {
-      index?: number;
-    }[];
+  {
+    index?: number;
+  }[];
 
 /**
  * 🏆 Use Ant Design Table like a Pro!
@@ -497,6 +502,7 @@ const ProTable = <T extends {}, U extends object>(
     defaultClassName,
     formRef,
     type = 'table',
+    onReset = () => { },
     ...rest
   } = props;
 
@@ -711,15 +717,15 @@ const ProTable = <T extends {}, U extends object>(
     // eg: api has 404 error
     const selectedRow = Array.isArray(dataSource)
       ? dataSource.filter((item, index) => {
-          if (!tableKey) {
-            return (selectedRowKeys as any).includes(index);
-          }
-          if (typeof tableKey === 'function') {
-            const key = tableKey(item, index);
-            return (selectedRowKeys as any).includes(key);
-          }
-          return (selectedRowKeys as any).includes(item[tableKey]);
-        })
+        if (!tableKey) {
+          return (selectedRowKeys as any).includes(index);
+        }
+        if (typeof tableKey === 'function') {
+          const key = tableKey(item, index);
+          return (selectedRowKeys as any).includes(key);
+        }
+        return (selectedRowKeys as any).includes(item[tableKey]);
+      })
       : [];
 
     setSelectedRows(selectedRow);
@@ -779,6 +785,7 @@ const ProTable = <T extends {}, U extends object>(
               setFormSearch(beforeSearchSubmit({}));
               // back first page
               action.resetPageIndex();
+              onReset();
             }}
             dateFormatter={rest.dateFormatter}
             search={search}
