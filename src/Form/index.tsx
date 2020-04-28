@@ -130,14 +130,44 @@ export interface TableFormItem<T> extends Omit<FormItemProps, 'children'> {
   formRef?: React.MutableRefObject<FormInstance | undefined> | ((actionRef: FormInstance) => void);
 }
 
-export const formInputRender: (props: {
+export const formIsNull = (props: {
   item: ProColumns<any>;
   value?: any;
   form?: Omit<FormInstance, 'scrollToField' | '__INTERNAL__'>;
   type: ProTableTypes;
   intl: IntlType;
   onChange?: (value: any) => void;
-}) => JSX.Element | false = (props) => {
+}) => {
+  const { item, intl, form, type, ...rest } = props;
+  /**
+   * 自定义 render
+   */
+  if (item.renderFormItem) {
+    /**
+     *删除 renderFormItem 防止重复的 dom 渲染
+     */
+    const { renderFormItem, ...restItem } = item;
+    const defaultRender = (newItem: ProColumns<any>) => (
+      <FormInputRender
+        {...({
+          ...props,
+          item: newItem,
+        } || null)}
+      />
+    );
+    return item.renderFormItem(restItem, { ...rest, type, defaultRender }, form as any) as any;
+  }
+  return true;
+};
+
+export const FormInputRender: React.FC<{
+  item: ProColumns<any>;
+  value?: any;
+  form?: Omit<FormInstance, 'scrollToField' | '__INTERNAL__'>;
+  type: ProTableTypes;
+  intl: IntlType;
+  onChange?: (value: any) => void;
+}> = (props) => {
   const { item, intl, form, type, ...rest } = props;
   const { valueType: itemValueType } = item;
   // if function， run it
@@ -150,11 +180,14 @@ export const formInputRender: (props: {
      *删除 renderFormItem 防止重复的 dom 渲染
      */
     const { renderFormItem, ...restItem } = item;
-    const defaultRender = (newItem: ProColumns<any>) =>
-      formInputRender({
-        ...props,
-        item: newItem,
-      }) || null;
+    const defaultRender = (newItem: ProColumns<any>) => (
+      <FormInputRender
+        {...({
+          ...props,
+          item: newItem,
+        } || null)}
+      />
+    );
     return item.renderFormItem(restItem, { ...rest, type, defaultRender }, form as any) as any;
   }
 
@@ -343,12 +376,16 @@ export const proFormItemRender: (props: {
     ...rest
   } = item;
   const key = genColumnKey(rest.key, dataIndex, index);
-  const dom = formInputRender({
+  const renderItemDom = formIsNull({
     item,
     type,
     intl,
     form: formInstance,
   });
+  if (!renderItemDom) {
+    return null;
+  }
+  const dom = <FormInputRender item={item} type={type} intl={intl} form={formInstance} />;
   if (!dom) {
     return null;
   }
