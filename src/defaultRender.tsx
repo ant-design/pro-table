@@ -108,6 +108,7 @@ const defaultRenderText = <T, U>(
   valueType: ProColumnsValueType | ProColumnsValueTypeFunction<T>,
   index: number,
   item?: T,
+  empty?: 'string' | false,
 ): React.ReactNode => {
   // when valueType == function
   // item always not null
@@ -219,9 +220,11 @@ const defaultRenderText = <T, U>(
       </pre>
     );
   }
-  // @ts-ignore
-  if (text !== false && typeof text !== 'number' && !text) {
-    return '-';
+
+  if (empty) {
+    if (typeof text !== 'boolean' && typeof text !== 'number' && !text) {
+      return typeof empty === 'string' ? empty : '-';
+    }
   }
 
   return text;
