@@ -284,7 +284,7 @@ export interface ProTableProps<T, U extends { [key: string]: any }>
   /**
    * 空值时显示
    */
-  empty?: 'string' | false;
+  columnEmptyText?: 'string' | false;
 }
 
 const mergePagination = <T extends any[], U>(
@@ -343,7 +343,7 @@ interface ColumRenderInterface<T> {
   text: any;
   row: T;
   index: number;
-  empty?: 'string' | false;
+  columnEmptyText?: 'string' | false;
 }
 
 /**
@@ -391,7 +391,7 @@ const columRender = <T, U = any>({
   text,
   row,
   index,
-  empty,
+  columnEmptyText,
 }: ColumRenderInterface<T>): any => {
   const counter = Container.useContainer();
   const { action } = counter;
@@ -406,7 +406,7 @@ const columRender = <T, U = any>({
     item.valueType || 'text',
     index,
     row,
-    empty,
+    columnEmptyText,
   );
 
   const dom: React.ReactNode = genEllipsis(
@@ -441,7 +441,7 @@ const genColumnList = <T, U = {}>(
   map: {
     [key: string]: ColumnsState;
   },
-  empty?: 'string' | false,
+  columnEmptyText?: 'string' | false,
 ): (ColumnsType<T>[number] & { index?: number })[] =>
   (columns
     .map((item, columnsIndex) => {
@@ -466,9 +466,9 @@ const genColumnList = <T, U = {}>(
         fixed: config.fixed,
         width: item.width || (item.fixed ? 200 : undefined),
         // @ts-ignore
-        children: item.children ? genColumnList(item.children, map, empty) : undefined,
+        children: item.children ? genColumnList(item.children, map, columnEmptyText) : undefined,
         render: (text: any, row: T, index: number) =>
-          columRender<T>({ item, text, row, index, empty }),
+          columRender<T>({ item, text, row, index, columnEmptyText }),
       };
       if (!tempColumns.children || !tempColumns.children.length) {
         delete tempColumns.children;
@@ -523,7 +523,7 @@ const ProTable = <T extends {}, U extends object>(
     formRef,
     type = 'table',
     onReset = () => {},
-    empty = false,
+    columnEmptyText = false,
     ...rest
   } = props;
 
@@ -667,7 +667,7 @@ const ProTable = <T extends {}, U extends object>(
    * Table Column 变化的时候更新一下，这个参数将会用于渲染
    */
   useDeepCompareEffect(() => {
-    const tableColumn = genColumnList<T>(propsColumns, counter.columnsMap, empty);
+    const tableColumn = genColumnList<T>(propsColumns, counter.columnsMap, columnEmptyText);
     if (tableColumn && tableColumn.length > 0) {
       counter.setColumns(tableColumn);
       // 重新生成key的字符串用于排序
@@ -686,7 +686,7 @@ const ProTable = <T extends {}, U extends object>(
    */
   useDeepCompareEffect(() => {
     const keys = counter.sortKeyColumns.join(',');
-    let tableColumn = genColumnList<T>(propsColumns, counter.columnsMap, empty);
+    let tableColumn = genColumnList<T>(propsColumns, counter.columnsMap, columnEmptyText);
     if (keys.length > 0) {
       // 用于可视化的排序
       tableColumn = tableColumn.sort((a, b) => {
