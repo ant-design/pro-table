@@ -35,7 +35,7 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 | form | antd form 的配置 | `FormProps` | - |
 | onSubmit | 提交表单时触发 | `(params: U) => void` | - |
 | onReset | 重置表单时触发 | `() => void` | - |
-| empty | 空值时显示 | `"string" \| false` | false |
+| columnEmptyText | 空值时显示 | `"string" \| false` | false |
 
 ### search
 
