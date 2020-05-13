@@ -29,6 +29,7 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 | onRequestError | 数据加载失败时触发 | `(e: Error) => void` | - |
 | tableClassName | 封装的 table 的 className | string | - |
 | tableStyle | 封装的 table 的 style | CSSProperties | - |
+| headerTitle | 左上角的 title | React.ReactNode | - |
 | options | table 的工具栏，设置为 false 可以关闭它 | `{{ fullScreen: boolean \| function, reload: boolean \| function,setting: true }}` | `{ fullScreen: true, reload:true, setting: true}` |
 | search | 是否显示搜索表单，传入对象时为搜索表单的配置 | [search config](#search) | true |
 | dateFormatter | moment 的格式化方式 | `"string" \| "number" \| false` | string |
