@@ -47,7 +47,7 @@ export interface ColumnsState {
 
 export interface ProColumnType<T = unknown>
   extends Omit<ColumnType<T>, 'render' | 'children'>,
-  Partial<Omit<FormItemProps, 'children'>> {
+    Partial<Omit<FormItemProps, 'children'>> {
   index?: number;
   /**
    * 自定义 render
@@ -112,11 +112,11 @@ export interface ProColumnType<T = unknown>
    */
   valueEnum?: {
     [key: string]:
-    | {
-      text: ReactNode;
-      status: StatusType;
-    }
-    | ReactNode;
+      | {
+          text: ReactNode;
+          status: StatusType;
+        }
+      | ReactNode;
   };
 
   /**
@@ -248,19 +248,19 @@ export interface ProTableProps<T, U extends { [key: string]: any }>
    * 设置或者返回false 即可关闭
    */
   tableAlertRender?:
-  | ((props: {
-    intl: IntlType;
-    selectedRowKeys: (string | number)[];
-    selectedRows: T[];
-  }) => React.ReactNode)
-  | false;
+    | ((props: {
+        intl: IntlType;
+        selectedRowKeys: (string | number)[];
+        selectedRows: T[];
+      }) => React.ReactNode)
+    | false;
   /**
    * 自定义 table 的 alert 的操作
    * 设置或者返回false 即可关闭
    */
   tableAlertOptionRender?:
-  | ((props: { intl: IntlType; onCleanSelected: () => void }) => React.ReactNode)
-  | false;
+    | ((props: { intl: IntlType; onCleanSelected: () => void }) => React.ReactNode)
+    | false;
 
   rowSelection?: TableProps<T>['rowSelection'] | false;
 
@@ -280,6 +280,11 @@ export interface ProTableProps<T, U extends { [key: string]: any }>
    * 重置表单时触发
    */
   onReset?: () => void;
+
+  /**
+   * 空值时显示
+   */
+  columnEmptyText?: 'string' | false;
 }
 
 const mergePagination = <T extends any[], U>(
@@ -338,6 +343,7 @@ interface ColumRenderInterface<T> {
   text: any;
   row: T;
   index: number;
+  columnEmptyText?: 'string' | false;
 }
 
 /**
@@ -380,7 +386,13 @@ const genCopyable = (dom: React.ReactNode, item: ProColumns<any>) => {
  * 这个组件负责单元格的具体渲染
  * @param param0
  */
-const columRender = <T, U = any>({ item, text, row, index }: ColumRenderInterface<T>): any => {
+const columRender = <T, U = any>({
+  item,
+  text,
+  row,
+  index,
+  columnEmptyText,
+}: ColumRenderInterface<T>): any => {
   const counter = Container.useContainer();
   const { action } = counter;
   const { renderText = (val: any) => val, valueEnum = {} } = item;
@@ -389,7 +401,13 @@ const columRender = <T, U = any>({ item, text, row, index }: ColumRenderInterfac
   }
 
   const renderTextStr = renderText(parsingText(text, valueEnum), row, index, action.current);
-  const textDom = defaultRenderText<T, {}>(renderTextStr, item.valueType || 'text', index, row);
+  const textDom = defaultRenderText<T, {}>(
+    renderTextStr,
+    item.valueType || 'text',
+    index,
+    row,
+    columnEmptyText,
+  );
 
   const dom: React.ReactNode = genEllipsis(
     genCopyable(textDom, item),
@@ -423,6 +441,7 @@ const genColumnList = <T, U = {}>(
   map: {
     [key: string]: ColumnsState;
   },
+  columnEmptyText?: 'string' | false,
 ): (ColumnsType<T>[number] & { index?: number })[] =>
   (columns
     .map((item, columnsIndex) => {
@@ -447,8 +466,9 @@ const genColumnList = <T, U = {}>(
         fixed: config.fixed,
         width: item.width || (item.fixed ? 200 : undefined),
         // @ts-ignore
-        children: item.children ? genColumnList(item.children, map) : undefined,
-        render: (text: any, row: T, index: number) => columRender<T>({ item, text, row, index }),
+        children: item.children ? genColumnList(item.children, map, columnEmptyText) : undefined,
+        render: (text: any, row: T, index: number) =>
+          columRender<T>({ item, text, row, index, columnEmptyText }),
       };
       if (!tempColumns.children || !tempColumns.children.length) {
         delete tempColumns.children;
@@ -462,9 +482,9 @@ const genColumnList = <T, U = {}>(
       return tempColumns;
     })
     .filter((item) => !item.hideInTable) as unknown) as ColumnsType<T>[number] &
-  {
-    index?: number;
-  }[];
+    {
+      index?: number;
+    }[];
 
 /**
  * 🏆 Use Ant Design Table like a Pro!
@@ -502,7 +522,8 @@ const ProTable = <T extends {}, U extends object>(
     defaultClassName,
     formRef,
     type = 'table',
-    onReset = () => { },
+    onReset = () => {},
+    columnEmptyText = false,
     ...rest
   } = props;
 
@@ -646,7 +667,7 @@ const ProTable = <T extends {}, U extends object>(
    * Table Column 变化的时候更新一下，这个参数将会用于渲染
    */
   useDeepCompareEffect(() => {
-    const tableColumn = genColumnList<T>(propsColumns, counter.columnsMap);
+    const tableColumn = genColumnList<T>(propsColumns, counter.columnsMap, columnEmptyText);
     if (tableColumn && tableColumn.length > 0) {
       counter.setColumns(tableColumn);
       // 重新生成key的字符串用于排序
@@ -665,7 +686,7 @@ const ProTable = <T extends {}, U extends object>(
    */
   useDeepCompareEffect(() => {
     const keys = counter.sortKeyColumns.join(',');
-    let tableColumn = genColumnList<T>(propsColumns, counter.columnsMap);
+    let tableColumn = genColumnList<T>(propsColumns, counter.columnsMap, columnEmptyText);
     if (keys.length > 0) {
       // 用于可视化的排序
       tableColumn = tableColumn.sort((a, b) => {
@@ -717,15 +738,15 @@ const ProTable = <T extends {}, U extends object>(
     // eg: api has 404 error
     const selectedRow = Array.isArray(dataSource)
       ? dataSource.filter((item, index) => {
-        if (!tableKey) {
-          return (selectedRowKeys as any).includes(index);
-        }
-        if (typeof tableKey === 'function') {
-          const key = tableKey(item, index);
-          return (selectedRowKeys as any).includes(key);
-        }
-        return (selectedRowKeys as any).includes(item[tableKey]);
-      })
+          if (!tableKey) {
+            return (selectedRowKeys as any).includes(index);
+          }
+          if (typeof tableKey === 'function') {
+            const key = tableKey(item, index);
+            return (selectedRowKeys as any).includes(key);
+          }
+          return (selectedRowKeys as any).includes(item[tableKey]);
+        })
       : [];
 
     setSelectedRows(selectedRow);
