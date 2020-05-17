@@ -284,7 +284,7 @@ export interface ProTableProps<T, U extends { [key: string]: any }>
   /**
    * 空值时显示
    */
-  columnEmptyText?: 'string' | false;
+  columnEmptyText?: ColumnEmptyText;
 }
 
 const mergePagination = <T extends any[], U>(
@@ -338,12 +338,14 @@ const mergePagination = <T extends any[], U>(
   };
 };
 
+export type ColumnEmptyText = string | false;
+
 interface ColumRenderInterface<T> {
   item: ProColumns<T>;
   text: any;
   row: T;
   index: number;
-  columnEmptyText?: 'string' | false;
+  columnEmptyText?: ColumnEmptyText;
 }
 
 /**
@@ -441,7 +443,7 @@ const genColumnList = <T, U = {}>(
   map: {
     [key: string]: ColumnsState;
   },
-  columnEmptyText?: 'string' | false,
+  columnEmptyText?: ColumnEmptyText,
 ): (ColumnsType<T>[number] & { index?: number })[] =>
   (columns
     .map((item, columnsIndex) => {
@@ -523,7 +525,7 @@ const ProTable = <T extends {}, U extends object>(
     formRef,
     type = 'table',
     onReset = () => {},
-    columnEmptyText = false,
+    columnEmptyText = '-',
     ...rest
   } = props;
 
