@@ -523,7 +523,10 @@ const ProTable = <T extends {}, U extends object>(
     formRef,
     type = 'table',
     onReset = () => {},
+<<<<<<< Updated upstream
     columnEmptyText = false,
+=======
+>>>>>>> Stashed changes
     ...rest
   } = props;
 
