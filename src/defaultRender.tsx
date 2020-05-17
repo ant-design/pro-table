@@ -4,6 +4,7 @@ import moment from 'moment';
 import Percent from './component/percent';
 import IndexColumn from './component/indexColumn';
 import { getProgressStatus } from './component/util';
+import { ColumnEmptyText } from './Table';
 
 /**
  * money 金额
@@ -108,7 +109,7 @@ const defaultRenderText = <T, U>(
   valueType: ProColumnsValueType | ProColumnsValueTypeFunction<T>,
   index: number,
   item?: T,
-  columnEmptyText?: 'string' | false,
+  columnEmptyText?: ColumnEmptyText,
 ): React.ReactNode => {
   // when valueType == function
   // item always not null
