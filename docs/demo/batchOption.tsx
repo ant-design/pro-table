@@ -1,6 +1,6 @@
 import React from 'react';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Tag } from 'antd';
+import { Button, Tag, Space } from 'antd';
 import ProTable, { ProColumns, TableDropdown } from '@ant-design/pro-table';
 import request from 'umi-request';
 
@@ -169,16 +169,12 @@ export default () => (
     }
     tableAlertOptionRender={(props) => {
       const { onCleanSelected } = props;
-      return [
-        <a
-          style={{
-            marginRight: 8,
-          }}
-        >
-          自定义
-        </a>,
-        <a onClick={onCleanSelected}>清空</a>,
-      ];
+      return (
+        <Space>
+          <a>自定义</a>
+          <a onClick={onCleanSelected}>清空</a>
+        </Space>
+      );
     }}
     dateFormatter="string"
     headerTitle="批量操作"
