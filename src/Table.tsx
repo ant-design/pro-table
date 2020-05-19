@@ -303,9 +303,10 @@ const mergePagination = <T extends any[], U>(
   }
   return {
     showTotal: (all, range) =>
-      `${intl.getMessage('pagination.total.range')} ${range[0]}-${range[1]} ${intl.getMessage(
+      `${intl.getMessage('pagination.total.range', '第')} ${range[0]}-${range[1]} ${intl.getMessage(
         'pagination.total.total',
-      )} ${all} ${intl.getMessage('pagination.total.item')}`,
+        '条/总共',
+      )} ${all} ${intl.getMessage('pagination.total.item', '条')}`,
     showSizeChanger: true,
     total: action.total,
     ...(defaultPagination as TablePaginationConfig),

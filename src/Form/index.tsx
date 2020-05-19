@@ -563,7 +563,6 @@ const FormSearch = <T, U = {}>({
     if (!isForm) {
       const value = form.getFieldsValue();
       if (onSubmit) {
-        debugger;
         onSubmit(conversionValue(value, dateFormatter, proColumnsMap) as T);
       }
       return;
@@ -571,7 +570,6 @@ const FormSearch = <T, U = {}>({
     try {
       const value = await form.validateFields();
       if (onSubmit) {
-        debugger;
         onSubmit(conversionValue(value, dateFormatter, proColumnsMap) as T);
       }
     } catch (error) {
