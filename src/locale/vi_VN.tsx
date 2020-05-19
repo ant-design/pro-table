@@ -13,6 +13,13 @@ export default {
     selected: 'đã chọn',
     item: 'mục',
   },
+  pagination: {
+    total: {
+      range: ' ',
+      total: 'trên',
+      item: 'mặt hàng',
+    },
+  },
   tableToolBar: {
     leftPin: 'Ghim trái',
     rightPin: 'Ghim phải',

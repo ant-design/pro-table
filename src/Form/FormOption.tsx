@@ -20,7 +20,16 @@ export interface FormOptionProps {
  * @param props
  */
 const FormOption: React.FC<FormOptionProps> = (props) => {
-  const { searchConfig, setCollapse, collapse, type, form, submit, showCollapseButton, onReset = () => { } } = props;
+  const {
+    searchConfig,
+    setCollapse,
+    collapse,
+    type,
+    form,
+    submit,
+    showCollapseButton,
+    onReset = () => {},
+  } = props;
   const isForm = type === 'form';
   const { searchText, submitText, resetText, collapseRender, optionRender } = searchConfig;
   if (optionRender === false) {

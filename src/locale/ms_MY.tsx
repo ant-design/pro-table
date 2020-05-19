@@ -13,6 +13,13 @@ export default {
     selected: 'Dipilih',
     item: 'Item',
   },
+  pagination: {
+    total: {
+      range: ' ',
+      total: 'daripada',
+      item: 'item',
+    },
+  },
   tableToolBar: {
     leftPin: 'Pin ke kiri',
     rightPin: 'Pin ke kanan',

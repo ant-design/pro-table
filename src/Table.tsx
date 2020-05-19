@@ -9,7 +9,7 @@ import { ColumnsType, TablePaginationConfig, TableProps, ColumnType } from 'antd
 import { FormItemProps, FormProps, FormInstance } from 'antd/es/form';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
 
-import { IntlProvider, IntlConsumer, IntlType } from './component/intlContext';
+import { IntlProvider, IntlConsumer, IntlType, useIntl } from './component/intlContext';
 import useFetchData, { UseFetchDataAction, RequestData } from './useFetchData';
 import Container from './container';
 import Toolbar, { OptionConfig, ToolBarProps } from './component/toolBar';
@@ -77,6 +77,7 @@ export interface ProColumnType<T = unknown>
     config: {
       value?: any;
       onChange?: (value: any) => void;
+      onSelect?: (value: any) => void;
       type: ProTableTypes;
       defaultRender: (newItem: ProColumns<any>) => JSX.Element | null;
     },
@@ -290,6 +291,7 @@ export interface ProTableProps<T, U extends { [key: string]: any }>
 const mergePagination = <T extends any[], U>(
   pagination: TablePaginationConfig | boolean | undefined = {},
   action: UseFetchDataAction<RequestData<T>>,
+  intl: IntlType,
 ): TablePaginationConfig | false | undefined => {
   if (pagination === false) {
     return {};
@@ -300,7 +302,10 @@ const mergePagination = <T extends any[], U>(
     defaultPagination = {};
   }
   return {
-    showTotal: (all, range) => `第 ${range[0]}-${range[1]} 条/总共 ${all} 条`,
+    showTotal: (all, range) =>
+      `${intl.getMessage('pagination.total.range')} ${range[0]}-${range[1]} ${intl.getMessage(
+        'pagination.total.total',
+      )} ${all} ${intl.getMessage('pagination.total.item')}`,
     showSizeChanger: true,
     total: action.total,
     ...(defaultPagination as TablePaginationConfig),
@@ -587,7 +592,10 @@ const ProTable = <T extends {}, U extends object>(
 
   action.fullScreen = fullScreen.current;
 
-  const pagination = propsPagination !== false && mergePagination<T[], {}>(propsPagination, action);
+  const intl = useIntl();
+
+  const pagination =
+    propsPagination !== false && mergePagination<T[], {}>(propsPagination, action, intl);
 
   const counter = Container.useContainer();
 
