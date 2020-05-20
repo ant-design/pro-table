@@ -14,6 +14,7 @@ export interface UseFetchDataAction<T extends RequestData<any>> {
   current: number;
   pageSize: number;
   total: number;
+  cancel: () => void;
   reload: () => Promise<void>;
   fetchMore: () => void;
   fullScreen?: () => void;
@@ -40,6 +41,7 @@ const useFetchData = <T extends RequestData<any>>(
     onRequestError?: (e: Error) => void;
   },
 ): UseFetchDataAction<T> => {
+  let isMount = true;
   const {
     defaultPageSize = 20,
     defaultCurrent = 1,
@@ -68,7 +70,7 @@ const useFetchData = <T extends RequestData<any>>(
    * @param isAppend 是否添加数据到后面
    */
   const fetchList = async (isAppend?: boolean) => {
-    if (loading) {
+    if (loading || !isMount) {
       return;
     }
     setLoading(true);
@@ -154,7 +156,10 @@ const useFetchData = <T extends RequestData<any>>(
 
   useEffect(() => {
     fetchListDebounce.run();
-    return () => fetchListDebounce.cancel();
+    return () => {
+      fetchListDebounce.cancel();
+      isMount = false;
+    };
   }, effects);
 
   return {
@@ -174,6 +179,7 @@ const useFetchData = <T extends RequestData<any>>(
         pageSize: defaultPageSize,
       });
     },
+    cancel: fetchListDebounce.cancel,
     pageSize: pageInfo.pageSize,
     setPageInfo: (info) =>
       setPageInfo({

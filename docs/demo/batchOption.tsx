@@ -90,18 +90,15 @@ const columns: ProColumns<GithubIssueItem>[] = [
     title: '标签',
     dataIndex: 'labels',
     width: 120,
-    render: (_, row) =>
-      row.labels.map(({ name, id, color }) => (
-        <Tag
-          color={`#${color}`}
-          key={id}
-          style={{
-            margin: 4,
-          }}
-        >
-          {name}
-        </Tag>
-      )),
+    render: (_, row) => (
+      <Space>
+        {row.labels.map(({ name, id, color }) => (
+          <Tag color={color} key={id}>
+            {name}
+          </Tag>
+        ))}
+      </Space>
+    ),
   },
   {
     title: '创建时间',
@@ -133,30 +130,13 @@ const columns: ProColumns<GithubIssueItem>[] = [
 export default () => (
   <ProTable<GithubIssueItem>
     columns={columns}
-    request={async (params = {}) => {
-      const data = await request<GithubIssueItem[]>(
-        'https://api.github.com/repos/ant-design/ant-design-pro/issues',
-        {
-          params: {
-            ...params,
-            page: params.current,
-            per_page: params.pageSize,
-          },
-        },
-      );
-      const totalObj = await request(
-        'https://api.github.com/repos/ant-design/ant-design-pro/issues?per_page=1',
-        {
-          params,
-        },
-      );
-      return {
-        data,
-        page: params.current,
-        success: true,
-        total: ((totalObj[0] || { number: 0 }).number - 56) as number,
-      };
-    }}
+    request={async (params = {}) =>
+      request<{
+        data: GithubIssueItem[];
+      }>('https://proapi.azurewebsites.net/github/issues', {
+        params,
+      })
+    }
     rowKey="id"
     rowSelection={{}}
     tableAlertRender={({ selectedRowKeys, selectedRows }) =>
