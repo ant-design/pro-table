@@ -24,7 +24,7 @@ import './index.less';
 const defaultColConfig = {
   lg: 8,
   md: 12,
-  xxl: 6,
+  xxl: 8,
   xl: 8,
   sm: 12,
   xs: 24,
@@ -81,11 +81,11 @@ export interface SearchConfig {
    * }
    */
   optionRender?:
-  | ((
-    searchConfig: Omit<SearchConfig, 'optionRender'>,
-    props: Omit<FormOptionProps, 'searchConfig'>,
-  ) => React.ReactNode)
-  | false;
+    | ((
+        searchConfig: Omit<SearchConfig, 'optionRender'>,
+        props: Omit<FormOptionProps, 'searchConfig'>,
+      ) => React.ReactNode)
+    | false;
   /**
    * 是否收起
    */
@@ -345,18 +345,18 @@ export const proFormItemRender: (props: {
   intl: IntlType;
   formInstance?: Omit<FormInstance, 'scrollToField' | '__INTERNAL__'>;
   colConfig:
-  | {
-    lg: number;
-    md: number;
-    xxl: number;
-    xl: number;
-    sm: number;
-    xs: number;
-  }
-  | {
-    span: number;
-  }
-  | undefined;
+    | {
+        lg: number;
+        md: number;
+        xxl: number;
+        xl: number;
+        sm: number;
+        xs: number;
+      }
+    | {
+        span: number;
+      }
+    | undefined;
 }) => null | JSX.Element = ({ item, intl, formInstance, type, isForm, colConfig }) => {
   const {
     valueType,
@@ -563,7 +563,7 @@ const FormSearch = <T, U = {}>({
   search: propsSearch,
   type,
   form: formConfig = {},
-  onReset
+  onReset,
 }: TableFormItem<T>) => {
   /**
    * 为了支持 dom 的消失，支持了这个 api
@@ -686,18 +686,18 @@ const FormSearch = <T, U = {}>({
 
   const domList = formInstanceRef.current
     ? columnsList
-      .map((item) =>
-        proFormItemRender({
-          isForm,
-          formInstance: formInstanceRef.current,
-          item,
-          type,
-          colConfig,
-          intl,
-        }),
-      )
-      .filter((_, index) => (collapse && type !== 'form' ? index < (rowNumber - 1 || 1) : true))
-      .filter((item) => !!item)
+        .map((item) =>
+          proFormItemRender({
+            isForm,
+            formInstance: formInstanceRef.current,
+            item,
+            type,
+            colConfig,
+            intl,
+          }),
+        )
+        .filter((_, index) => (collapse && type !== 'form' ? index < (rowNumber - 1 || 1) : true))
+        .filter((item) => !!item)
     : [];
 
   return (
@@ -714,8 +714,8 @@ const FormSearch = <T, U = {}>({
               isForm
                 ? undefined
                 : {
-                  height: formHeight,
-                }
+                    height: formHeight,
+                  }
             }
           >
             <RcResizeObserver

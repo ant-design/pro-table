@@ -6,11 +6,12 @@
 @pro-table-form-prefix-cls: ~'@{ant-prefix}-pro-table-form';
 
 .@{pro-table-search-prefix-cls} {
-  .clearfix;
-
+  margin-bottom: 16px;
   padding: 24px;
   padding-bottom: 0;
   background: @component-background;
+
+  .clearfix;
 
   &.@{pro-table-form-prefix-cls} {
     margin: 0;
@@ -19,7 +20,7 @@
   }
 
   .@{ant-prefix}-form-item-label {
-    min-width: 80px;
+    min-width: 40px;
     text-align: right;
   }
   .@{ant-prefix}-row:not(.ant-form-item) {

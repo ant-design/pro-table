@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Drawer, Tag } from 'antd';
+import { Button, Drawer, Tag, Space } from 'antd';
 import ProTable, { ProColumns, TableDropdown, ActionType } from '@ant-design/pro-table';
 import request from 'umi-request';
 
@@ -79,7 +79,7 @@ const columns: ProColumns<GithubIssueItem>[] = [
         message: '此项为必填项',
       },
     ],
-    width: 200,
+    width: '30%',
     hideInSearch: true,
   },
   {
@@ -96,36 +96,44 @@ const columns: ProColumns<GithubIssueItem>[] = [
         text: '已解决',
         status: 'Success',
       },
+      processing: {
+        text: '解决中',
+        status: 'Processing',
+      },
     },
+    width: '10%',
   },
   {
     title: '标签',
     dataIndex: 'labels',
-    width: 120,
-    render: (_, row) =>
-      row.labels.map(({ name, id, color }) => (
-        <Tag
-          color={`#${color}`}
-          key={id}
-          style={{
-            margin: 4,
-          }}
-        >
-          {name}
-        </Tag>
-      )),
+    width: '10%',
+    render: (_, row) => (
+      <Space>
+        {row.labels.map(({ name, id, color }) => (
+          <Tag color={color} key={id}>
+            {name}
+          </Tag>
+        ))}
+      </Space>
+    ),
   },
   {
     title: '创建时间',
     key: 'since',
     dataIndex: 'created_at',
     valueType: 'dateTime',
-    hideInForm: true,
+    width: '20%',
   },
   {
-    title: 'option',
+    title: '操作',
     valueType: 'option',
     render: (text, row, _, action) => [
+      <a href={row.html_url} target="_blank" rel="noopener noreferrer">
+        链路
+      </a>,
+      <a href={row.html_url} target="_blank" rel="noopener noreferrer">
+        报警
+      </a>,
       <a href={row.html_url} target="_blank" rel="noopener noreferrer">
         查看
       </a>,
@@ -144,7 +152,13 @@ export default () => {
   const actionRef = useRef<ActionType>();
   const [visible, setVisible] = useState(false);
   return (
-    <>
+    <div
+      style={{
+        background: '#f5f5f5',
+        margin: -24,
+        padding: 24,
+      }}
+    >
       <Drawer width={600} onClose={() => setVisible(false)} visible={visible}>
         <Button
           style={{
@@ -176,33 +190,16 @@ export default () => {
       <ProTable<GithubIssueItem>
         columns={columns}
         actionRef={actionRef}
-        request={async (params = {}) => {
-          const data = await request<GithubIssueItem[]>(
-            'https://api.github.com/repos/ant-design/ant-design-pro/issues',
-            {
-              params: {
-                ...params,
-                page: params.current,
-                per_page: params.pageSize,
-              },
-            },
-          );
-          const totalObj = await request(
-            'https://api.github.com/repos/ant-design/ant-design-pro/issues?per_page=1',
-            {
-              params,
-            },
-          );
-          return {
-            data,
-            page: params.current,
-            success: true,
-            total: ((totalObj[0] || { number: 0 }).number - 56) as number,
-          };
-        }}
+        request={async (params = {}) =>
+          request<{
+            data: GithubIssueItem[];
+          }>('https://proapi.azurewebsites.net/github/issues', {
+            params,
+          })
+        }
         rowKey="id"
         dateFormatter="string"
-        headerTitle="基础 Table"
+        headerTitle="高级表格"
         toolBarRender={() => [
           <Button key="3" type="primary">
             <PlusOutlined />
@@ -210,6 +207,6 @@ export default () => {
           </Button>,
         ]}
       />
-    </>
+    </div>
   );
 };
