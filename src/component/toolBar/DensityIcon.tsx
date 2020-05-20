@@ -6,12 +6,11 @@ import { useIntl } from '../intlContext';
 
 export type DensitySize = 'middle' | 'small' | 'large' | undefined;
 
-const DensityIcon: React.ForwardRefRenderFunction<Dropdown, {}> = (_, ref) => {
+const DensityIcon: React.ForwardRefRenderFunction<any, {}> = (_, ref) => {
   const counter = Container.useContainer();
   const intl = useIntl();
   return (
     <Dropdown
-      ref={ref}
       overlay={
         <Menu
           selectedKeys={[counter.tableSize as string]}
@@ -33,7 +32,7 @@ const DensityIcon: React.ForwardRefRenderFunction<Dropdown, {}> = (_, ref) => {
       }
       trigger={['click']}
     >
-      <Tooltip title={intl.getMessage('tableToolBar.density', '表格密度')}>
+      <Tooltip ref={ref} title={intl.getMessage('tableToolBar.density', '表格密度')}>
         <ColumnHeightOutlined />
       </Tooltip>
     </Dropdown>
