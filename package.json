@@ -44,7 +44,7 @@
     "moment": "^2.24.0",
     "rc-resize-observer": "^0.2.1",
     "rc-util": "^4.20.5",
-    "react-dnd": "^10.0.2",
+    "react-dnd": "^11.0.0",
     "react-dnd-html5-backend": "^10.0.2",
     "unstated-next": "^1.1.0",
     "use-json-comparison": "^1.0.5",
