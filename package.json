@@ -72,7 +72,7 @@
     "dumi": "^1.0.20",
     "enzyme": "^3.10.0",
     "enzyme-to-json": "^3.4.3",
-    "eslint": "^6.8.0",
+    "eslint": "^7.1.0",
     "father": "^2.29.3",
     "husky": "^4.2.5",
     "jsdom-global": "^3.0.2",
