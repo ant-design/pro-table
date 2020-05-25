@@ -13,6 +13,13 @@ export default {
     selected: 'Selected',
     item: 'Item',
   },
+  pagination: {
+    total: {
+      range: ' ',
+      total: 'of',
+      item: 'items',
+    },
+  },
   tableToolBar: {
     leftPin: 'Pin to left',
     rightPin: 'Pin to right',

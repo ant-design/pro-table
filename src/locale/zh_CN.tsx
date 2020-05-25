@@ -13,6 +13,13 @@ export default {
     selected: '已选择',
     item: '项',
   },
+  pagination: {
+    total: {
+      range: '第',
+      total: '条/总共',
+      item: '条',
+    },
+  },
   tableToolBar: {
     leftPin: '固定到左边',
     rightPin: '固定到右边',

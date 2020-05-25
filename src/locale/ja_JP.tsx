@@ -13,6 +13,13 @@ export default {
     selected: '選択した',
     item: '項目',
   },
+  pagination: {
+    total: {
+      range: '記事',
+      total: '/合計',
+      item: ' ',
+    },
+  },
   tableToolBar: {
     leftPin: '左に固定',
     rightPin: '右に固定',

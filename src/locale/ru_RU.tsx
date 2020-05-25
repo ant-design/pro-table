@@ -13,6 +13,13 @@ export default {
     selected: 'выбранный',
     item: 'предмет',
   },
+  pagination: {
+    total: {
+      range: ' ',
+      total: 'из',
+      item: 'предметов',
+    },
+  },
   tableToolBar: {
     leftPin: 'Закрепить слева',
     rightPin: 'Закрепить справа',
