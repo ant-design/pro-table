@@ -51,9 +51,23 @@ const ruRUIntl = createIntl('ru_RU', ruRU);
 const msMYIntl = createIntl('ms_MY', msMY);
 const zhTWIntl = createIntl('zh_TW', zhTW);
 
+const intlMap = {
+  'zh-CN': zhCNIntl,
+  'en-US': enUSIntl,
+  'vi-VN': viVNIntl,
+  'it-IT': itITIntl,
+  'js-JP': jaJPIntl,
+  'es-ES': esESIntl,
+  'ru-RU': ruRUIntl,
+  'ms-MY': msMYIntl,
+  'zh-TW': zhTWIntl,
+};
+
 export { enUSIntl, zhCNIntl, viVNIntl, itITIntl, jaJPIntl, esESIntl, ruRUIntl, msMYIntl, zhTWIntl };
 
-const IntlContext = React.createContext<IntlType>(zhCNIntl);
+const IntlContext = React.createContext<IntlType>(
+  intlMap[localStorage.getItem('umi_locale') || ''] || zhCNIntl,
+);
 
 const { Consumer: IntlConsumer, Provider: IntlProvider } = IntlContext;
 
