@@ -552,7 +552,7 @@ const ProTable = <T extends {}, U extends object>(
   const [selectedRowKeys, setSelectedRowKeys] = useMergeValue<React.ReactText[]>([], {
     value: propsRowSelection ? propsRowSelection.selectedRowKeys : undefined,
   });
-  const [formSearch, setFormSearch] = useState<{}>({});
+  const [formSearch, setFormSearch] = useState<{}>(() => rest.form?.initialValues);
   const [selectedRows, setSelectedRows] = useState<T[]>([]);
   const [dataSource, setDataSource] = useState<T[]>([]);
   const rootRef = useRef<HTMLDivElement>(null);
