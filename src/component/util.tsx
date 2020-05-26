@@ -234,3 +234,13 @@ export function useDebounceFn<T extends any[]>(
     cancel,
   };
 }
+
+export const getLang = (): string => {
+  const isNavigatorLanguageValid =
+    typeof navigator !== 'undefined' && typeof navigator.language === 'string';
+  const browserLang = isNavigatorLanguageValid
+    ? navigator.language.split('-').join('{{BaseSeparator}}')
+    : '';
+  const lang = typeof localStorage !== 'undefined' ? window.localStorage.getItem('umi_locale') : '';
+  return lang || browserLang || '';
+};

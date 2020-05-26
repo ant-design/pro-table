@@ -8,6 +8,7 @@ import esES from '../../locale/es_ES';
 import ruRU from '../../locale/ru_RU';
 import msMY from '../../locale/ms_MY';
 import zhTW from '../../locale/zh_TW';
+import { getLang } from '../util';
 
 export interface IntlType {
   locale: string;
@@ -65,9 +66,7 @@ const intlMap = {
 
 export { enUSIntl, zhCNIntl, viVNIntl, itITIntl, jaJPIntl, esESIntl, ruRUIntl, msMYIntl, zhTWIntl };
 
-const IntlContext = React.createContext<IntlType>(
-  intlMap[localStorage.getItem('umi_locale') || ''] || zhCNIntl,
-);
+const IntlContext = React.createContext<IntlType>(intlMap[getLang() || ''] || zhCNIntl);
 
 const { Consumer: IntlConsumer, Provider: IntlProvider } = IntlContext;
 

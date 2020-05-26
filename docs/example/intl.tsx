@@ -102,6 +102,13 @@ const columns: ProColumns<GithubIssueItem>[] = [
     hideInSearch: true,
   },
   {
+    title: 'Money',
+    dataIndex: 'title',
+    width: 100,
+    valueType: 'money',
+    render: () => (Math.random() * 100).toFixed(2),
+  },
+  {
     title: 'Status',
     dataIndex: 'state',
     initialValue: 'all',

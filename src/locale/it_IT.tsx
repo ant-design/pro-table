@@ -1,4 +1,5 @@
 export default {
+  moneySymbol: '€',
   tableForm: {
     search: 'Filtra',
     reset: 'Pulisci',

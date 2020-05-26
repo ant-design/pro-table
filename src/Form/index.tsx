@@ -277,11 +277,21 @@ export const FormInputRender: React.FC<{
         precision={2}
         formatter={(value) => {
           if (value) {
-            return `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            return `${intl.getMessage('moneySymbol', '￥')} ${value}`.replace(
+              /\B(?=(\d{3})+(?!\d))/g,
+              ',',
+            );
           }
           return '';
         }}
-        parser={(value) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
+        parser={(value) =>
+          value
+            ? value.replace(
+                new RegExp(`\\${intl.getMessage('moneySymbol', '￥')}\\s?|(,*)`, 'g'),
+                '',
+              )
+            : ''
+        }
         placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入')}
         style={{
           width: '100%',

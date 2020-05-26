@@ -1,4 +1,5 @@
 export default {
+  moneySymbol: '￥',
   tableForm: {
     search: '查詢',
     reset: '重置',

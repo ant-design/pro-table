@@ -1,8 +1,9 @@
 export default {
+  moneySymbol: '₫',
   tableForm: {
     search: 'Tìm kiếm',
     reset: 'Làm lại',
-    submit: '提交',
+    submit: 'Gửi đi',
     collapsed: 'Mở rộng',
     expand: 'Thu gọn',
     inputPlaceholder: 'nhập dữ liệu',

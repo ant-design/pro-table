@@ -1,4 +1,5 @@
 export default {
+  moneySymbol: 'RM',
   tableForm: {
     search: 'Cari',
     reset: 'Menetapkan semula',
