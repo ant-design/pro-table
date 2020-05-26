@@ -9,21 +9,7 @@ import { ColumnsType, TablePaginationConfig, TableProps, ColumnType } from 'antd
 import { FormItemProps, FormProps, FormInstance } from 'antd/es/form';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
 
-import {
-  IntlProvider,
-  IntlConsumer,
-  IntlType,
-  useIntl,
-  zhCNIntl,
-  enUSIntl,
-  viVNIntl,
-  itITIntl,
-  jaJPIntl,
-  esESIntl,
-  ruRUIntl,
-  msMYIntl,
-  zhTWIntl,
-} from './component/intlContext';
+import { IntlProvider, IntlConsumer, IntlType, useIntl } from './component/intlContext';
 import useFetchData, { UseFetchDataAction, RequestData } from './useFetchData';
 import Container from './container';
 import Toolbar, { OptionConfig, ToolBarProps } from './component/toolBar';
@@ -552,7 +538,7 @@ const ProTable = <T extends {}, U extends object>(
   const [selectedRowKeys, setSelectedRowKeys] = useMergeValue<React.ReactText[]>([], {
     value: propsRowSelection ? propsRowSelection.selectedRowKeys : undefined,
   });
-  const [formSearch, setFormSearch] = useState<{}>({});
+  const [formSearch, setFormSearch] = useState<{}>(() => rest.form?.initialValues);
   const [selectedRows, setSelectedRows] = useState<T[]>([]);
   const [dataSource, setDataSource] = useState<T[]>([]);
   const rootRef = useRef<HTMLDivElement>(null);
