@@ -1,4 +1,5 @@
 export default {
+  moneySymbol: '$',
   tableForm: {
     search: 'Query',
     reset: 'Reset',

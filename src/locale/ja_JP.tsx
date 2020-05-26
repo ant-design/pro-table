@@ -1,4 +1,5 @@
 export default {
+  moneySymbol: '¥',
   tableForm: {
     search: '検索',
     reset: 'リセット',
