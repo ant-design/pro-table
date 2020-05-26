@@ -7,6 +7,7 @@ import useMergeValue from 'use-merge-value';
 import { stringify } from 'use-json-comparison';
 import { ColumnsType, TablePaginationConfig, TableProps, ColumnType } from 'antd/es/table';
 import { FormItemProps, FormProps, FormInstance } from 'antd/es/form';
+import { TableCurrentDataSource, SorterResult } from 'antd/lib/table/interface';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
 
 import { IntlProvider, IntlConsumer, IntlType, useIntl } from './component/intlContext';
@@ -23,6 +24,7 @@ import get, {
   checkUndefinedOrNull,
   useDeepCompareEffect,
   genColumnKey,
+  removeObjectNull,
 } from './component/util';
 import defaultRenderText, {
   ProColumnsValueType,
@@ -168,10 +170,14 @@ export interface ProTableProps<T, U extends { [key: string]: any }>
    * 一个获得 dataSource 的方法
    */
   request?: (
-    params?: U & {
+    params: U & {
       pageSize?: number;
       current?: number;
     },
+    sort: {
+      [key: string]: 'ascend' | 'descend';
+    },
+    filter: { [key: string]: React.ReactText[] },
   ) => Promise<RequestData<T>>;
 
   /**
@@ -541,6 +547,12 @@ const ProTable = <T extends {}, U extends object>(
   const [formSearch, setFormSearch] = useState<{}>(() => rest.form?.initialValues);
   const [selectedRows, setSelectedRows] = useState<T[]>([]);
   const [dataSource, setDataSource] = useState<T[]>([]);
+  const [proFilter, setProFilter] = useState<{
+    [key: string]: React.ReactText[];
+  }>({});
+  const [proSort, setProSort] = useState<{
+    [key: string]: 'ascend' | 'descend';
+  }>({});
   const rootRef = useRef<HTMLDivElement>(null);
   const fullScreen = useRef<() => void>();
 
@@ -562,7 +574,17 @@ const ProTable = <T extends {}, U extends object>(
           success: true,
         } as RequestData<T>;
       }
-      const msg = await request({ current, pageSize, ...formSearch, ...params } as U);
+      const msg = await request(
+        {
+          current,
+          pageSize,
+          ...formSearch,
+
+          ...params,
+        } as U,
+        proSort,
+        proFilter,
+      );
       if (postData) {
         return { ...msg, data: postData(msg.data) };
       }
@@ -574,7 +596,7 @@ const ProTable = <T extends {}, U extends object>(
       defaultPageSize: fetchPagination.pageSize || fetchPagination.defaultPageSize,
       onLoad,
       onRequestError,
-      effects: [stringify(params), stringify(formSearch)],
+      effects: [stringify(params), stringify(formSearch), stringify(proFilter), stringify(proSort)],
     },
   );
 
@@ -876,6 +898,39 @@ const ProTable = <T extends {}, U extends object>(
               loading={action.loading || props.loading}
               dataSource={dataSource}
               pagination={pagination}
+              onChange={(
+                changePagination: TablePaginationConfig,
+                filters: {
+                  [string: string]: React.ReactText[] | null;
+                },
+                sorter: SorterResult<T> | SorterResult<T>[],
+                extra: TableCurrentDataSource<T>,
+              ) => {
+                if (rest.onChange) {
+                  rest.onChange(changePagination, filters, sorter, extra);
+                }
+
+                // 制造筛选的数据
+                setProFilter(removeObjectNull(filters));
+
+                // 制造一个排序的数据
+                if (Array.isArray(sorter)) {
+                  const data = sorter.reduce<{
+                    [key: string]: any;
+                  }>((pre, value) => {
+                    if (!value.order) {
+                      return pre;
+                    }
+                    return {
+                      ...pre,
+                      [`${value.field}`]: value.order,
+                    };
+                  }, {});
+                  setProSort(data);
+                } else if (sorter.order) {
+                  setProSort({ [`${sorter.field}`]: sorter.order });
+                }
+              }}
             />
           </Card>
         )}

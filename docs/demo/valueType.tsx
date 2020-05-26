@@ -63,11 +63,19 @@ const columns: ProColumns<TableListItem>[] = [
     key: 'indexBorder',
     valueType: 'indexBorder',
     width: 72,
+    // @ts-ignore
+    sorter: {
+      multiple: 3,
+    },
   },
   {
     title: '状态',
     dataIndex: 'status',
     initialValue: 'all',
+    // @ts-ignore
+    sorter: {
+      multiple: 3,
+    },
     width: 100,
     ellipsis: true,
     valueEnum: {
@@ -113,8 +121,8 @@ export default () => (
   <>
     <ProTable<TableListItem>
       columns={columns}
-      request={(params) => {
-        console.log(params);
+      request={(params, sorter, filter) => {
+        console.log(params, sorter, filter);
         return Promise.resolve({
           total: 200,
           data: tableListDataSource,
