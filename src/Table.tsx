@@ -632,7 +632,7 @@ const ProTable = <T extends {}, U extends object>(
 
   useEffect(() => {
     // 数据源更新时 取消所有选中项
-    onCleanSelected();
+    // onCleanSelected();
     setDataSource(request ? (action.dataSource as T[]) : props.dataSource || []);
   }, [props.dataSource, action.dataSource]);
 
@@ -686,7 +686,7 @@ const ProTable = <T extends {}, U extends object>(
         }
         current.reset();
       },
-      clearSelected: onCleanSelected,
+      clearSelected: () => onCleanSelected(),
     };
     if (actionRef && typeof actionRef === 'function') {
       actionRef(userAction);
@@ -770,7 +770,7 @@ const ProTable = <T extends {}, U extends object>(
     // dataSource maybe is a null
     // eg: api has 404 error
     const selectedRow = Array.isArray(dataSource)
-      ? dataSource.filter((item, index) => {
+      ? [...selectedRows, ...dataSource].filter((item, index) => {
           if (!tableKey) {
             return (selectedRowKeys as any).includes(index);
           }
@@ -792,7 +792,7 @@ const ProTable = <T extends {}, U extends object>(
       if (propsRowSelection && propsRowSelection.onChange) {
         propsRowSelection.onChange(keys, rows);
       }
-      setSelectedRowKeys(keys);
+      setSelectedRowKeys([...keys]);
     },
   };
 
