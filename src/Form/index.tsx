@@ -363,7 +363,12 @@ export const proFormItemRender: (props: {
   }
   return (
     <Col {...colConfig} key={key}>
-      <Form.Item labelAlign="right" label={rest.title} name={key} {...(isForm && rest)}>
+      <Form.Item
+        labelAlign="right"
+        label={rest.title}
+        name={Array.isArray(dataIndex) ? dataIndex : key}
+        {...(isForm && rest)}
+      >
         {dom}
       </Form.Item>
     </Col>
