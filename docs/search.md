@@ -12,7 +12,7 @@ nav:
 Pro-Table 会根据列来生成一个 Form，用于筛选列表数据，最后的值会根据通过 `request` 的第一个参数返回，看起来就像。
 
 ```jsx | pure
-<ProTable request={(params)=>{ all params}}>
+<ProTable request={(params,sort,filter)=>{ all params}}>
 ```
 
 按照规范，table 的表单不需要任何的必选参数，所有点击搜索和重置都会触发 `request`来发起一次查询。
