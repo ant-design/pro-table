@@ -122,6 +122,10 @@ const columns: ProColumns<GithubIssueItem>[] = [
         text: 'Success',
         status: 'Success',
       },
+      processing: {
+        text: '解决中',
+        status: 'Processing',
+      },
     },
   },
   {
@@ -129,9 +133,8 @@ const columns: ProColumns<GithubIssueItem>[] = [
     dataIndex: 'labels',
     width: 80,
     render: (_, row) =>
-      row.labels.map(({ name, id, color }) => (
+      row.labels.map(({ name, id }) => (
         <Tag
-          color={color}
           key={id}
           style={{
             margin: 4,
@@ -177,8 +180,11 @@ export default () => {
         }}
         value={intl}
         onChange={(value) => setIntl(value)}
-        options={Object.keys(intlMap).map((value) => ({ value, label: value }))}
-      />
+      >
+        {Object.keys(intlMap).map((value) => (
+          <Select.Option value={value}>{value}</Select.Option>
+        ))}
+      </Select>
       <IntlProvider value={intlMap[intl]}>
         <ProTable<GithubIssueItem>
           columns={columns}

@@ -63,8 +63,8 @@ const columns: ProColumns<TableListItem>[] = [
     key: 'indexBorder',
     valueType: 'indexBorder',
     width: 72,
-    // @ts-ignore
     sorter: {
+      // @ts-ignore
       multiple: 3,
     },
   },
@@ -72,8 +72,9 @@ const columns: ProColumns<TableListItem>[] = [
     title: '状态',
     dataIndex: 'status',
     initialValue: 'all',
-    // @ts-ignore
+
     sorter: {
+      // @ts-ignore
       multiple: 3,
     },
     width: 100,

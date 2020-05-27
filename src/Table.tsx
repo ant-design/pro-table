@@ -480,7 +480,7 @@ const genColumnList = <T, U = {}>(
   },
   counter: any,
   columnEmptyText?: ColumnEmptyText,
-): (ColumnProps<T> & { index?: number })[] =>
+): (ColumnProps<T> & { index?: number; children?: ColumnProps<T>[] })[] =>
   (columns
     .map((item, columnsIndex) => {
       const { key, dataIndex } = item;
@@ -505,7 +505,7 @@ const genColumnList = <T, U = {}>(
         width: item.width || (item.fixed ? 200 : undefined),
         // @ts-ignore
         children: item.children
-          ? genColumnList(item.children, map, counter, columnEmptyText)
+          ? genColumnList((item as any).children, map, counter, columnEmptyText)
           : undefined,
         render: (text: any, row: T, index: number) =>
           columRender<T>({ item, text, row, index, columnEmptyText, counter }),

@@ -92,9 +92,8 @@ const columns: ProColumns<GithubIssueItem>[] = [
     width: 120,
     render: (_, row) => (
       <div>
-        {row.labels.map(({ name, id, color }) => (
+        {row.labels.map(({ name, id }) => (
           <Tag
-            color={color}
             key={id}
             style={{
               marginRight: 8,
