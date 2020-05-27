@@ -40,9 +40,6 @@ const FormOption: React.FC<FormOptionProps> = (props) => {
   }
   return (
     <Space>
-      <Button type="primary" htmlType="submit" onClick={() => submit()}>
-        {isForm ? submitText : searchText}
-      </Button>
       <Button
         onClick={() => {
           form.resetFields();
@@ -53,6 +50,9 @@ const FormOption: React.FC<FormOptionProps> = (props) => {
         }}
       >
         {resetText}
+      </Button>{' '}
+      <Button type="primary" htmlType="submit" onClick={() => submit()}>
+        {isForm ? submitText : searchText}
       </Button>
       {!isForm && showCollapseButton && (
         <a
