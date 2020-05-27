@@ -37,6 +37,7 @@ type TableRowSelection = TableProps<any>['rowSelection'];
 
 export interface ActionType {
   reload: (resetPageIndex?: boolean) => void;
+  reloadAndRest: () => void;
   fetchMore: () => void;
   reset: () => void;
   clearSelected: () => void;
@@ -659,13 +660,23 @@ const ProTable = <T extends {}, U extends object>(
         if (!current) {
           return;
         }
-        // reload 之后大概率会切换数据，清空一下选择。
-        setSelectedRowKeys([]);
         // 如果为 true，回到第一页
         if (resetPageIndex) {
           await current.resetPageIndex();
         }
-
+        await current.reload();
+      },
+      reloadAndRest: async () => {
+        const {
+          action: { current },
+        } = counter;
+        if (!current) {
+          return;
+        }
+        // reload 之后大概率会切换数据，清空一下选择。
+        onCleanSelected();
+        // 如果为 true，回到第一页
+        await current.resetPageIndex();
         await current.reload();
       },
       fetchMore: async () => {
