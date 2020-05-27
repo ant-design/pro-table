@@ -5,6 +5,7 @@ export interface RequestData<T> {
   data: T[];
   success?: boolean;
   total?: number;
+  [key: string]: any;
 }
 export interface UseFetchDataAction<T extends RequestData<any>> {
   dataSource: T['data'] | T;
@@ -13,6 +14,7 @@ export interface UseFetchDataAction<T extends RequestData<any>> {
   current: number;
   pageSize: number;
   total: number;
+  cancel: () => void;
   reload: () => Promise<void>;
   fetchMore: () => void;
   fullScreen?: () => void;
@@ -39,6 +41,7 @@ const useFetchData = <T extends RequestData<any>>(
     onRequestError?: (e: Error) => void;
   },
 ): UseFetchDataAction<T> => {
+  let isMount = true;
   const {
     defaultPageSize = 20,
     defaultCurrent = 1,
@@ -67,7 +70,7 @@ const useFetchData = <T extends RequestData<any>>(
    * @param isAppend 是否添加数据到后面
    */
   const fetchList = async (isAppend?: boolean) => {
-    if (loading) {
+    if (loading || !isMount) {
       return;
     }
     setLoading(true);
@@ -134,6 +137,11 @@ const useFetchData = <T extends RequestData<any>>(
     if (!prePageSize) {
       return () => undefined;
     }
+    /**
+     * 切换页面的时候清空一下数据，不然会造成判断失误。
+     * 会认为是本地分页而不是服务器分页从而不请求数据
+     */
+    setList([]);
     setPageInfo({ ...pageInfo, page: 1 });
     fetchListDebounce.run();
     return () => fetchListDebounce.cancel();
@@ -148,7 +156,10 @@ const useFetchData = <T extends RequestData<any>>(
 
   useEffect(() => {
     fetchListDebounce.run();
-    return () => fetchListDebounce.cancel();
+    return () => {
+      fetchListDebounce.cancel();
+      isMount = false;
+    };
   }, effects);
 
   return {
@@ -168,6 +179,7 @@ const useFetchData = <T extends RequestData<any>>(
         pageSize: defaultPageSize,
       });
     },
+    cancel: fetchListDebounce.cancel,
     pageSize: pageInfo.pageSize,
     setPageInfo: (info) =>
       setPageInfo({

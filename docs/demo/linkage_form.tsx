@@ -116,18 +116,15 @@ const columns: ProColumns<GithubIssueItem>[] = [
     title: '标签',
     dataIndex: 'labels',
     width: 120,
-    render: (_, row) =>
-      row.labels.map(({ name, id, color }) => (
-        <Tag
-          color={`#${color}`}
-          key={id}
-          style={{
-            margin: 4,
-          }}
-        >
-          {name}
-        </Tag>
-      )),
+    render: (_, row) => (
+      <div>
+        {row.labels.map(({ name, id, color }) => (
+          <Tag color={color} key={id}>
+            {name}
+          </Tag>
+        ))}
+      </div>
+    ),
   },
   {
     title: '创建时间',
@@ -157,24 +154,13 @@ const columns: ProColumns<GithubIssueItem>[] = [
 export default () => (
   <ProTable<GithubIssueItem>
     columns={columns}
-    request={async (params = {}) => {
-      const data = await request<GithubIssueItem[]>(
-        'https://api.github.com/repos/ant-design/ant-design-pro/issues',
-        {
-          params: {
-            ...params,
-            page: params.current,
-            per_page: params.pageSize,
-          },
-        },
-      );
-      return {
-        data,
-        page: params.current,
-        success: true,
-        total: 5713,
-      };
-    }}
+    request={async (params = {}) =>
+      request<{
+        data: GithubIssueItem[];
+      }>('https://proapi.azurewebsites.net/github/issues', {
+        params,
+      })
+    }
     rowKey="id"
     dateFormatter="string"
     headerTitle="查询 Table"

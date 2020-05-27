@@ -5,39 +5,43 @@ import { Table, ConfigProvider, Card, Typography, Empty, Tooltip } from 'antd';
 import classNames from 'classnames';
 import useMergeValue from 'use-merge-value';
 import { stringify } from 'use-json-comparison';
-import { PaginationConfig, TableProps, ColumnProps } from 'antd/es/table';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
 import {
   FormComponentProps,
   FormProps,
   GetFieldDecoratorOptions,
 } from '@ant-design/compatible/lib/form/Form';
-import { IntlProvider, IntlConsumer, IntlType } from './component/intlContext';
+import { ColumnProps, PaginationConfig, TableProps } from 'antd/es/table';
+import { TableCurrentDataSource, SorterResult } from 'antd/lib/table/interface';
+
+import { noteOnce } from 'rc-util/lib/warning';
+import { IntlProvider, IntlConsumer, IntlType, useIntl } from './component/intlContext';
 import useFetchData, { UseFetchDataAction, RequestData } from './useFetchData';
 import Container from './container';
 import Toolbar, { OptionConfig, ToolBarProps } from './component/toolBar';
 import Alert from './component/alert';
 import FormSearch, { SearchConfig, TableFormItem } from './Form';
 import { StatusType } from './component/status';
-
 import get, {
   parsingText,
   parsingValueEnumToArray,
   checkUndefinedOrNull,
   useDeepCompareEffect,
   genColumnKey,
+  removeObjectNull,
 } from './component/util';
-
 import defaultRenderText, {
   ProColumnsValueType,
   ProColumnsValueTypeFunction,
 } from './defaultRender';
 import { DensitySize } from './component/toolBar/DensityIcon';
+import ErrorBoundary from './component/ErrorBoundary';
 
 type TableRowSelection = TableProps<any>['rowSelection'];
 
 export interface ActionType {
-  reload: () => void;
+  reload: (resetPageIndex?: boolean) => void;
+  reloadAndRest: () => void;
   fetchMore: () => void;
   reset: () => void;
   clearSelected: () => void;
@@ -80,6 +84,7 @@ export interface ProColumnType<T = unknown>
     config: {
       value?: any;
       onChange?: (value: any) => void;
+      onSelect?: (value: any) => void;
       type: ProTableTypes;
       defaultRender: (newItem: ProColumns<any>) => JSX.Element | null;
     },
@@ -147,7 +152,7 @@ export interface ProColumnGroupType<RecordType> extends ProColumnType<RecordType
   children: ProColumns<RecordType>;
 }
 
-export type ProColumns<T> = ProColumnGroupType<T> | ProColumnType<T>;
+export type ProColumns<T = {}> = ProColumnGroupType<T> | ProColumnType<T>;
 
 // table 支持的变形，还未完全支持完毕
 export type ProTableTypes = 'form' | 'list' | 'table' | 'cardList' | undefined;
@@ -170,10 +175,15 @@ export interface ProTableProps<T, U extends { [key: string]: any }>
    * 一个获得 dataSource 的方法
    */
   request?: (
-    params?: U & {
+    params: U & {
       pageSize?: number;
       current?: number;
-    } & { [key: string]: any },
+      [key: string]: any;
+    },
+    sort: {
+      [key: string]: 'ascend' | 'descend';
+    },
+    filter: { [key: string]: React.ReactText[] },
   ) => Promise<RequestData<T>>;
 
   /**
@@ -278,11 +288,22 @@ export interface ProTableProps<T, U extends { [key: string]: any }>
    * 提交表单时触发
    */
   onSubmit?: (params: U) => void;
+
+  /**
+   * 重置表单时触发
+   */
+  onReset?: () => void;
+
+  /**
+   * 空值时显示
+   */
+  columnEmptyText?: ColumnEmptyText;
 }
 
 const mergePagination = <T extends any[], U>(
   pagination: PaginationConfig | boolean | undefined = {},
   action: UseFetchDataAction<RequestData<T>>,
+  intl: IntlType,
 ): PaginationConfig | false | undefined => {
   if (pagination === false) {
     return {};
@@ -293,7 +314,11 @@ const mergePagination = <T extends any[], U>(
     defaultPagination = {};
   }
   return {
-    showTotal: (all, range) => `第 ${range[0]}-${range[1]} 条/总共 ${all} 条`,
+    showTotal: (all, range) =>
+      `${intl.getMessage('pagination.total.range', '第')} ${range[0]}-${range[1]} ${intl.getMessage(
+        'pagination.total.total',
+        '条/总共',
+      )} ${all} ${intl.getMessage('pagination.total.item', '条')}`,
     showSizeChanger: true,
     total: action.total,
     ...(defaultPagination as PaginationConfig),
@@ -331,11 +356,15 @@ const mergePagination = <T extends any[], U>(
   };
 };
 
+export type ColumnEmptyText = string | false;
+
 interface ColumRenderInterface<T> {
   item: ProColumns<T>;
   text: any;
   row: T;
   index: number;
+  counter: any;
+  columnEmptyText?: ColumnEmptyText;
 }
 
 /**
@@ -378,10 +407,14 @@ const genCopyable = (dom: React.ReactNode, item: ProColumns<any>) => {
  * 这个组件负责单元格的具体渲染
  * @param param0
  */
-const columRender = <T, U = any>(
-  { item, text, row, index }: ColumRenderInterface<T>,
-  counter: any,
-): any => {
+const columRender = <T, U = any>({
+  item,
+  text,
+  row,
+  index,
+  columnEmptyText,
+  counter,
+}: ColumRenderInterface<T>): any => {
   const { action } = counter;
   const { renderText = (val: any) => val, valueEnum = {} } = item;
   if (!action.current) {
@@ -389,7 +422,13 @@ const columRender = <T, U = any>(
   }
 
   const renderTextStr = renderText(parsingText(text, valueEnum), row, index, action.current);
-  const textDom = defaultRenderText<T, {}>(renderTextStr, item.valueType || 'text', index, row);
+  const textDom = defaultRenderText<T, {}>(
+    renderTextStr,
+    item.valueType || 'text',
+    index,
+    row,
+    columnEmptyText,
+  );
 
   const dom: React.ReactNode = genEllipsis(
     genCopyable(textDom, item),
@@ -412,10 +451,17 @@ const columRender = <T, U = any>(
 
     if (renderDom && item.valueType === 'option' && Array.isArray(renderDom)) {
       return (
-        <div className="ant-pro-table-option-cell">
-          {renderDom.map((optionDom, domIndex) => (
-            // eslint-disable-next-line react/no-array-index-key
-            <div className="ant-pro-table-option-cell-item" key={`${index}-${domIndex}`}>
+        <div
+          style={{
+            display: 'flex',
+          }}
+        >
+          {renderDom.map((optionDom) => (
+            <div
+              style={{
+                marginRight: 8,
+              }}
+            >
               {optionDom}
             </div>
           ))}
@@ -433,6 +479,7 @@ const genColumnList = <T, U = {}>(
     [key: string]: ColumnsState;
   },
   counter: any,
+  columnEmptyText?: ColumnEmptyText,
 ): (ColumnProps<T> & { index?: number })[] =>
   (columns
     .map((item, columnsIndex) => {
@@ -457,9 +504,11 @@ const genColumnList = <T, U = {}>(
         fixed: config.fixed,
         width: item.width || (item.fixed ? 200 : undefined),
         // @ts-ignore
-        children: item.children ? genColumnList(item.children, map) : undefined,
+        children: item.children
+          ? genColumnList(item.children, map, counter, columnEmptyText)
+          : undefined,
         render: (text: any, row: T, index: number) =>
-          columRender<T>({ item, text, row, index }, counter),
+          columRender<T>({ item, text, row, index, columnEmptyText, counter }),
       };
       if (!tempColumns.children || !tempColumns.children.length) {
         delete tempColumns.children;
@@ -513,15 +562,23 @@ const ProTable = <T extends {}, U extends object>(
     defaultClassName,
     formRef,
     type = 'table',
+    onReset = () => {},
+    columnEmptyText = '-',
     ...rest
   } = props;
 
   const [selectedRowKeys, setSelectedRowKeys] = useMergeValue<any[]>([], {
     value: propsRowSelection ? propsRowSelection.selectedRowKeys : undefined,
   });
-  const [formSearch, setFormSearch] = useState<{}>({});
+  const [formSearch, setFormSearch] = useState<{}>(() => {});
   const [selectedRows, setSelectedRows] = useState<T[]>([]);
   const [dataSource, setDataSource] = useState<T[]>([]);
+  const [proFilter, setProFilter] = useState<{
+    [key: string]: React.ReactText[];
+  }>({});
+  const [proSort, setProSort] = useState<{
+    [key: string]: 'ascend' | 'descend';
+  }>({});
   const rootRef = useRef<HTMLDivElement>(null);
   const fullScreen = useRef<() => void>();
 
@@ -543,7 +600,17 @@ const ProTable = <T extends {}, U extends object>(
           success: true,
         } as RequestData<T>;
       }
-      const msg = await request({ current, pageSize, ...formSearch, ...params } as U);
+      const msg = await request(
+        {
+          current,
+          pageSize,
+          ...formSearch,
+
+          ...params,
+        } as U,
+        proSort,
+        proFilter,
+      );
       if (postData) {
         return { ...msg, data: postData(msg.data) };
       }
@@ -555,7 +622,7 @@ const ProTable = <T extends {}, U extends object>(
       defaultPageSize: fetchPagination.pageSize || fetchPagination.defaultPageSize,
       onLoad,
       onRequestError,
-      effects: [stringify(params), stringify(formSearch)],
+      effects: [stringify(params), stringify(formSearch), stringify(proFilter), stringify(proSort)],
     },
   );
 
@@ -574,7 +641,10 @@ const ProTable = <T extends {}, U extends object>(
 
   action.fullScreen = fullScreen.current;
 
-  const pagination = propsPagination !== false && mergePagination<T[], {}>(propsPagination, action);
+  const intl = useIntl();
+
+  const pagination =
+    propsPagination !== false && mergePagination<T[], {}>(propsPagination, action, intl);
 
   const counter = Container.useContainer();
 
@@ -588,7 +658,7 @@ const ProTable = <T extends {}, U extends object>(
 
   useEffect(() => {
     // 数据源更新时 取消所有选中项
-    onCleanSelected();
+    // onCleanSelected();
     setDataSource(request ? (action.dataSource as T[]) : props.dataSource || []);
   }, [props.dataSource, action.dataSource]);
 
@@ -608,7 +678,26 @@ const ProTable = <T extends {}, U extends object>(
    */
   useEffect(() => {
     const userAction: ActionType = {
-      reload: async () => {
+      reload: async (resetPageIndex?: boolean) => {
+        const {
+          action: { current },
+        } = counter;
+        if (!current) {
+          return;
+        }
+        noteOnce(!!resetPageIndex, ' reload 的 resetPageIndex 将会失效，建议使用 reloadAndRest。');
+        noteOnce(
+          !!resetPageIndex,
+          'reload resetPageIndex will remove and reloadAndRest is recommended.',
+        );
+
+        // 如果为 true，回到第一页
+        if (resetPageIndex) {
+          await current.resetPageIndex();
+        }
+        await current.reload();
+      },
+      reloadAndRest: async () => {
         const {
           action: { current },
         } = counter;
@@ -616,7 +705,9 @@ const ProTable = <T extends {}, U extends object>(
           return;
         }
         // reload 之后大概率会切换数据，清空一下选择。
-        setSelectedRowKeys([]);
+        onCleanSelected();
+        // 如果为 true，回到第一页
+        await current.resetPageIndex();
         await current.reload();
       },
       fetchMore: async () => {
@@ -637,7 +728,7 @@ const ProTable = <T extends {}, U extends object>(
         }
         current.reset();
       },
-      clearSelected: onCleanSelected,
+      clearSelected: () => onCleanSelected(),
     };
     if (actionRef && typeof actionRef === 'function') {
       actionRef(userAction);
@@ -651,7 +742,12 @@ const ProTable = <T extends {}, U extends object>(
    * Table Column 变化的时候更新一下，这个参数将会用于渲染
    */
   useDeepCompareEffect(() => {
-    const tableColumn = genColumnList<T>(propsColumns, counter.columnsMap, counter);
+    const tableColumn = genColumnList<T>(
+      propsColumns,
+      counter.columnsMap,
+      counter,
+      columnEmptyText,
+    );
     if (tableColumn && tableColumn.length > 0) {
       counter.setColumns(tableColumn);
       // 重新生成key的字符串用于排序
@@ -670,7 +766,7 @@ const ProTable = <T extends {}, U extends object>(
    */
   useDeepCompareEffect(() => {
     const keys = counter.sortKeyColumns.join(',');
-    let tableColumn = genColumnList<T>(propsColumns, counter.columnsMap, counter);
+    let tableColumn = genColumnList<T>(propsColumns, counter.columnsMap, counter, columnEmptyText);
     if (keys.length > 0) {
       // 用于可视化的排序
       tableColumn = tableColumn.sort((a, b) => {
@@ -717,8 +813,11 @@ const ProTable = <T extends {}, U extends object>(
       return;
     }
     const tableKey = rest.rowKey;
-    const rows = Array.isArray(dataSource)
-      ? dataSource.filter((item, index) => {
+
+    // dataSource maybe is a null
+    // eg: api has 404 error
+    const selectedRow = Array.isArray(dataSource)
+      ? [...selectedRows, ...dataSource].filter((item, index) => {
           if (!tableKey) {
             return (selectedRowKeys as any).includes(index);
           }
@@ -729,7 +828,7 @@ const ProTable = <T extends {}, U extends object>(
           return (selectedRowKeys as any).includes(item[tableKey]);
         })
       : [];
-    setSelectedRows(rows);
+    setSelectedRows(selectedRow);
   }, [selectedRowKeys.join('-'), action.loading, propsRowSelection === false]);
 
   const rowSelection: TableRowSelection = {
@@ -739,7 +838,7 @@ const ProTable = <T extends {}, U extends object>(
       if (propsRowSelection && propsRowSelection.onChange) {
         propsRowSelection.onChange(keys, rows);
       }
-      setSelectedRowKeys(keys);
+      setSelectedRowKeys([...keys]);
     },
   };
 
@@ -785,11 +884,13 @@ const ProTable = <T extends {}, U extends object>(
               setFormSearch(beforeSearchSubmit({}));
               // back first page
               action.resetPageIndex();
+              onReset();
             }}
             dateFormatter={rest.dateFormatter}
             search={search}
           />
         )}
+
         {type !== 'form' && (
           <Card
             bordered={false}
@@ -842,6 +943,39 @@ const ProTable = <T extends {}, U extends object>(
               loading={action.loading || props.loading}
               dataSource={dataSource}
               pagination={pagination}
+              onChange={(
+                changePagination: PaginationConfig,
+                filters: {
+                  [string: string]: React.ReactText[] | null | undefined;
+                },
+                sorter: SorterResult<T> | SorterResult<T>[],
+                extra: TableCurrentDataSource<T>,
+              ) => {
+                if (rest.onChange) {
+                  rest.onChange(changePagination, filters as any, sorter as any, extra);
+                }
+
+                // 制造筛选的数据
+                setProFilter(removeObjectNull(filters));
+
+                // 制造一个排序的数据
+                if (Array.isArray(sorter)) {
+                  const data = sorter.reduce<{
+                    [key: string]: any;
+                  }>((pre, value) => {
+                    if (!value.order) {
+                      return pre;
+                    }
+                    return {
+                      ...pre,
+                      [`${value.field}`]: value.order,
+                    };
+                  }, {});
+                  setProSort(data);
+                } else if (sorter.order) {
+                  setProSort({ [`${sorter.field}`]: sorter.order });
+                }
+              }}
             />
           </Card>
         )}
@@ -862,7 +996,9 @@ const ProviderWarp = <T, U extends { [key: string]: any } = {}>(props: ProTableP
         <IntlConsumer>
           {(value) => (
             <IntlProvider value={value}>
-              <ProTable defaultClassName={getPrefixCls('pro-table')} {...props} />
+              <ErrorBoundary>
+                <ProTable defaultClassName={getPrefixCls('pro-table')} {...props} />
+              </ErrorBoundary>
             </IntlProvider>
           )}
         </IntlConsumer>

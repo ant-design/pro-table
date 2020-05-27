@@ -176,6 +176,7 @@ const GroupCheckboxList: React.FC<{
   const leftList: (ProColumns<any> & { index?: number })[] = [];
   const list: (ProColumns<any> & { index?: number })[] = [];
   const intl = useIntl();
+
   localColumns.forEach((item) => {
     const { fixed } = item;
     if (fixed === 'left') {
@@ -188,8 +189,10 @@ const GroupCheckboxList: React.FC<{
     }
     list.push(item);
   });
+
   const showRight = rightList && rightList.length > 0;
   const showLeft = leftList && leftList.length > 0;
+
   return (
     <div className={`${className}-list`}>
       <CheckboxList
@@ -236,9 +239,11 @@ const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
     setColumnsMap(columnKeyMap);
   };
 
-  const selectKeys = Object.values(columnsMap).filter((value) => !value || value.show === false);
+  // 选中的 key 列表
+  const selectedKeys = Object.values(columnsMap).filter((value) => !value || value.show === false);
 
-  const indeterminate = selectKeys.length > 0 && selectKeys.length !== localColumns.length;
+  // 是否已经选中
+  const indeterminate = selectedKeys.length > 0 && selectedKeys.length !== localColumns.length;
 
   const intl = useIntl();
   return (
@@ -253,7 +258,7 @@ const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
               <div className={`${className}-title`}>
                 <Checkbox
                   indeterminate={indeterminate}
-                  checked={selectKeys.length === 0 && selectKeys.length !== localColumns.length}
+                  checked={selectedKeys.length === 0 && selectedKeys.length !== localColumns.length}
                   onChange={(e) => {
                     if (e.target.checked) {
                       setAllSelectAction();

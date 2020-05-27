@@ -12,6 +12,7 @@ export interface FormOptionProps {
   collapse: boolean;
   setCollapse: (collapse: boolean) => void;
   showCollapseButton: boolean;
+  onReset?: () => void;
 }
 
 /**
@@ -19,7 +20,16 @@ export interface FormOptionProps {
  * @param props
  */
 const FormOption: React.FC<FormOptionProps> = (props) => {
-  const { searchConfig, setCollapse, collapse, type, form, submit, showCollapseButton } = props;
+  const {
+    searchConfig,
+    setCollapse,
+    collapse,
+    type,
+    form,
+    submit,
+    showCollapseButton,
+    onReset = () => {},
+  } = props;
   const isForm = type === 'form';
   const { searchText, submitText, resetText, collapseRender, optionRender } = searchConfig;
   if (optionRender === false) {
@@ -29,24 +39,33 @@ const FormOption: React.FC<FormOptionProps> = (props) => {
     return <>{optionRender(searchConfig, props)}</>;
   }
   return (
-    <>
-      <Button type="primary" htmlType="submit" onClick={() => submit()}>
-        {isForm ? submitText : searchText}
-      </Button>
+    <React.Fragment>
       <Button
-        style={{ marginLeft: 8 }}
         onClick={() => {
           form.resetFields();
+          onReset();
           if (!isForm) {
             submit();
           }
         }}
+        style={{
+          marginRight: 8,
+        }}
       >
         {resetText}
+      </Button>{' '}
+      <Button
+        type="primary"
+        htmlType="submit"
+        onClick={() => submit()}
+        style={{
+          marginRight: 8,
+        }}
+      >
+        {isForm ? submitText : searchText}
       </Button>
       {!isForm && showCollapseButton && (
         <a
-          style={{ marginLeft: 8 }}
           onClick={() => {
             setCollapse(!collapse);
           }}
@@ -54,7 +73,7 @@ const FormOption: React.FC<FormOptionProps> = (props) => {
           {collapseRender && collapseRender(collapse)}
         </a>
       )}
-    </>
+    </React.Fragment>
   );
 };
 

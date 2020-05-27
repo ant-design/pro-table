@@ -9,13 +9,7 @@
     overflow: auto;
     background: @component-background;
   }
-  &-option-cell {
-    display: flex;
-    align-items: center;
-    &-item {
-      margin-right: 8px;
-    }
-  }
+
   .@{ant-prefix}-pagination {
     padding: 0 24px;
   }
@@ -33,14 +27,8 @@
   }
 
   td.@{ant-prefix}-table-cell {
-    a {
-      padding: 0 8px;
+    > a {
       font-size: 14px;
-    }
-    .@{pro-table-prefix-cls}-option-cell {
-      a {
-        padding: 0;
-      }
     }
   }
 }

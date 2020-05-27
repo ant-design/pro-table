@@ -15,7 +15,7 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 
 | 属性 | 描述 | 类型 | 默认值 |
 | --- | --- | --- | --- |
-| request | 一个获得 dataSource 的方法 | `(params?: {pageSize: number;current: number;[key: string]: any;}) => Promise<RequestData<T>>` | - |
+| request | 一个获得 dataSource 的方法 | `(params?: {pageSize: number;current: number;[key: string]: any;},sort,filter) => Promise<RequestData<T>>` | - |
 | postData | 对通过 url 获取的数据进行一些处理 | `(data: T[]) => T[]` | - |
 | defaultData | 默认的数据 | `T[]` | - |
 | actionRef | get table action | `React.MutableRefObject<ActionType> \| ((actionRef: ActionType) => void)` | - |
@@ -24,13 +24,18 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 | onRequestError | 数据加载失败时触发 | `(e: Error) => void` | - |
 | tableClassName | 封装的 table 的 className | string | - |
 | tableStyle | 封装的 table 的 style | CSSProperties | - |
-| options | table 的默认操作，设置为 false 可以关闭它 | `{{ fullScreen: boolean \| function, reload: boolean \| function,setting: true }}` | `{ fullScreen: true, reload:true, setting: true}` |
+| options | table 的工具栏，设置为 false 可以关闭它 | `{{ fullScreen: boolean \| function, reload: boolean \| function,setting: true }}` | `{ fullScreen: true, reload:true, setting: true}` |
 | search | 是否显示搜索表单，传入对象时为搜索表单的配置 | [search config](#search) | true |
 | dateFormatter | moment 的格式化方式 | `"string" \| "number" \| false` | string |
 | beforeSearchSubmit | 搜索之前进行一些修改 | `(params:T)=>T` | - |
 | onSizeChange | table 尺寸发生改变 | `(size: 'default' | 'middle' | 'small' | undefined) => void` | - |
 | columnsStateMap | columns 的状态枚举 | `{[key: string]: { show:boolean, fixed: "right"|"left"} }` | - |
 | onColumnsStateChange | columns 状态发生改变 | `(props: {[key: string]: { show:boolean, fixed: "right"|"left"} }) => void` | - |
+| type | pro-table 类型 | `"form"` | - |
+| form | antd form 的配置 | `FormProps` | - |
+| onSubmit | 提交表单时触发 | `(params: U) => void` | - |
+| onReset | 重置表单时触发 | `() => void` | - |
+| columnEmptyText | 空值时显示 | `"string" \| false` | false |
 
 ### search
 

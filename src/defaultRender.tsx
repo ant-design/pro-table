@@ -1,9 +1,10 @@
 import React from 'react';
-import { Progress } from 'antd';
+import { Progress, Avatar } from 'antd';
 import moment from 'moment';
 import Percent from './component/percent';
 import IndexColumn from './component/indexColumn';
 import { getProgressStatus } from './component/util';
+import { ColumnEmptyText } from './Table';
 
 /**
  * money 金额
@@ -31,7 +32,9 @@ export type ProColumnsValueType =
   | 'indexBorder'
   | 'progress'
   | 'percent'
-  | 'digit';
+  | 'digit'
+  | 'avatar'
+  | 'code';
 
 // function return type
 export type ProColumnsValueObjectType = {
@@ -106,6 +109,7 @@ const defaultRenderText = <T, U>(
   valueType: ProColumnsValueType | ProColumnsValueTypeFunction<T>,
   index: number,
   item?: T,
+  columnEmptyText?: ColumnEmptyText,
 ): React.ReactNode => {
   // when valueType == function
   // item always not null
@@ -145,8 +149,19 @@ const defaultRenderText = <T, U>(
   if (valueType === 'dateRange' && text && Array.isArray(text) && text.length === 2) {
     // 值不存在的时候显示 "-"
     return (
-      <div>
-        <div>{text[0] ? moment(text[0]).format('YYYY-MM-DD') : '-'}</div>
+      <div
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+        }}
+      >
+        <div
+          style={{
+            marginRight: 8,
+          }}
+        >
+          {text[0] ? moment(text[0]).format('YYYY-MM-DD') : '-'}
+        </div>
         <div>{text[1] ? moment(text[1]).format('YYYY-MM-DD') : '-'}</div>
       </div>
     );
@@ -165,8 +180,19 @@ const defaultRenderText = <T, U>(
   if (valueType === 'dateTimeRange' && text && Array.isArray(text) && text.length === 2) {
     // 值不存在的时候显示 "-"
     return (
-      <div>
-        <div>{text[0] ? moment(text[0]).format('YYYY-MM-DD HH:mm:ss') : '-'}</div>
+      <div
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+        }}
+      >
+        <div
+          style={{
+            marginRight: 8,
+          }}
+        >
+          {text[0] ? moment(text[0]).format('YYYY-MM-DD HH:mm:ss') : '-'}
+        </div>
         <div>{text[1] ? moment(text[1]).format('YYYY-MM-DD HH:mm:ss') : '-'}</div>
       </div>
     );
@@ -195,6 +221,33 @@ const defaultRenderText = <T, U>(
   /** 百分比, 默认展示符号, 不展示小数位 */
   if (valueType === 'percent') {
     return <Percent value={text as number} />;
+  }
+
+  if (valueType === 'avatar' && typeof text === 'string') {
+    return <Avatar src={text as string} size={22} shape="circle" />;
+  }
+
+  if (valueType === 'code' && text) {
+    return (
+      <pre
+        style={{
+          padding: 16,
+          overflow: 'auto',
+          fontSize: '85%',
+          lineHeight: 1.45,
+          backgroundColor: '#f6f8fa',
+          borderRadius: 3,
+        }}
+      >
+        <code>{text}</code>
+      </pre>
+    );
+  }
+
+  if (columnEmptyText) {
+    if (typeof text !== 'boolean' && typeof text !== 'number' && !text) {
+      return typeof columnEmptyText === 'string' ? columnEmptyText : '-';
+    }
   }
 
   return text;

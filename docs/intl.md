@@ -61,26 +61,4 @@ const enUSIntl = createIntl('en_US', enUS);
 
 # Demo 列表
 
-### English
-
-<code src="./example/english.tsx" />
-
-### Italiano
-
-<code src="./example/italian.tsx" />
-
-### Tiếng Việt
-
-<code src="./example/vietnamese.tsx" />
-
-### 日本語
-
-<code src="./example/japanese.tsx" />
-
-### Русский
-
-<code src="./example/russian.tsx" />
-
-## Malay
-
-<code src="./example/malay.tsx" />
+<code src="./example/intl.tsx" />

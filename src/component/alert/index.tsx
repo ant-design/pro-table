@@ -34,11 +34,15 @@ const TableAlert = <T, U = {}>({
   onCleanSelected,
   selectedRows = [],
   alertInfoRender = ({ intl }) => (
-    <span>
+    <div
+      style={{
+        display: 'flex',
+      }}
+    >
       {intl.getMessage('alert.selected', '已选择')}
-      <a style={{ fontWeight: 600 }}>{selectedRowKeys.length}</a>
+      <a style={{ fontWeight: 600, margin: '0 8px' }}>{selectedRowKeys.length}</a>
       {intl.getMessage('alert.item', '项')}&nbsp;&nbsp;
-    </span>
+    </div>
   ),
   alertOptionRender = defaultAlertOptionRender,
 }: TableAlertProps<T>) => {

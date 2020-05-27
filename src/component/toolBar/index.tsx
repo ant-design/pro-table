@@ -75,7 +75,7 @@ const renderDefaultOption = <T, U = {}>(
   options &&
   Object.keys(options)
     .filter((item) => item)
-    .map((key, index) => {
+    .map((key) => {
       const value = options[key];
       if (!value) {
         return null;
@@ -87,9 +87,6 @@ const renderDefaultOption = <T, U = {}>(
         return (
           <span
             key={key}
-            style={{
-              marginLeft: index === 0 ? 8 : 16,
-            }}
             className={className}
             onClick={value === true ? defaultOptions[key] : value}
           >
@@ -102,9 +99,6 @@ const renderDefaultOption = <T, U = {}>(
         return (
           <span
             key={key}
-            style={{
-              marginLeft: index === 0 ? 8 : 16,
-            }}
             className={className}
             onClick={() => {
               if (value && defaultOptions[key] !== true) {
@@ -154,20 +148,35 @@ const ToolBar = <T, U = {}>({
     <div className={className}>
       <div className={`${className}-title`}>{headerTitle}</div>
       <div className={`${className}-option`}>
-        {actions
-          .filter((item) => item)
-          .map((node, index) => (
-            <div
-              // eslint-disable-next-line react/no-array-index-key
-              key={index}
-              className={`${className}-item`}
-            >
-              {node}
-            </div>
-          ))}
+        <div
+          style={{
+            display: 'flex',
+          }}
+        >
+          {actions
+            .filter((item) => item)
+            .map((node, index) => (
+              <div
+                style={{
+                  marginRight: 8,
+                }}
+                // eslint-disable-next-line react/no-array-index-key
+                key={index}
+              >
+                {node}
+              </div>
+            ))}
+        </div>
         <div className={`${className}-default-option`}>
           {optionDom.length > 0 && actions.length > 0 && <Divider type="vertical" />}
-          {optionDom}
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+            }}
+          >
+            {optionDom}
+          </div>
         </div>
       </div>
     </div>

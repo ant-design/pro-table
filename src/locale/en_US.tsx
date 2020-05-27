@@ -1,4 +1,5 @@
 export default {
+  moneySymbol: '$',
   tableForm: {
     search: 'Query',
     reset: 'Reset',
@@ -12,6 +13,13 @@ export default {
     clear: 'Clear',
     selected: 'Selected',
     item: 'Item',
+  },
+  pagination: {
+    total: {
+      range: ' ',
+      total: 'of',
+      item: 'items',
+    },
   },
   tableToolBar: {
     leftPin: 'Pin to left',

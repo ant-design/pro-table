@@ -1,28 +1,59 @@
 const path = require('path');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 module.exports = {
-  entry: './src/index.tsx',
+  entry: {
+    protable: './src/index.tsx',
+    'protable.min': './src/index.tsx',
+  },
   output: {
+    filename: '[name].js',
     library: 'ProTable',
     libraryExport: 'default',
     path: path.resolve(__dirname, 'dist'),
-    filename: 'pro-table.umd.js',
     globalObject: 'this',
   },
   mode: 'production',
   resolve: {
-    extensions: ['.ts', '.tsx', '.json', '.css', '.js'],
+    extensions: ['.ts', '.tsx', '.json', '.css', '.js', '.less'],
+  },
+  optimization: {
+    minimize: true,
+    minimizer: [
+      new TerserPlugin({
+        include: /\.min\.js$/,
+      }),
+      new OptimizeCSSAssetsPlugin({
+        include: /\.min\.js$/,
+      }),
+    ],
   },
   module: {
     rules: [
       {
+        test: /\.(png|jpg|gif|svg)$/i,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 8192,
+            },
+          },
+        ],
+      },
+      {
         test: /\.jsx?$/,
-        exclude: /(node_modules|bower_components)/,
         use: {
           loader: 'babel-loader',
           options: {
             presets: ['@babel/typescript', '@babel/env', '@babel/react'],
-            plugins: ['@babel/proposal-class-properties', '@babel/proposal-object-rest-spread'],
+            plugins: [
+              ['@babel/plugin-proposal-decorators', { legacy: true }],
+              ['@babel/plugin-proposal-class-properties', { loose: true }],
+              '@babel/proposal-object-rest-spread',
+            ],
           },
         },
       },
@@ -43,26 +74,13 @@ module.exports = {
               ],
               '@babel/react',
             ],
-            plugins: ['@babel/proposal-class-properties', '@babel/proposal-object-rest-spread'],
+            plugins: [
+              ['@babel/plugin-proposal-decorators', { legacy: true }],
+              ['@babel/plugin-proposal-class-properties', { loose: true }],
+              '@babel/proposal-object-rest-spread',
+            ],
           },
         },
-      },
-      {
-        test: /\.less$/,
-        use: [
-          {
-            loader: 'style-loader', // creates style nodes from JS strings
-          },
-          {
-            loader: 'css-loader', // translates CSS into CommonJS
-          },
-          {
-            loader: 'less-loader',
-            options: {
-              javascriptEnabled: true,
-            },
-          },
-        ],
       },
       {
         test: /\.css$/,
@@ -72,6 +90,29 @@ module.exports = {
           },
           {
             loader: 'css-loader', // translates CSS into CommonJS
+          },
+        ],
+      },
+      {
+        test: /\.less$/,
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              publicPath: (resourcePath, context) =>
+                `${path.relative(path.dirname(resourcePath), context)}/`,
+            },
+          },
+          {
+            loader: 'css-loader', // translates CSS into CommonJS
+          },
+          {
+            loader: 'less-loader',
+            options: {
+              lessOptions: {
+                javascriptEnabled: true,
+              },
+            },
           },
         ],
       },
@@ -85,5 +126,13 @@ module.exports = {
       moment: 'moment',
     },
     /^antd/,
+  ],
+  plugins: [
+    new MiniCssExtractPlugin({
+      // Options similar to the same options in webpackOptions.output
+      // both options are optional
+      filename: '[name].css',
+      chunkFilename: '[id].css',
+    }),
   ],
 };

@@ -1,7 +1,6 @@
 import React from 'react';
-import { PlusOutlined } from '@ant-design/icons';
-import { Button } from 'antd';
 import ProTable, { ProColumns } from '@ant-design/pro-table';
+import {} from 'antd';
 
 const valueEnum = {
   0: 'close',
@@ -20,12 +19,16 @@ export interface TableListItem {
   money: number;
   percent: number | string;
   createdAtRange: number[];
+  code: string;
+  avatar: string;
 }
 const tableListDataSource: TableListItem[] = [];
 
-for (let i = 0; i < 20; i += 1) {
+for (let i = 0; i < 2; i += 1) {
   tableListDataSource.push({
     key: i,
+    avatar:
+      'https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg',
     name: `TradeCode ${i}`,
     status: valueEnum[Math.floor(Math.random() * 10) % 4],
     updatedAt: Date.now() - Math.floor(Math.random() * 1000),
@@ -40,24 +43,70 @@ for (let i = 0; i < 20; i += 1) {
       Math.random() > 0.5
         ? ((i + 1) * 10 + Math.random()).toFixed(3)
         : -((i + 1) * 10 + Math.random()).toFixed(2),
+    code: `const getData = async params => {
+  const data = await getData(params);
+  return { list: data.data, ...data };
+};`,
   });
 }
 
 const columns: ProColumns<TableListItem>[] = [
   {
-    title: '关闭时间',
-    key: 'since3',
-    width: 120,
-    dataIndex: 'updatedAt',
+    title: '序号',
+    dataIndex: 'index',
+    valueType: 'index',
+    width: 72,
   },
   {
-    title: '百分比',
-    key: 'percent',
+    title: 'border 序号',
+    dataIndex: 'index',
+    key: 'indexBorder',
+    valueType: 'indexBorder',
+    width: 72,
+    // @ts-ignore
+    sorter: {
+      multiple: 3,
+    },
+  },
+  {
+    title: '状态',
+    dataIndex: 'status',
+    initialValue: 'all',
+    // @ts-ignore
+    sorter: {
+      multiple: 3,
+    },
+    width: 100,
+    ellipsis: true,
+    valueEnum: {
+      all: { text: '全部', status: 'Default' },
+      close: { text: '关闭', status: 'Default' },
+      running: { text: '运行中', status: 'Processing' },
+      online: { text: '已上线', status: 'Success' },
+      error: { text: '异常', status: 'Error' },
+    },
+  },
+  {
+    title: '代码',
+    key: 'code',
     width: 120,
-    dataIndex: 'percent',
-    valueType: () => ({
-      type: 'percent',
-    }),
+    dataIndex: 'code',
+    valueType: 'code',
+  },
+  {
+    title: '头像',
+    dataIndex: 'avatar',
+    key: 'avatar',
+    valueType: 'avatar',
+    width: 150,
+    render: (dom) => (
+      <div>
+        <span>{dom}</span>
+        <a href="https://github.com/chenshuai2144" target="_blank" rel="noopener noreferrer">
+          chenshuai2144
+        </a>
+      </div>
+    ),
   },
   {
     title: '操作',
@@ -72,7 +121,8 @@ export default () => (
   <>
     <ProTable<TableListItem>
       columns={columns}
-      request={() => {
+      request={(params, sorter, filter) => {
+        console.log(params, sorter, filter);
         return Promise.resolve({
           total: 200,
           data: tableListDataSource,
@@ -80,31 +130,7 @@ export default () => (
         });
       }}
       rowKey="key"
-      pagination={{
-        showSizeChanger: true,
-      }}
-      scroll={{
-        x: columns.length * 120,
-      }}
-      dateFormatter="string"
-      headerTitle="valueType 设置"
-      toolBarRender={() => [
-        <Button key="3" type="primary">
-          <PlusOutlined />
-          新建
-        </Button>,
-      ]}
-    />
-    <ProTable<TableListItem>
-      style={{
-        maxWidth: 500,
-      }}
-      type="form"
-      columns={columns}
-      onSubmit={(params) => {
-        // eslint-disable-next-line no-console
-        console.log(params);
-      }}
+      headerTitle="样式类"
     />
   </>
 );

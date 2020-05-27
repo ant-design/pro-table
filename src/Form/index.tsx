@@ -25,24 +25,24 @@ import './index.less';
  * 默认的查询表单配置
  */
 const defaultColConfig = {
-  lg: 8,
-  md: 12,
-  xxl: 6,
-  xl: 8,
-  sm: 12,
   xs: 24,
+  sm: 24,
+  md: 12,
+  lg: 12,
+  xl: 8,
+  xxl: 6,
 };
 
 /**
  * 默认的新建表单配置
  */
 const defaultFormColConfig = {
-  lg: 24,
-  md: 24,
-  xxl: 24,
-  xl: 24,
-  sm: 24,
   xs: 24,
+  sm: 24,
+  md: 24,
+  lg: 24,
+  xl: 24,
+  xxl: 24,
 };
 
 /**
@@ -136,14 +136,15 @@ export interface TableFormItem<T> extends Omit<FormItemProps, 'children'> {
     | ((actionRef: FormComponentProps['form']) => void);
 }
 
-export const formInputRender: (props: {
+export const FormInputRender: React.FC<{
   item: ProColumns<any>;
   value?: any;
   form?: FormComponentProps['form'];
   type: ProTableTypes;
   intl: IntlType;
   onChange?: (value: any) => void;
-}) => JSX.Element | false = (props) => {
+  onSelect?: (value: any) => void;
+}> = (props) => {
   const { item, intl, form, type, ...rest } = props;
   const { valueType: itemValueType } = item;
   // if function， run it
@@ -156,12 +157,15 @@ export const formInputRender: (props: {
      *删除 renderFormItem 防止重复的 dom 渲染
      */
     const { renderFormItem, ...restItem } = item;
-    const defaultRender = (newItem: ProColumns<any>) =>
-      formInputRender({
-        ...props,
-        item: newItem,
-      }) || null;
-    return item.renderFormItem(restItem, { ...rest, type, defaultRender }, form as any) as any;
+    const defaultRender = (newItem: ProColumns<any>) => (
+      <FormInputRender
+        {...({
+          ...props,
+          item: newItem,
+        } || null)}
+      />
+    );
+    return renderFormItem(restItem, { ...rest, type, defaultRender }, form as any) as any;
   }
 
   if (!valueType || valueType === 'text') {
@@ -279,11 +283,21 @@ export const formInputRender: (props: {
         precision={2}
         formatter={(value) => {
           if (value) {
-            return `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            return `${intl.getMessage('moneySymbol', '￥')} ${value}`.replace(
+              /\B(?=(\d{3})+(?!\d))/g,
+              ',',
+            );
           }
           return '';
         }}
-        parser={(value) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
+        parser={(value) =>
+          value
+            ? value.replace(
+                new RegExp(`\\${intl.getMessage('moneySymbol', '￥')}\\s?|(,*)`, 'g'),
+                '',
+              )
+            : ''
+        }
         placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入')}
         style={{
           width: '100%',
@@ -349,12 +363,7 @@ export const proFormItemRender: (props: {
     ...rest
   } = item;
   const key = genColumnKey(rest.key, dataIndex, index);
-  const dom = formInputRender({
-    item,
-    type,
-    intl,
-    form: formInstance,
-  });
+  const dom = <FormInputRender item={item} type={type} intl={intl} form={formInstance} />;
   if (!dom) {
     return null;
   }
@@ -372,7 +381,7 @@ const dateFormatterMap = {
   date: 'YYYY-MM-DD',
   dateTime: 'YYYY-MM-DD HH:mm:ss',
   dateRange: 'YYYY-MM-DD',
-  dateTimeRange: 'HH:mm:ss',
+  dateTimeRange: 'YYYY-MM-DD HH:mm:ss',
 };
 
 /**
@@ -455,6 +464,9 @@ const conversionValue = (
         ];
       }
     }
+
+    // 都没命中，原样返回
+    tmpValue[key] = itemValue;
   });
   return tmpValue;
 };
@@ -533,6 +545,7 @@ const FormSearch = <T, U = {}>({
   type,
   form,
   formConfig = {},
+  onReset,
 }: TableFormItem<T>) => {
   /**
    * 为了支持 dom 的消失，支持了这个 api
@@ -699,7 +712,11 @@ const FormSearch = <T, U = {}>({
                           showCollapseButton={columnsList.length > rowNumber - 1 && !isForm}
                           searchConfig={searchConfig}
                           submit={submit}
-                          form={{ ...form, submit }}
+                          onReset={onReset}
+                          form={{
+                            ...form,
+                            submit,
+                          }}
                           type={type}
                           collapse={collapse}
                           setCollapse={setCollapse}
