@@ -10,6 +10,7 @@ import { FormItemProps, FormProps, FormInstance } from 'antd/es/form';
 import { TableCurrentDataSource, SorterResult } from 'antd/lib/table/interface';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
 
+import { noteOnce } from 'rc-util/lib/warning';
 import { IntlProvider, IntlConsumer, IntlType, useIntl } from './component/intlContext';
 import useFetchData, { UseFetchDataAction, RequestData } from './useFetchData';
 import Container from './container';
@@ -17,7 +18,6 @@ import Toolbar, { OptionConfig, ToolBarProps } from './component/toolBar';
 import Alert from './component/alert';
 import FormSearch, { SearchConfig, TableFormItem } from './Form';
 import { StatusType } from './component/status';
-
 import get, {
   parsingText,
   parsingValueEnumToArray,
@@ -660,6 +660,12 @@ const ProTable = <T extends {}, U extends object>(
         if (!current) {
           return;
         }
+        noteOnce(!!resetPageIndex, ' reload 的 resetPageIndex 将会失效，建议使用 reloadAndRest。');
+        noteOnce(
+          !!resetPageIndex,
+          'reload resetPageIndex will remove and reloadAndRest is recommended.',
+        );
+
         // 如果为 true，回到第一页
         if (resetPageIndex) {
           await current.resetPageIndex();
@@ -792,7 +798,6 @@ const ProTable = <T extends {}, U extends object>(
           return (selectedRowKeys as any).includes(item[tableKey]);
         })
       : [];
-
     setSelectedRows(selectedRow);
   }, [selectedRowKeys.join('-'), action.loading, propsRowSelection === false]);
 
