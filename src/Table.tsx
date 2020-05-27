@@ -147,7 +147,7 @@ export interface ProColumnGroupType<RecordType> extends ProColumnType<RecordType
   children: ProColumns<RecordType>;
 }
 
-export type ProColumns<T> = ProColumnGroupType<T> | ProColumnType<T>;
+export type ProColumns<T = {}> = ProColumnGroupType<T> | ProColumnType<T>;
 
 // table 支持的变形，还未完全支持完毕
 export type ProTableTypes = 'form' | 'list' | 'table' | 'cardList' | undefined;
