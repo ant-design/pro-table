@@ -25,6 +25,7 @@ import get, {
   useDeepCompareEffect,
   genColumnKey,
   removeObjectNull,
+  ObjToMap,
 } from './component/util';
 import defaultRenderText, {
   ProColumnsValueType,
@@ -47,6 +48,24 @@ export interface ColumnsState {
   show?: boolean;
   fixed?: 'right' | 'left' | undefined;
 }
+
+export type valueEnumObj = {
+  [key: string]:
+    | {
+        text: ReactNode;
+        status: StatusType;
+      }
+    | ReactNode;
+};
+
+export type valueEnumMap = Map<
+  React.ReactText,
+  | {
+      text: ReactNode;
+      status: StatusType;
+    }
+  | ReactNode
+>;
 
 export interface ProColumnType<T = unknown>
   extends Omit<ColumnType<T>, 'render' | 'children'>,
@@ -114,14 +133,7 @@ export interface ProColumnType<T = unknown>
   /**
    * 值的枚举，如果存在枚举，Search 中会生成 select
    */
-  valueEnum?: {
-    [key: string]:
-      | {
-          text: ReactNode;
-          status: StatusType;
-        }
-      | ReactNode;
-  };
+  valueEnum?: valueEnumMap | valueEnumObj;
 
   /**
    * 在查询表单中隐藏
@@ -415,7 +427,12 @@ const columRender = <T, U = any>({
     return null;
   }
 
-  const renderTextStr = renderText(parsingText(text, valueEnum), row, index, action.current);
+  const renderTextStr = renderText(
+    parsingText(text, ObjToMap(valueEnum)),
+    row,
+    index,
+    action.current,
+  );
   const textDom = defaultRenderText<T, {}>(
     renderTextStr,
     item.valueType || 'text',
@@ -427,7 +444,7 @@ const columRender = <T, U = any>({
   const dom: React.ReactNode = genEllipsis(
     genCopyable(textDom, item),
     item,
-    renderText(parsingText(text, valueEnum, true), row, index, action.current),
+    renderText(parsingText(text, ObjToMap(valueEnum), true), row, index, action.current),
   );
 
   if (item.render) {
@@ -451,6 +468,13 @@ const columRender = <T, U = any>({
   return checkUndefinedOrNull(dom) ? dom : null;
 };
 
+/**
+ * 转化 columns 到 pro 的格式
+ * 主要是 render 方法的自行实现
+ * @param columns
+ * @param map
+ * @param columnEmptyText
+ */
 const genColumnList = <T, U = {}>(
   columns: ProColumns<T>[],
   map: {
@@ -459,6 +483,10 @@ const genColumnList = <T, U = {}>(
   columnEmptyText?: ColumnEmptyText,
 ): (ColumnsType<T>[number] & { index?: number })[] =>
   (columns
+    .map((item) => ({
+      ...item,
+      valueEnum: ObjToMap(item.valueEnum),
+    }))
     .map((item, columnsIndex) => {
       const { key, dataIndex } = item;
       const columnKey = genColumnKey(key, dataIndex, columnsIndex);

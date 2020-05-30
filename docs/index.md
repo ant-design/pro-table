@@ -3,7 +3,7 @@ title: 介绍
 order: 10
 sidebar: false
 hero:
-  title: Pro-Table
+  title: ProTable
   desc: 🏆 Use Ant Design Table like a Pro!.
   actions:
     - text: 快速开始 →

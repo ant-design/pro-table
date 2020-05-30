@@ -9,7 +9,7 @@ nav:
 
 # Table 搜索
 
-Pro-Table 会根据列来生成一个 Form，用于筛选列表数据，最后的值会根据通过 `request` 的第一个参数返回，看起来就像。
+ProTable 会根据列来生成一个 Form，用于筛选列表数据，最后的值会根据通过 `request` 的第一个参数返回，看起来就像。
 
 ```jsx | pure
 <ProTable request={(params,sort,filter)=>{ all params}}>
@@ -33,7 +33,7 @@ Form 的列是根据 `valueType` 来生成不同的类型。
 
 ## 相关 API
 
-### Pro-Table
+### ProTable
 
 | 属性 | 描述 | 类型 | 默认值 |
 | --- | --- | --- | --- |

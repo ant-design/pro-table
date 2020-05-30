@@ -2,6 +2,7 @@ import React, { ReactNode, useEffect, useRef, ReactText, DependencyList, useCall
 import isEqual from 'lodash.isequal';
 import { DataIndex } from 'rc-table/lib/interface';
 import TableStatus, { StatusType } from './status';
+import { valueEnumObj, valueEnumMap } from '../Table';
 
 /**
  * 转化 text 和 valueEnum
@@ -10,29 +11,19 @@ import TableStatus, { StatusType } from './status';
  * @param valueEnum
  * @param prue 纯净模式，不增加 status
  */
-export const parsingText = (
-  text: string | number,
-  valueEnum?: {
-    [key: string]:
-      | {
-          text: ReactNode;
-          type: StatusType;
-        }
-      | ReactNode;
-  },
-  pure?: boolean,
-) => {
+export const parsingText = (text: string | number, valueEnum?: valueEnumMap, pure?: boolean) => {
   if (!valueEnum) {
     return text;
   }
-  const domText = valueEnum[text] as {
-    text: ReactNode;
-    status: StatusType;
-  };
-  if (!domText) {
+
+  if (!valueEnum.has(text)) {
     return text;
   }
 
+  const domText = valueEnum.get(text) as {
+    text: ReactNode;
+    status: StatusType;
+  };
   if (domText.status) {
     if (pure) {
       return domText.text;
@@ -47,32 +38,41 @@ export const parsingText = (
 };
 
 /**
- * 把 value 的枚举转化为 数组
+ * 把 value 的枚举转化为数组
  * @param valueEnum
  */
 export const parsingValueEnumToArray = (
-  valueEnum: {
-    [key: string]:
-      | {
-          text: ReactNode;
-          type: StatusType;
-        }
-      | ReactNode;
-  } = {},
+  valueEnum: valueEnumMap | undefined = new Map(),
 ): {
   value: string;
   text: string;
 }[] =>
-  Object.keys(valueEnum).map((key) => {
-    const value =
-      (valueEnum[key] as {
+  Object.keys(valueEnum)
+    .filter((key) => {
+      if (!valueEnum.has(key)) {
+        return false;
+      }
+      const value = valueEnum.get(key);
+      if (!value) {
+        return false;
+      }
+      return true;
+    })
+    .map((key) => {
+      const value = valueEnum.get(key) as {
         text: string;
-      }) || '';
-    return {
-      text: ((value.text || value || '') as unknown) as string,
-      value: key,
-    };
-  });
+      };
+      if (typeof value === 'object' && value?.text) {
+        return {
+          text: (value?.text as unknown) as string,
+          value: key,
+        };
+      }
+      return {
+        text: ((value || '') as unknown) as string,
+        value: key,
+      };
+    });
 
 /**
  * 检查值是否存在
@@ -257,4 +257,33 @@ export const removeObjectNull = (obj: { [key: string]: any }) => {
     }
   });
   return newObj;
+};
+
+/**
+ * 获取类型的 type
+ * @param obj
+ */
+function getType(obj: any) {
+  // @ts-ignore
+  const type = Object.prototype.toString
+    .call(obj)
+    .match(/^\[object (.*)\]$/)[1]
+    .toLowerCase();
+  if (type === 'string' && typeof obj === 'object') return 'object'; // Let "new String('')" return 'object'
+  if (obj === null) return 'null'; // PhantomJS has type "DOMWindow" for null
+  if (obj === undefined) return 'undefined'; // PhantomJS has type "DOMWindow" for undefined
+  return type;
+}
+
+export const ObjToMap = (
+  value: valueEnumObj | valueEnumMap | undefined,
+): valueEnumMap | undefined => {
+  if (!value) {
+    return value;
+  }
+  console.log(getType(value));
+  if (getType(value) === 'map') {
+    return value as valueEnumMap;
+  }
+  return new Map(Object.entries(value));
 };

@@ -9,7 +9,12 @@ import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
 import { DownOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 
-import { parsingValueEnumToArray, useDeepCompareEffect, genColumnKey } from '../component/util';
+import {
+  parsingValueEnumToArray,
+  useDeepCompareEffect,
+  genColumnKey,
+  ObjToMap,
+} from '../component/util';
 import { useIntl, IntlType } from '../component/intlContext';
 import Container from '../container';
 import { ProColumnsValueTypeFunction } from '../defaultRender';
@@ -171,7 +176,7 @@ export const FormInputRender: React.FC<{
           {...rest}
           {...item.formItemProps}
         >
-          {parsingValueEnumToArray(valueEnum).map(({ value, text }) => (
+          {parsingValueEnumToArray(ObjToMap(valueEnum)).map(({ value, text }) => (
             <Select.Option key={value} value={value}>
               {text}
             </Select.Option>
