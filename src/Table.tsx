@@ -26,6 +26,7 @@ import get, {
   genColumnKey,
   removeObjectNull,
   ObjToMap,
+  reduceWidth,
 } from './component/util';
 import defaultRenderText, {
   ProColumnsValueType,
@@ -395,7 +396,7 @@ const genCopyable = (dom: React.ReactNode, item: ProColumns<any>) => {
     return (
       <Typography.Paragraph
         style={{
-          width: item.width && (item.width as number) - 32,
+          width: reduceWidth(item.width),
           margin: 0,
           padding: 0,
         }}
