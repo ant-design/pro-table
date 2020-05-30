@@ -300,5 +300,8 @@ export const reduceWidth = (width?: string | number): string | number | undefine
     }
     return width;
   }
-  return (width as number) - 32;
+  if (typeof width === 'number') {
+    return (width as number) - 32;
+  }
+  return width;
 };
