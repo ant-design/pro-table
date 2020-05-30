@@ -281,9 +281,24 @@ export const ObjToMap = (
   if (!value) {
     return value;
   }
-  console.log(getType(value));
   if (getType(value) === 'map') {
     return value as valueEnumMap;
   }
   return new Map(Object.entries(value));
+};
+
+/**
+ * 减少 width，支持 string 和 number
+ */
+export const reduceWidth = (width?: string | number): string | number | undefined => {
+  if (width === undefined) {
+    return width;
+  }
+  if (typeof width === 'string') {
+    if (!width.includes('calc')) {
+      return `calc(100% - ${width})`;
+    }
+    return width;
+  }
+  return (width as number) - 32;
 };
