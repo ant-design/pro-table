@@ -12,5 +12,12 @@ export default {
       },
     ],
   ],
+  navs: [
+    null,
+    {
+      title: 'GitHub',
+      path: 'https://github.com/ant-design/pro-table',
+    },
+  ],
   hash: true,
 };
