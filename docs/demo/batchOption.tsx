@@ -158,7 +158,7 @@ export default () => (
     }}
     dateFormatter="string"
     headerTitle="批量操作"
-    toolBarRender={(_, { selectedRowKeys }) => [
+    toolBarRender={(_, { selectedRowKeys, selectedRows }) => [
       <Button key="3" type="primary">
         <PlusOutlined />
         新建
@@ -170,7 +170,7 @@ export default () => (
             window.alert(selectedRowKeys.join('-'));
           }}
         >
-          批量删除
+          批量删除 {selectedRows?.length}
         </Button>
       ),
     ]}

@@ -816,7 +816,8 @@ const ProTable = <T extends {}, U extends object>(
     // dataSource maybe is a null
     // eg: api has 404 error
     const selectedRow = Array.isArray(dataSource)
-      ? [...selectedRows, ...dataSource].filter((item, index) => {
+      ? // remove `...selectedRow` otherwise the selectedRow array length will always being increase
+        [...dataSource].filter((item, index) => {
           if (!tableKey) {
             return (selectedRowKeys as any).includes(index);
           }
