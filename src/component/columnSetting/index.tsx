@@ -218,7 +218,7 @@ const GroupCheckboxList: React.FC<{
 
 const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
   const counter = Container.useContainer();
-  const localColumns: (ProColumns<any> & { index?: number })[] =
+  const localColumns: Omit<ProColumns<any> & { index?: number }, 'ellipsis'>[] =
     props.columns || counter.columns || [];
   const { columnsMap, setColumnsMap, setSortKeyColumns } = counter;
   /**
