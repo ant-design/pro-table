@@ -102,6 +102,9 @@ const columns: ProColumns<GithubIssueItem>[] = [
       desc: '倒序',
     },
     renderFormItem: (_, { type, defaultRender, ...rest }, form) => {
+      console.log('item:', _);
+      console.log('config:', { type, defaultRender, ...rest });
+      console.log('form:', form);
       if (type === 'form') {
         return null;
       }

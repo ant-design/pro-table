@@ -1,9 +1,9 @@
 ---
-title: 值类型
+title: 预设样式
 order: 7
 sidemenu: false
 nav:
-  title: 默认值类型
+  title: 预设样式
   order: 5
 ---
 

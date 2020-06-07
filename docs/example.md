@@ -11,6 +11,10 @@ nav:
 
 这里将会提供一些常用的功能示例，方便大家直接拷贝。
 
+## 批量操作
+
+<code src="./demo/batchOption.tsx" />
+
 ## toolbar 搜索
 
 <code src="./example/search.tsx" />
@@ -24,6 +28,8 @@ nav:
 <code src="./example/dataSource.tsx" />
 
 ## 受控模式
+
+可以默认隐藏某些栏，但是在操作栏中可以选择
 
 <code src="./example/columnsStateMap.tsx" />
 
