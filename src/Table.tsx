@@ -489,7 +489,6 @@ const genColumnList = <T, U = {}>(
       valueEnum: ObjToMap(item.valueEnum),
     }))
     .map((item, columnsIndex) => {
-      console.log(item.valueEnum);
       const { key, dataIndex } = item;
       const columnKey = genColumnKey(key, dataIndex, columnsIndex);
       const config = columnKey ? map[columnKey] || { fixed: item.fixed } : { fixed: item.fixed };
