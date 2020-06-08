@@ -9,7 +9,12 @@ import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
 import { DownOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 
-import { parsingValueEnumToArray, useDeepCompareEffect, genColumnKey } from '../component/util';
+import {
+  parsingValueEnumToArray,
+  useDeepCompareEffect,
+  genColumnKey,
+  ObjToMap,
+} from '../component/util';
 import { useIntl, IntlType } from '../component/intlContext';
 import Container from '../container';
 import { ProColumnsValueTypeFunction } from '../defaultRender';
@@ -22,24 +27,24 @@ import './index.less';
  * 默认的查询表单配置
  */
 const defaultColConfig = {
-  lg: 8,
-  md: 12,
-  xxl: 8,
-  xl: 8,
-  sm: 12,
   xs: 24,
+  sm: 24,
+  md: 12,
+  lg: 12,
+  xl: 8,
+  xxl: 6,
 };
 
 /**
  * 默认的新建表单配置
  */
 const defaultFormColConfig = {
-  lg: 24,
-  md: 24,
-  xxl: 24,
-  xl: 24,
-  sm: 24,
   xs: 24,
+  sm: 24,
+  md: 24,
+  lg: 24,
+  xl: 24,
+  xxl: 24,
 };
 
 /**
@@ -130,36 +135,6 @@ export interface TableFormItem<T> extends Omit<FormItemProps, 'children'> {
   formRef?: React.MutableRefObject<FormInstance | undefined> | ((actionRef: FormInstance) => void);
 }
 
-export const formIsNull = (props: {
-  item: ProColumns<any>;
-  value?: any;
-  form?: Omit<FormInstance, 'scrollToField' | '__INTERNAL__'>;
-  type: ProTableTypes;
-  intl: IntlType;
-  onChange?: (value: any) => void;
-}) => {
-  const { item, intl, form, type, ...rest } = props;
-  /**
-   * 自定义 render
-   */
-  if (item.renderFormItem) {
-    /**
-     *删除 renderFormItem 防止重复的 dom 渲染
-     */
-    const { renderFormItem, ...restItem } = item;
-    const defaultRender = (newItem: ProColumns<any>) => (
-      <FormInputRender
-        {...({
-          ...props,
-          item: newItem,
-        } || null)}
-      />
-    );
-    return item.renderFormItem(restItem, { ...rest, type, defaultRender }, form as any) as any;
-  }
-  return true;
-};
-
 export const FormInputRender: React.FC<{
   item: ProColumns<any>;
   value?: any;
@@ -167,6 +142,7 @@ export const FormInputRender: React.FC<{
   type: ProTableTypes;
   intl: IntlType;
   onChange?: (value: any) => void;
+  onSelect?: (value: any) => void;
 }> = (props) => {
   const { item, intl, form, type, ...rest } = props;
   const { valueType: itemValueType } = item;
@@ -188,7 +164,7 @@ export const FormInputRender: React.FC<{
         } || null)}
       />
     );
-    return item.renderFormItem(restItem, { ...rest, type, defaultRender }, form as any) as any;
+    return renderFormItem(restItem, { ...rest, type, defaultRender }, form as any) as any;
   }
 
   if (!valueType || valueType === 'text') {
@@ -200,7 +176,7 @@ export const FormInputRender: React.FC<{
           {...rest}
           {...item.formItemProps}
         >
-          {parsingValueEnumToArray(valueEnum).map(({ value, text }) => (
+          {parsingValueEnumToArray(ObjToMap(valueEnum)).map(({ value, text }) => (
             <Select.Option key={value} value={value}>
               {text}
             </Select.Option>
@@ -306,11 +282,21 @@ export const FormInputRender: React.FC<{
         precision={2}
         formatter={(value) => {
           if (value) {
-            return `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            return `${intl.getMessage('moneySymbol', '￥')} ${value}`.replace(
+              /\B(?=(\d{3})+(?!\d))/g,
+              ',',
+            );
           }
           return '';
         }}
-        parser={(value) => (value ? value.replace(/\$\s?|(,*)/g, '') : '')}
+        parser={(value) =>
+          value
+            ? value.replace(
+                new RegExp(`\\${intl.getMessage('moneySymbol', '￥')}\\s?|(,*)`, 'g'),
+                '',
+              )
+            : ''
+        }
         placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入')}
         style={{
           width: '100%',
@@ -376,22 +362,18 @@ export const proFormItemRender: (props: {
     ...rest
   } = item;
   const key = genColumnKey(rest.key, dataIndex, index);
-  const renderItemDom = formIsNull({
-    item,
-    type,
-    intl,
-    form: formInstance,
-  });
-  if (!renderItemDom) {
-    return null;
-  }
   const dom = <FormInputRender item={item} type={type} intl={intl} form={formInstance} />;
   if (!dom) {
     return null;
   }
   return (
     <Col {...colConfig} key={key}>
-      <Form.Item labelAlign="right" label={rest.title} name={key} {...(isForm && rest)}>
+      <Form.Item
+        labelAlign="right"
+        label={rest.title}
+        name={Array.isArray(dataIndex) ? dataIndex : key}
+        {...(isForm && rest)}
+      >
         {dom}
       </Form.Item>
     </Col>
@@ -486,6 +468,9 @@ const conversionValue = (
         ];
       }
     }
+
+    // 都没命中，原样返回
+    tmpValue[key] = itemValue;
   });
   return tmpValue;
 };

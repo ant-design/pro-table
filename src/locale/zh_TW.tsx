@@ -1,4 +1,5 @@
 export default {
+  moneySymbol: '￥',
   tableForm: {
     search: '查詢',
     reset: '重置',
@@ -12,6 +13,13 @@ export default {
     clear: '清空',
     selected: '已選擇',
     item: '項',
+  },
+  pagination: {
+    total: {
+      range: '第',
+      total: '條/總共',
+      item: '條',
+    },
   },
   tableToolBar: {
     leftPin: '固定到左邊',

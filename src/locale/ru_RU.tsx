@@ -1,4 +1,5 @@
 export default {
+  moneySymbol: '₽',
   tableForm: {
     search: 'Найти',
     reset: 'Сброс',
@@ -12,6 +13,13 @@ export default {
     clear: 'Очистить',
     selected: 'выбранный',
     item: 'предмет',
+  },
+  pagination: {
+    total: {
+      range: ' ',
+      total: 'из',
+      item: 'предметов',
+    },
   },
   tableToolBar: {
     leftPin: 'Закрепить слева',

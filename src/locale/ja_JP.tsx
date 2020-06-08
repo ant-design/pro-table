@@ -1,4 +1,5 @@
 export default {
+  moneySymbol: '¥',
   tableForm: {
     search: '検索',
     reset: 'リセット',
@@ -12,6 +13,13 @@ export default {
     clear: 'クリア',
     selected: '選択した',
     item: '項目',
+  },
+  pagination: {
+    total: {
+      range: '記事',
+      total: '/合計',
+      item: ' ',
+    },
   },
   tableToolBar: {
     leftPin: '左に固定',

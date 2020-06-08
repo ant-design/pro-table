@@ -1,18 +1,18 @@
 ---
-title: 搜索表单
+title: 表单
 order: 8
 sidemenu: false
 nav:
-  title: 搜索表单
+  title: 表单
   order: 2
 ---
 
 # Table 搜索
 
-Pro-Table 会根据列来生成一个 Form，用于筛选列表数据，最后的值会根据通过 `request` 的第一个参数返回，看起来就像。
+ProTable 会根据列来生成一个 Form，用于筛选列表数据，最后的值会根据通过 `request` 的第一个参数返回，看起来就像。
 
 ```jsx | pure
-<ProTable request={(params)=>{ all params}}>
+<ProTable request={(params,sort,filter)=>{ all params}}>
 ```
 
 按照规范，table 的表单不需要任何的必选参数，所有点击搜索和重置都会触发 `request`来发起一次查询。
@@ -33,7 +33,7 @@ Form 的列是根据 `valueType` 来生成不同的类型。
 
 ## 相关 API
 
-### Pro-Table
+### ProTable
 
 | 属性 | 描述 | 类型 | 默认值 |
 | --- | --- | --- | --- |
@@ -63,7 +63,47 @@ Form 的列是根据 `valueType` 来生成不同的类型。
 | valueType | 值的类型 | `'money' \| 'option' \| 'date' \| 'dateTime' \| 'time' \| 'text'\| 'index' \| 'indexBorder'` | 'text' |
 | hideInSearch | 在查询表单中不展示此项 | boolean | - |
 | hideInTable | 在 Table 中不展示此列 | boolean | - |
+| formItemProps | 查询表单的 props，会透传给表单项 | `{ [prop: string]: any }` | - |
 | renderFormItem | 渲染查询表单的输入组件 | `(item,props:{value,onChange}) => React.ReactNode` | - |
+
+## 自定义表单项
+
+很多时候内置的表单项无法满足我们的基本需求，这时候我们就需要来自定义一下默认的组件，我们可以通过 `formItemProps` 和 `renderFormItem` 配合来使用。
+
+`formItemProps` 可以把 props 透传，可以设置 select 的样式和多选等问题。
+
+`renderFormItem` 可以完成重写渲染逻辑，传入 item 和 props 来进行渲染，需要注意的是我们必须要将 props 中的 `value` 和 `onChange` 必须要被赋值，否则 form 无法拿到参数。
+
+```tsx | pure
+renderFormItem: (_, { type, defaultRender, ...rest }, form) => {
+  if (type === 'form') {
+    return null;
+  }
+  const status = form.getFieldValue('state');
+  if (status !== 'open') {
+    return <Input {...rest} placeholder="请输入" />;
+  }
+  return defaultRender(_);
+};
+```
+
+`renderFormItem` 的定义, 具体的值可以打开控制台查看。
+
+```tsx | pure
+ renderFormItem?: (
+    item: ProColumns<T>,
+    config: {
+      value?: any;
+      onChange?: (value: any) => void;
+      onSelect?: (value: any) => void;
+      type: ProTableTypes;
+      defaultRender: (newItem: ProColumns<any>) => JSX.Element | null;
+    },
+    form: Omit<FormInstance, 'scrollToField' | '__INTERNAL__'>,
+  ) => JSX.Element | false | null;
+```
+
+<code src="./demo/linkage_form.tsx" />
 
 ## 基本使用
 
@@ -72,7 +112,3 @@ Form 的列是根据 `valueType` 来生成不同的类型。
 ## 操作栏
 
 <code src="./demo/search_option.tsx" />
-
-## 表单联动
-
-<code src="./demo/linkage_form.tsx" />

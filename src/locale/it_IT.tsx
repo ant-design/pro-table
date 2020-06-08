@@ -1,4 +1,5 @@
 export default {
+  moneySymbol: '€',
   tableForm: {
     search: 'Filtra',
     reset: 'Pulisci',
@@ -12,6 +13,13 @@ export default {
     clear: 'Rimuovi',
     selected: 'Selezionato',
     item: 'Articolo',
+  },
+  pagination: {
+    total: {
+      range: ' ',
+      total: 'di',
+      item: 'articoli',
+    },
   },
   tableToolBar: {
     leftPin: 'Fissa a sinistra',

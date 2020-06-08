@@ -2,6 +2,7 @@ import React, { ReactNode, useEffect, useRef, ReactText, DependencyList, useCall
 import isEqual from 'lodash.isequal';
 import { DataIndex } from 'rc-table/lib/interface';
 import TableStatus, { StatusType } from './status';
+import { valueEnumObj, valueEnumMap } from '../Table';
 
 /**
  * 转化 text 和 valueEnum
@@ -10,29 +11,19 @@ import TableStatus, { StatusType } from './status';
  * @param valueEnum
  * @param prue 纯净模式，不增加 status
  */
-export const parsingText = (
-  text: string | number,
-  valueEnum?: {
-    [key: string]:
-      | {
-          text: ReactNode;
-          type: StatusType;
-        }
-      | ReactNode;
-  },
-  pure?: boolean,
-) => {
+export const parsingText = (text: string | number, valueEnum?: valueEnumMap, pure?: boolean) => {
   if (!valueEnum) {
     return text;
   }
-  const domText = valueEnum[text] as {
-    text: ReactNode;
-    status: StatusType;
-  };
-  if (!domText) {
+
+  if (!valueEnum.has(text) && !valueEnum.has(`${text}`)) {
     return text;
   }
 
+  const domText = (valueEnum.get(text) || valueEnum.get(`${text}`)) as {
+    text: ReactNode;
+    status: StatusType;
+  };
   if (domText.status) {
     if (pure) {
       return domText.text;
@@ -47,32 +38,44 @@ export const parsingText = (
 };
 
 /**
- * 把 value 的枚举转化为 数组
+ * 把 value 的枚举转化为数组
  * @param valueEnum
  */
 export const parsingValueEnumToArray = (
-  valueEnum: {
-    [key: string]:
-      | {
-          text: ReactNode;
-          type: StatusType;
-        }
-      | ReactNode;
-  } = {},
+  valueEnum: valueEnumMap | undefined = new Map(),
 ): {
-  value: string;
+  value: string | number;
   text: string;
-}[] =>
-  Object.keys(valueEnum).map((key) => {
-    const value =
-      (valueEnum[key] as {
-        text: string;
-      }) || '';
-    return {
-      text: ((value.text || value || '') as unknown) as string,
-      value: key,
+}[] => {
+  const enumArray: {
+    value: string | number;
+    text: string;
+  }[] = [];
+  valueEnum.forEach((_, key) => {
+    if (!valueEnum.has(key) && !valueEnum.has(`${key}`)) {
+      return;
+    }
+    const value = (valueEnum.get(key) || valueEnum.get(`${key}`)) as {
+      text: string;
     };
+    if (!value) {
+      return;
+    }
+
+    if (typeof value === 'object' && value?.text) {
+      enumArray.push({
+        text: (value?.text as unknown) as string,
+        value: key,
+      });
+      return;
+    }
+    enumArray.push({
+      text: ((value || '') as unknown) as string,
+      value: key,
+    });
   });
+  return enumArray;
+};
 
 /**
  * 检查值是否存在
@@ -234,3 +237,74 @@ export function useDebounceFn<T extends any[]>(
     cancel,
   };
 }
+
+export const getLang = (): string => {
+  const isNavigatorLanguageValid =
+    typeof navigator !== 'undefined' && typeof navigator.language === 'string';
+  const browserLang = isNavigatorLanguageValid
+    ? navigator.language.split('-').join('{{BaseSeparator}}')
+    : '';
+  const lang = typeof localStorage !== 'undefined' ? window.localStorage.getItem('umi_locale') : '';
+  return lang || browserLang || '';
+};
+
+/**
+ * 删除对象中所有的空值
+ * @param obj
+ */
+export const removeObjectNull = (obj: { [key: string]: any }) => {
+  const newObj = {};
+  Object.keys(obj).forEach((key) => {
+    if (obj[key]) {
+      newObj[key] = obj[key];
+    }
+  });
+  return newObj;
+};
+
+/**
+ * 获取类型的 type
+ * @param obj
+ */
+function getType(obj: any) {
+  // @ts-ignore
+  const type = Object.prototype.toString
+    .call(obj)
+    .match(/^\[object (.*)\]$/)[1]
+    .toLowerCase();
+  if (type === 'string' && typeof obj === 'object') return 'object'; // Let "new String('')" return 'object'
+  if (obj === null) return 'null'; // PhantomJS has type "DOMWindow" for null
+  if (obj === undefined) return 'undefined'; // PhantomJS has type "DOMWindow" for undefined
+  return type;
+}
+
+export const ObjToMap = (
+  value: valueEnumObj | valueEnumMap | undefined,
+): valueEnumMap | undefined => {
+  if (!value) {
+    return value;
+  }
+  if (getType(value) === 'map') {
+    return value as valueEnumMap;
+  }
+  return new Map(Object.entries(value));
+};
+
+/**
+ * 减少 width，支持 string 和 number
+ */
+export const reduceWidth = (width?: string | number): string | number | undefined => {
+  if (width === undefined) {
+    return width;
+  }
+  if (typeof width === 'string') {
+    if (!width.includes('calc')) {
+      return `calc(100% - ${width})`;
+    }
+    return width;
+  }
+  if (typeof width === 'number') {
+    return (width as number) - 32;
+  }
+  return width;
+};
