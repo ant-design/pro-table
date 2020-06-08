@@ -16,11 +16,11 @@ export const parsingText = (text: string | number, valueEnum?: valueEnumMap, pur
     return text;
   }
 
-  if (!valueEnum.has(text)) {
+  if (!valueEnum.has(text) && !valueEnum.has(`${text}`)) {
     return text;
   }
 
-  const domText = valueEnum.get(text) as {
+  const domText = (valueEnum.get(text) || valueEnum.get(`${text}`)) as {
     text: ReactNode;
     status: StatusType;
   };
@@ -44,35 +44,38 @@ export const parsingText = (text: string | number, valueEnum?: valueEnumMap, pur
 export const parsingValueEnumToArray = (
   valueEnum: valueEnumMap | undefined = new Map(),
 ): {
-  value: string;
+  value: string | number;
   text: string;
-}[] =>
-  Object.keys(valueEnum)
-    .filter((key) => {
-      if (!valueEnum.has(key)) {
-        return false;
-      }
-      const value = valueEnum.get(key);
-      if (!value) {
-        return false;
-      }
-      return true;
-    })
-    .map((key) => {
-      const value = valueEnum.get(key) as {
-        text: string;
-      };
-      if (typeof value === 'object' && value?.text) {
-        return {
-          text: (value?.text as unknown) as string,
-          value: key,
-        };
-      }
-      return {
-        text: ((value || '') as unknown) as string,
+}[] => {
+  const enumArray: {
+    value: string | number;
+    text: string;
+  }[] = [];
+  valueEnum.forEach((_, key) => {
+    if (!valueEnum.has(key) && !valueEnum.has(`${key}`)) {
+      return;
+    }
+    const value = (valueEnum.get(key) || valueEnum.get(`${key}`)) as {
+      text: string;
+    };
+    if (!value) {
+      return;
+    }
+
+    if (typeof value === 'object' && value?.text) {
+      enumArray.push({
+        text: (value?.text as unknown) as string,
         value: key,
-      };
+      });
+      return;
+    }
+    enumArray.push({
+      text: ((value || '') as unknown) as string,
+      value: key,
     });
+  });
+  return enumArray;
+};
 
 /**
  * 检查值是否存在
