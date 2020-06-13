@@ -815,19 +815,30 @@ const ProTable = <T extends {}, U extends object>(
 
     // dataSource maybe is a null
     // eg: api has 404 error
-    const selectedRow = Array.isArray(dataSource)
-      ? [...selectedRows, ...dataSource].filter((item, index) => {
-          if (!tableKey) {
-            return (selectedRowKeys as any).includes(index);
-          }
-          if (typeof tableKey === 'function') {
-            const key = tableKey(item, index);
-            return (selectedRowKeys as any).includes(key);
-          }
-          return (selectedRowKeys as any).includes(item[tableKey]);
-        })
-      : [];
-    setSelectedRows(selectedRow);
+    const duplicateRemoveMap = new Map();
+    if (Array.isArray(dataSource)) {
+      // 根据当前选中和当前的所有数据计算选中的行
+      // 因为防止翻页以后丢失，所有还增加了当前选择选中的
+      const rows = [...dataSource, ...selectedRows].filter((item, index) => {
+        let rowKey = tableKey;
+        if (!tableKey) {
+          return (selectedRowKeys as any).includes(index);
+        }
+        if (typeof tableKey === 'function') {
+          rowKey = tableKey(item, index) as string;
+        } else {
+          rowKey = item[tableKey];
+        }
+        if (duplicateRemoveMap.has(rowKey)) {
+          return false;
+        }
+        duplicateRemoveMap.set(rowKey, true);
+        return (selectedRowKeys as any).includes(rowKey);
+      });
+      setSelectedRows(rows);
+      return;
+    }
+    setSelectedRows([]);
   }, [selectedRowKeys.join('-'), action.loading, propsRowSelection === false]);
 
   const rowSelection: TableRowSelection = {
