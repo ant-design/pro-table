@@ -69,9 +69,10 @@ export type valueEnumMap = Map<
 >;
 
 export interface ProColumnType<T = unknown>
-  extends Omit<ColumnType<T>, 'render' | 'children'>,
+  extends Omit<ColumnType<T>, 'render' | 'children' | 'title'>,
     Partial<Omit<FormItemProps, 'children'>> {
   index?: number;
+  title?: ReactNode | ((config: ProColumnType<T>, type: ProTableTypes) => ReactNode);
   /**
    * 自定义 render
    */
@@ -484,10 +485,14 @@ const genColumnList = <T, U = {}>(
   columnEmptyText?: ColumnEmptyText,
 ): (ColumnsType<T>[number] & { index?: number })[] =>
   (columns
-    .map((item) => ({
-      ...item,
-      valueEnum: ObjToMap(item.valueEnum),
-    }))
+    .map((item) => {
+      const { title } = item;
+      return {
+        ...item,
+        title: title && typeof title === 'function' ? title(item, 'table') : title,
+        valueEnum: ObjToMap(item.valueEnum),
+      };
+    })
     .map((item, columnsIndex) => {
       const { key, dataIndex } = item;
       const columnKey = genColumnKey(key, dataIndex, columnsIndex);

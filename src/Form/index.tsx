@@ -366,11 +366,19 @@ export const proFormItemRender: (props: {
   if (!dom) {
     return null;
   }
+
+  // 支持 function 的 title
+  const getTitle = () => {
+    if (rest.title && typeof rest.title === 'function') {
+      return rest.title(item, 'form');
+    }
+    return rest.title;
+  };
   return (
     <Col {...colConfig} key={key}>
       <Form.Item
         labelAlign="right"
-        label={rest.title}
+        label={getTitle()}
         name={Array.isArray(dataIndex) ? dataIndex : key}
         {...(isForm && rest)}
       >
