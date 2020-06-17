@@ -78,6 +78,7 @@ interface ActionType {
   reload: () => void;
   fetchMore: () => void;
   reset: () => void;
+  reloadAndRest: () => void;
 }
 
 const ref = useRef<ActionType>();
@@ -86,6 +87,9 @@ const ref = useRef<ActionType>();
 
 // 刷新
 ref.current.reload();
+
+// 重置所有项并刷新
+ref.current.reloadAndRest();
 
 // 加载更多
 ref.current.fetchMore();
