@@ -21,13 +21,20 @@ Form 的列是根据 `valueType` 来生成不同的类型。
 
 > valueType 为 index indexBorder option 和没有 dataIndex 和 key 的列将会忽略。
 
-| 类型 | 描述 |
+| 类型 | 对应的组件 |
 | --- | --- |
-| text | input |
+| text | [Input](https://ant.design/components/input-cn/) |
+| textarea | [Input.TextArea](https://ant.design/components/input-cn/#components-input-demo-textarea) |
 | date | [DatePicker](https://ant.design/components/date-picker-cn/) |
 | dateTime | [DatePicker](https://ant.design/components/date-picker-cn/#components-date-picker-demo-time) |
 | time | [TimePicker](https://ant.design/components/time-picker-cn/) |
-| money | inputNumber |
+| dateTimeRange | [RangePicker](https://ant.design/components/time-picker-cn/#components-time-picker-demo-range-picker) |
+| dateRange | [RangePicker](https://ant.design/components/time-picker-cn/#components-time-picker-demo-range-picker) |
+| money | [InputNumber](https://ant.design/components/input-number-cn/) |
+| digit | [InputNumber](https://ant.design/components/input-number-cn/) |
+| option | 不展示 |
+| index | 不展示 |
+| progress | 不展示 |
 
 设置了 `valueEnum` 的列将会生成 Select,Select 会自动插入一个全部选项，并且默认选中，但是值为 `all` 在查询时会被丢弃。
 

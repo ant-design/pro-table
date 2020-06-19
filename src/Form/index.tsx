@@ -366,11 +366,19 @@ export const proFormItemRender: (props: {
   if (!dom) {
     return null;
   }
+
+  // 支持 function 的 title
+  const getTitle = () => {
+    if (rest.title && typeof rest.title === 'function') {
+      return rest.title(item, 'form');
+    }
+    return rest.title;
+  };
   return (
     <Col {...colConfig} key={key}>
       <Form.Item
         labelAlign="right"
-        label={rest.title}
+        label={getTitle()}
         name={Array.isArray(dataIndex) ? dataIndex : key}
         {...(isForm && rest)}
       >
@@ -455,16 +463,18 @@ const conversionValue = (
     if (Array.isArray(itemValue) && itemValue.length === 2 && dateFormatter) {
       if (dateFormatter === 'string') {
         const formatString = dateFormatterMap[valueType as 'dateTime'];
+        const [startValue, endValue] = itemValue;
         tmpValue[key] = [
-          moment(itemValue[0] as Moment).format(formatString || 'YYYY-MM-DD HH:mm:ss'),
-          moment(itemValue[1] as Moment).format(formatString || 'YYYY-MM-DD HH:mm:ss'),
+          moment(startValue as Moment).format(formatString || 'YYYY-MM-DD HH:mm:ss'),
+          moment(endValue as Moment).format(formatString || 'YYYY-MM-DD HH:mm:ss'),
         ];
         return;
       }
       if (dateFormatter === 'number') {
+        const [startValue, endValue] = itemValue;
         tmpValue[key] = [
-          moment(itemValue[0] as Moment).valueOf(),
-          moment(itemValue[1] as Moment).valueOf(),
+          moment(startValue as Moment).valueOf(),
+          moment(endValue as Moment).valueOf(),
         ];
       }
     }
