@@ -202,7 +202,7 @@ ref.current.clearSelected();
  title: (_, type) => (type === 'table' ? '状态' : '列表状态'),
 ```
 
-我们可以可以用 form 配置来自定义表单的操作，比如说默认值。
+我们可以在 props 中设置 form 配置来自定义表单的操作，比如说默认值。
 
 ```tsx | pure
 form={{ initialValues: {...data}, labelCol: { span: 6 }, }}
