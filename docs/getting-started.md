@@ -202,6 +202,12 @@ ref.current.clearSelected();
  title: (_, type) => (type === 'table' ? '状态' : '列表状态'),
 ```
 
+我们可以可以用 form 配置来自定义表单的操作，比如说默认值。
+
+```tsx | pure
+form={{ initialValues: {...data}, labelCol: { span: 6 }, }}
+```
+
 ### 自定义表单项
 
 很多时候内置的表单项无法满足我们的需求，这时候我们就需要来自定义一下默认的组件，`renderFormItem` 可以完成重写渲染逻辑，它会传入 item 和 props 来进行渲染，需要注意的是我们必须要将 props 中的 `value` 和 `onChange` 必须要被赋值，否则 form 无法绑定数据。
