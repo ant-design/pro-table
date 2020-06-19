@@ -463,16 +463,18 @@ const conversionValue = (
     if (Array.isArray(itemValue) && itemValue.length === 2 && dateFormatter) {
       if (dateFormatter === 'string') {
         const formatString = dateFormatterMap[valueType as 'dateTime'];
+        const [startValue, endValue] = itemValue;
         tmpValue[key] = [
-          moment(itemValue[0] as Moment).format(formatString || 'YYYY-MM-DD HH:mm:ss'),
-          moment(itemValue[1] as Moment).format(formatString || 'YYYY-MM-DD HH:mm:ss'),
+          moment(startValue as Moment).format(formatString || 'YYYY-MM-DD HH:mm:ss'),
+          moment(endValue as Moment).format(formatString || 'YYYY-MM-DD HH:mm:ss'),
         ];
         return;
       }
       if (dateFormatter === 'number') {
+        const [startValue, endValue] = itemValue;
         tmpValue[key] = [
-          moment(itemValue[0] as Moment).valueOf(),
-          moment(itemValue[1] as Moment).valueOf(),
+          moment(startValue as Moment).valueOf(),
+          moment(endValue as Moment).valueOf(),
         ];
       }
     }
