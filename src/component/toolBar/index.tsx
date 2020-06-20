@@ -1,20 +1,22 @@
 import React from 'react';
 import { ReloadOutlined, SettingOutlined } from '@ant-design/icons';
-import { Divider, Space, Tooltip } from 'antd';
+import { Divider, Space, Tooltip, Input } from 'antd';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider/context';
+import { SearchProps } from 'antd/lib/input';
+
 import ColumnSetting from '../columnSetting';
 import { useIntl, IntlType } from '../intlContext';
 import { UseFetchDataAction, RequestData } from '../../useFetchData';
-
 import './index.less';
 import FullScreenIcon from './FullscreenIcon';
 import DensityIcon from './DensityIcon';
 
 export interface OptionConfig<T> {
-  density: boolean;
-  fullScreen: OptionsType<T>;
-  reload: OptionsType<T>;
-  setting: boolean;
+  density?: boolean;
+  fullScreen?: OptionsType<T>;
+  reload?: OptionsType<T>;
+  setting?: boolean;
+  search?: (SearchProps & { name?: string }) | boolean;
 }
 
 export type OptionsType<T = unknown> =
@@ -35,6 +37,7 @@ export interface ToolBarProps<T = unknown> {
   selectedRowKeys?: (string | number)[];
   selectedRows?: T[];
   className?: string;
+  onSearch?: (keyWords: string) => void;
 }
 
 const getButtonText = <T, U = {}>({
@@ -122,16 +125,26 @@ const ToolBar = <T, U = {}>({
   headerTitle,
   toolBarRender,
   action,
-  options = {
+  options: propsOptions = {
     density: true,
     fullScreen: () => action.fullScreen && action.fullScreen(),
     reload: () => action.reload(),
     setting: true,
+    search: false,
   },
   selectedRowKeys,
   selectedRows,
   className,
+  onSearch,
 }: ToolBarProps<T>) => {
+  const options = {
+    density: true,
+    fullScreen: () => action.fullScreen && action.fullScreen(),
+    reload: () => action.reload(),
+    setting: true,
+    search: false,
+    ...propsOptions,
+  };
   const intl = useIntl();
   const optionDom =
     renderDefaultOption<T>(options, `${className}-item-icon`, {
@@ -139,16 +152,35 @@ const ToolBar = <T, U = {}>({
       reload: () => action.reload(),
       density: true,
       setting: true,
+      search: false,
       intl,
     }) || [];
   // 操作列表
   const actions = toolBarRender ? toolBarRender(action, { selectedRowKeys, selectedRows }) : [];
-
+  const renderDivider = () => {
+    if (optionDom.length < 1) {
+      return false;
+    }
+    if (actions.length < 1 && options.search === false) {
+      return false;
+    }
+    return <Divider type="vertical" />;
+  };
   return (
     <div className={className}>
       <div className={`${className}-title`}>{headerTitle}</div>
       <div className={`${className}-option`}>
         <Space>
+          {options && options.search && (
+            <Input.Search
+              placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入')}
+              style={{
+                width: 200,
+              }}
+              {...options.search}
+              onSearch={onSearch}
+            />
+          )}
           {actions
             .filter((item) => item)
             .map((node, index) => (
@@ -161,7 +193,7 @@ const ToolBar = <T, U = {}>({
             ))}
         </Space>
         <div className={`${className}-default-option`}>
-          {optionDom.length > 0 && actions.length > 0 && <Divider type="vertical" />}
+          {renderDivider()}
           <Space>{optionDom}</Space>
         </div>
       </div>
