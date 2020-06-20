@@ -208,6 +208,10 @@ export interface ProTableProps<T, U extends { [key: string]: any }>
    * 初始化的参数，可以操作 table
    */
   actionRef?: React.MutableRefObject<ActionType | undefined> | ((actionRef: ActionType) => void);
+
+  /**
+   * 操作自带的 form
+   */
   formRef?: TableFormItem<T>['formRef'];
   /**
    * 渲染操作栏
@@ -923,6 +927,20 @@ const ProTable = <T extends {}, U extends object>(
                 options={options}
                 headerTitle={headerTitle}
                 action={action}
+                onSearch={(keyword) => {
+                  if (options && options.search) {
+                    const { name = 'keyword' } =
+                      options.search === true
+                        ? {
+                            name: 'keyword',
+                          }
+                        : options.search;
+                    setFormSearch({
+                      [name]: keyword,
+                      ...formSearch,
+                    });
+                  }
+                }}
                 selectedRows={selectedRows}
                 selectedRowKeys={selectedRowKeys}
                 toolBarRender={toolBarRender}
