@@ -35,7 +35,7 @@
     "not ie <= 10"
   ],
   "resolutions": {
-    "eslint": ">=7.2.0"
+    "eslint": "7.2.0"
   },
   "dependencies": {
     "@ant-design/icons": "^4.1.0",
