@@ -164,7 +164,16 @@ export const FormInputRender: React.FC<{
         } || null)}
       />
     );
-    return renderFormItem(restItem, { ...rest, type, defaultRender }, form as any) as any;
+    const dom = renderFormItem(
+      restItem,
+      { ...rest, type, defaultRender },
+      form as any,
+    ) as React.ReactElement;
+    if (!React.isValidElement(dom)) {
+      return dom;
+    }
+    const defaultProps = dom.props as any;
+    return React.cloneElement(dom, { ...rest, ...defaultProps });
   }
 
   if (!valueType || valueType === 'text') {
