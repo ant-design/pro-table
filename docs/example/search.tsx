@@ -1,5 +1,7 @@
 import React from 'react';
 import ProTable, { ProColumns } from '@ant-design/pro-table';
+import { PlusOutlined } from '@ant-design/icons';
+import { Button } from 'antd';
 
 const valueEnum = {
   0: 'close',
@@ -103,6 +105,11 @@ export default () => {
       }}
       size="middle"
       search={false}
+      toolBarRender={() => [
+        <Button type="primary" icon={<PlusOutlined />}>
+          新建
+        </Button>,
+      ]}
       dateFormatter="string"
       headerTitle="简单搜索"
     />
