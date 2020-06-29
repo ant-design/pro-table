@@ -137,14 +137,16 @@ const ToolBar = <T, U = {}>({
   className,
   onSearch,
 }: ToolBarProps<T>) => {
-  const options = {
-    density: true,
-    fullScreen: () => action.fullScreen && action.fullScreen(),
-    reload: () => action.reload(),
-    setting: true,
-    search: false,
-    ...propsOptions,
-  };
+  const options = propsOptions
+    ? {
+        density: true,
+        fullScreen: () => action.fullScreen && action.fullScreen(),
+        reload: () => action.reload(),
+        setting: true,
+        search: false,
+        ...propsOptions,
+      }
+    : false;
   const intl = useIntl();
   const optionDom =
     renderDefaultOption<T>(options, `${className}-item-icon`, {
@@ -161,7 +163,7 @@ const ToolBar = <T, U = {}>({
     if (optionDom.length < 1) {
       return false;
     }
-    if (actions.length < 1 && options.search === false) {
+    if (actions.length < 1 && options && options.search === false) {
       return false;
     }
     return <Divider type="vertical" />;

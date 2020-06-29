@@ -50,7 +50,7 @@ export interface ColumnsState {
   fixed?: 'right' | 'left' | undefined;
 }
 
-export type valueEnumObj = {
+export type ValueEnumObj = {
   [key: string]:
     | {
         text: ReactNode;
@@ -59,7 +59,7 @@ export type valueEnumObj = {
     | ReactNode;
 };
 
-export type valueEnumMap = Map<
+export type ValueEnumMap = Map<
   React.ReactText,
   | {
       text: ReactNode;
@@ -135,7 +135,7 @@ export interface ProColumnType<T = unknown>
   /**
    * 值的枚举，如果存在枚举，Search 中会生成 select
    */
-  valueEnum?: valueEnumMap | valueEnumObj;
+  valueEnum?: ValueEnumMap | ValueEnumObj;
 
   /**
    * 在查询表单中隐藏
