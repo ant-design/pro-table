@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import React, { ReactNode, useEffect, useRef, ReactText, DependencyList, useCallback } from 'react';
 import isEqual from 'lodash.isequal';
 import { DataIndex } from 'rc-table/lib/interface';
