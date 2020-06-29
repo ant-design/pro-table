@@ -279,6 +279,7 @@ const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
                 </a>
               </div>
             }
+            overlayClassName={`${className}-overlay`}
             trigger="click"
             placement="bottomRight"
             content={<GroupCheckboxList className={className} localColumns={localColumns} />}
