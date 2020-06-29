@@ -100,6 +100,7 @@ export default () => {
           赋值
         </Button>,
       ]}
+      options={false}
       dateFormatter="string"
       headerTitle="表单赋值"
     />
