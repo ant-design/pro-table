@@ -185,7 +185,6 @@ export const FormInputRender: React.FC<{
     if (valueEnum) {
       return (
         <Select
-          clearIcon
           placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择')}
           {...rest}
           {...item.formItemProps}
