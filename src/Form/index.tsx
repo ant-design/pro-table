@@ -137,8 +137,8 @@ export interface TableFormItem<T> extends Omit<FormItemProps, 'children'> {
   dateFormatter?: 'string' | 'number' | false;
   search?: boolean | SearchConfig;
   formRef?:
-    | React.MutableRefObject<FormComponentProps['form'] | undefined>
-    | ((actionRef: FormComponentProps['form']) => void);
+    | React.MutableRefObject<(FormComponentProps['form'] & { submit: () => void }) | undefined>
+    | ((actionRef: FormComponentProps['form'] & { submit: () => void }) => void);
 }
 
 export const FormInputRender: React.FC<{

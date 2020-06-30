@@ -105,11 +105,7 @@ export default () => {
       }}
       size="middle"
       search={false}
-      toolBarRender={() => [
-        <Button type="primary" icon={<PlusOutlined />}>
-          新建
-        </Button>,
-      ]}
+      toolBarRender={() => [<Button type="primary">新建</Button>]}
       dateFormatter="string"
       headerTitle="简单搜索"
     />
