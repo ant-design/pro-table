@@ -391,7 +391,7 @@ const genEllipsis = (dom: React.ReactNode, item: ProColumns<any>, text: string) 
   }
   return (
     <Tooltip title={text}>
-      <div>{dom}</div>
+      <span>{dom}</span>
     </Tooltip>
   );
 };
