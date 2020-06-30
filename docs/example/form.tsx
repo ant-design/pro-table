@@ -66,7 +66,7 @@ const columns: ProColumns<TableListItem>[] = [
 ];
 
 export default () => {
-  const ref = useRef<FormComponentProps['form']>();
+  const ref = useRef<FormComponentProps['form'] & { submit: () => void }>();
   const [collapsed, setCollapsed] = useState(false);
 
   return (
