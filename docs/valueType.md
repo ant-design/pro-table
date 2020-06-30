@@ -1,15 +1,15 @@
 ---
-title: 值类型
+title: 预设样式
 order: 7
 sidemenu: false
 nav:
-  title: 默认值类型
+  title: 预设样式
   order: 5
 ---
 
 # 值类型
 
-Pro-Table 封装了一些常用的值类型来减少重复的 `render` 操作，配置一个`valueType` 即可展示格式化响应的数据。
+ProTable 封装了一些常用的值类型来减少重复的 `render` 操作，配置一个`valueType` 即可展示格式化响应的数据。
 
 ## valueType
 
@@ -74,7 +74,7 @@ return { type: 'percent', showSymbol: true | false, precision: 2 };
 
 ## valueEnum
 
-valueEnum 需要传入一个枚举，Pro-Table 会自动根据值获取响应的枚举，并且在 from 中生成一个下拉框。看起来是这样的：
+valueEnum 需要传入一个枚举，ProTable 会自动根据值获取响应的枚举，并且在 from 中生成一个下拉框。看起来是这样的：
 
 ```ts | pure
 const valueEnum = {

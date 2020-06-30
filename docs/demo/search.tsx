@@ -77,7 +77,7 @@ const columns: ProColumns<GithubIssueItem>[] = [
     hideInSearch: true,
   },
   {
-    title: '状态',
+    title: (_, type) => (type === 'table' ? '状态' : '列表状态'),
     dataIndex: 'state',
     initialValue: 'all',
     valueEnum: {

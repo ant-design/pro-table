@@ -29,6 +29,8 @@ import get, {
   useDeepCompareEffect,
   genColumnKey,
   removeObjectNull,
+  ObjToMap,
+  reduceWidth,
 } from './component/util';
 import defaultRenderText, {
   ProColumnsValueType,
@@ -52,10 +54,29 @@ export interface ColumnsState {
   fixed?: 'right' | 'left' | undefined;
 }
 
+export type ValueEnumObj = {
+  [key: string]:
+    | {
+        text: ReactNode;
+        status: StatusType;
+      }
+    | ReactNode;
+};
+
+export type ValueEnumMap = Map<
+  React.ReactText,
+  | {
+      text: ReactNode;
+      status: StatusType;
+    }
+  | ReactNode
+>;
+
 export interface ProColumnType<T = unknown>
-  extends Omit<ColumnProps<T>, 'render' | 'children'>,
+  extends Omit<ColumnProps<T>, 'render' | 'children' | 'title'>,
     Partial<GetFieldDecoratorOptions> {
   index?: number;
+  title?: ReactNode | ((config: ProColumnType<T>, type: ProTableTypes) => ReactNode);
   /**
    * 自定义 render
    */
@@ -118,14 +139,7 @@ export interface ProColumnType<T = unknown>
   /**
    * 值的枚举，如果存在枚举，Search 中会生成 select
    */
-  valueEnum?: {
-    [key: string]:
-      | {
-          text: ReactNode;
-          status: StatusType;
-        }
-      | ReactNode;
-  };
+  valueEnum?: ValueEnumMap | ValueEnumObj;
 
   /**
    * 在查询表单中隐藏
@@ -199,6 +213,10 @@ export interface ProTableProps<T, U extends { [key: string]: any }>
    * 初始化的参数，可以操作 table
    */
   actionRef?: React.MutableRefObject<ActionType | undefined> | ((actionRef: ActionType) => void);
+
+  /**
+   * 操作自带的 form
+   */
   formRef?: TableFormItem<T>['formRef'];
   /**
    * 渲染操作栏
@@ -379,7 +397,7 @@ const genEllipsis = (dom: React.ReactNode, item: ProColumns<any>, text: string) 
   }
   return (
     <Tooltip title={text}>
-      <div>{dom}</div>
+      <span>{dom}</span>
     </Tooltip>
   );
 };
@@ -389,7 +407,7 @@ const genCopyable = (dom: React.ReactNode, item: ProColumns<any>) => {
     return (
       <Typography.Paragraph
         style={{
-          width: item.width && (item.width as number) - 32,
+          width: reduceWidth(item.width),
           margin: 0,
           padding: 0,
         }}
@@ -421,7 +439,12 @@ const columRender = <T, U = any>({
     return null;
   }
 
-  const renderTextStr = renderText(parsingText(text, valueEnum), row, index, action.current);
+  const renderTextStr = renderText(
+    parsingText(text, ObjToMap(valueEnum)),
+    row,
+    index,
+    action.current,
+  );
   const textDom = defaultRenderText<T, {}>(
     renderTextStr,
     item.valueType || 'text',
@@ -433,7 +456,7 @@ const columRender = <T, U = any>({
   const dom: React.ReactNode = genEllipsis(
     genCopyable(textDom, item),
     item,
-    renderText(parsingText(text, valueEnum, true), row, index, action.current),
+    renderText(parsingText(text, ObjToMap(valueEnum), true), row, index, action.current),
   );
 
   if (item.render) {
@@ -473,6 +496,13 @@ const columRender = <T, U = any>({
   return checkUndefinedOrNull(dom) ? dom : null;
 };
 
+/**
+ * 转化 columns 到 pro 的格式
+ * 主要是 render 方法的自行实现
+ * @param columns
+ * @param map
+ * @param columnEmptyText
+ */
 const genColumnList = <T, U = {}>(
   columns: ProColumns<T>[],
   map: {
@@ -482,6 +512,14 @@ const genColumnList = <T, U = {}>(
   columnEmptyText?: ColumnEmptyText,
 ): (ColumnProps<T> & { index?: number; children?: ColumnProps<T>[] })[] =>
   (columns
+    .map((item) => {
+      const { title } = item;
+      return {
+        ...item,
+        title: title && typeof title === 'function' ? title(item, 'table') : title,
+        valueEnum: ObjToMap(item.valueEnum),
+      };
+    })
     .map((item, columnsIndex) => {
       const { key, dataIndex } = item;
       const columnKey = genColumnKey(key, dataIndex, columnsIndex);
@@ -816,19 +854,30 @@ const ProTable = <T extends {}, U extends object>(
 
     // dataSource maybe is a null
     // eg: api has 404 error
-    const selectedRow = Array.isArray(dataSource)
-      ? [...selectedRows, ...dataSource].filter((item, index) => {
-          if (!tableKey) {
-            return (selectedRowKeys as any).includes(index);
-          }
-          if (typeof tableKey === 'function') {
-            const key = tableKey(item, index);
-            return (selectedRowKeys as any).includes(key);
-          }
-          return (selectedRowKeys as any).includes(item[tableKey]);
-        })
-      : [];
-    setSelectedRows(selectedRow);
+    const duplicateRemoveMap = new Map();
+    if (Array.isArray(dataSource)) {
+      // 根据当前选中和当前的所有数据计算选中的行
+      // 因为防止翻页以后丢失，所有还增加了当前选择选中的
+      const rows = [...dataSource, ...selectedRows].filter((item, index) => {
+        let rowKey = tableKey;
+        if (!tableKey) {
+          return (selectedRowKeys as any).includes(index);
+        }
+        if (typeof tableKey === 'function') {
+          rowKey = tableKey(item, index) as string;
+        } else {
+          rowKey = item[tableKey];
+        }
+        if (duplicateRemoveMap.has(rowKey)) {
+          return false;
+        }
+        duplicateRemoveMap.set(rowKey, true);
+        return (selectedRowKeys as any).includes(rowKey);
+      });
+      setSelectedRows(rows);
+      return;
+    }
+    setSelectedRows([]);
   }, [selectedRowKeys.join('-'), action.loading, propsRowSelection === false]);
 
   const rowSelection: TableRowSelection = {
@@ -907,6 +956,20 @@ const ProTable = <T extends {}, U extends object>(
                 options={options}
                 headerTitle={headerTitle}
                 action={action}
+                onSearch={(keyword) => {
+                  if (options && options.search) {
+                    const { name = 'keyword' } =
+                      options.search === true
+                        ? {
+                            name: 'keyword',
+                          }
+                        : options.search;
+                    setFormSearch({
+                      [name]: keyword,
+                      ...formSearch,
+                    });
+                  }
+                }}
                 selectedRows={selectedRows}
                 selectedRowKeys={selectedRowKeys}
                 toolBarRender={toolBarRender}

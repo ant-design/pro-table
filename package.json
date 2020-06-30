@@ -43,12 +43,12 @@
     "lodash.tonumber": "^4.0.3",
     "moment": "^2.24.0",
     "rc-resize-observer": "^0.2.1",
-    "rc-util": "^4.20.5",
+    "rc-util": "^5.0.1",
     "react-dnd": "^10.0.2",
     "react-dnd-html5-backend": "^10.0.2",
     "unstated-next": "^1.1.0",
     "use-json-comparison": "^1.0.5",
-    "use-media-antd-query": "1.0.1",
+    "use-media-antd-query": "1.0.2",
     "use-merge-value": "^1.0.1"
   },
   "devDependencies": {
@@ -59,7 +59,7 @@
     "@babel/preset-typescript": "^7.8.3",
     "@types/classnames": "^2.2.9",
     "@types/enzyme": "^3.10.3",
-    "@types/jest": "^25.2.1",
+    "@types/jest": "^26.0.0",
     "@types/lodash.isequal": "^4.5.5",
     "@types/lodash.tonumber": "^4.0.3",
     "@types/node": "^14.0.5",
@@ -71,7 +71,7 @@
     "dumi": "^1.0.20",
     "enzyme": "^3.10.0",
     "enzyme-to-json": "^3.4.3",
-    "eslint": "^6.8.0",
+    "eslint": "7.3.1",
     "father": "^2.29.3",
     "husky": "^4.2.5",
     "jsdom-global": "^3.0.2",
@@ -87,7 +87,7 @@
     "umi-plugin-githubpages": "^2.0.1",
     "umi-request": "^1.2.15",
     "webpack-bundle-analyzer": "^3.7.0",
-    "webpack-cli": "^3.3.10"
+    "webpack": "^4.43.0"
   },
   "peerDependencies": {
     "antd": "3.x",

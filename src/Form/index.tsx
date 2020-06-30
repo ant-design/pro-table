@@ -12,7 +12,12 @@ import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 import { FormComponentProps } from '@ant-design/compatible/lib/form/Form';
 
-import { parsingValueEnumToArray, useDeepCompareEffect, genColumnKey } from '../component/util';
+import {
+  parsingValueEnumToArray,
+  useDeepCompareEffect,
+  genColumnKey,
+  ObjToMap,
+} from '../component/util';
 import { useIntl, IntlType } from '../component/intlContext';
 import Container from '../container';
 import { ProColumnsValueTypeFunction } from '../defaultRender';
@@ -165,7 +170,20 @@ export const FormInputRender: React.FC<{
         } || null)}
       />
     );
-    return renderFormItem(restItem, { ...rest, type, defaultRender }, form as any) as any;
+
+    // 自动注入 onChange 和 value,用户自己很有肯能忘记
+    const dom = renderFormItem(
+      restItem,
+      { ...rest, type, defaultRender },
+      form as any,
+    ) as React.ReactElement;
+    // 有可能不是不是一个组件
+    if (!React.isValidElement(dom)) {
+      return dom;
+    }
+    const defaultProps = dom.props as any;
+    // 已用户的为主，不然过于 magic
+    return React.cloneElement(dom, { ...rest, ...defaultProps });
   }
 
   if (!valueType || valueType === 'text') {
@@ -173,11 +191,12 @@ export const FormInputRender: React.FC<{
     if (valueEnum) {
       return (
         <Select
+          allowClear
           placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择')}
           {...rest}
           {...item.formItemProps}
         >
-          {parsingValueEnumToArray(valueEnum).map(({ value, text }) => (
+          {parsingValueEnumToArray(ObjToMap(valueEnum)).map(({ value, text }) => (
             <Select.Option key={value} value={value}>
               {text}
             </Select.Option>
@@ -367,9 +386,17 @@ export const proFormItemRender: (props: {
   if (!dom) {
     return null;
   }
+
+  // 支持 function 的 title
+  const getTitle = () => {
+    if (rest.title && typeof rest.title === 'function') {
+      return rest.title(item, 'form');
+    }
+    return rest.title;
+  };
   return (
     <Col {...colConfig} key={key}>
-      <Form.Item labelAlign="right" label={rest.title}>
+      <Form.Item labelAlign="right" label={getTitle()}>
         {formInstance?.getFieldDecorator(key, { ...(isForm ? (rest as any) : {}) })(dom)}
       </Form.Item>
     </Col>
@@ -451,16 +478,18 @@ const conversionValue = (
     if (Array.isArray(itemValue) && itemValue.length === 2 && dateFormatter) {
       if (dateFormatter === 'string') {
         const formatString = dateFormatterMap[valueType as 'dateTime'];
+        const [startValue, endValue] = itemValue;
         tmpValue[key] = [
-          moment(itemValue[0] as Moment).format(formatString || 'YYYY-MM-DD HH:mm:ss'),
-          moment(itemValue[1] as Moment).format(formatString || 'YYYY-MM-DD HH:mm:ss'),
+          moment(startValue as Moment).format(formatString || 'YYYY-MM-DD HH:mm:ss'),
+          moment(endValue as Moment).format(formatString || 'YYYY-MM-DD HH:mm:ss'),
         ];
         return;
       }
       if (dateFormatter === 'number') {
+        const [startValue, endValue] = itemValue;
         tmpValue[key] = [
-          moment(itemValue[0] as Moment).valueOf(),
-          moment(itemValue[1] as Moment).valueOf(),
+          moment(startValue as Moment).valueOf(),
+          moment(endValue as Moment).valueOf(),
         ];
       }
     }
@@ -599,12 +628,16 @@ const FormSearch = <T, U = {}>({
       return;
     }
     if (typeof formRef === 'function') {
-      formRef(form);
+      formRef({
+        ...form,
+        submit,
+      });
     }
     if (formRef && typeof formRef !== 'function') {
       // eslint-disable-next-line no-param-reassign
       formRef.current = {
         ...form,
+        submit,
       };
     }
   }, []);

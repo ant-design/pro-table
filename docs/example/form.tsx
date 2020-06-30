@@ -94,12 +94,14 @@ export default () => {
               ref.current.setFieldsValue({
                 name: 'test-xxx',
               });
+              ref.current.submit();
             }
           }}
         >
           赋值
         </Button>,
       ]}
+      options={false}
       dateFormatter="string"
       headerTitle="表单赋值"
     />

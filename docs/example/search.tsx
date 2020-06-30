@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { Input } from 'antd';
+import React from 'react';
 import ProTable, { ProColumns } from '@ant-design/pro-table';
+import { PlusOutlined } from '@ant-design/icons';
+import { Button } from 'antd';
 
 const valueEnum = {
   0: 'close',
@@ -76,7 +77,6 @@ const columns: ProColumns<TableListItem>[] = [
 ];
 
 export default () => {
-  const [keyWord, setKeyWord] = useState<string>();
   return (
     <ProTable<TableListItem, { keyWord?: string }>
       columns={columns}
@@ -94,18 +94,24 @@ export default () => {
           success: true,
         })
       }
+      options={{
+        search: {
+          name: 'qixian',
+        },
+      }}
       rowKey="key"
       pagination={{
         showSizeChanger: true,
       }}
       size="middle"
-      params={{ keyWord }}
       search={false}
+      toolBarRender={() => [
+        <Button type="primary" icon={<PlusOutlined />}>
+          新建
+        </Button>,
+      ]}
       dateFormatter="string"
       headerTitle="简单搜索"
-      toolBarRender={() => [
-        <Input.Search placeholder="请输入" onSearch={(value) => setKeyWord(value)} />,
-      ]}
     />
   );
 };

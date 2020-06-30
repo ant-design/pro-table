@@ -3,7 +3,7 @@ export default {
   tableForm: {
     search: 'Filtra',
     reset: 'Pulisci',
-    submit: 'Submit',
+    submit: 'Invia',
     collapsed: 'Espandi',
     expand: 'Contrai',
     inputPlaceholder: 'Digita',
@@ -11,14 +11,14 @@ export default {
   },
   alert: {
     clear: 'Rimuovi',
-    selected: 'Selezionato',
-    item: 'Articolo',
+    selected: 'Selezionati',
+    item: 'elementi',
   },
   pagination: {
     total: {
       range: ' ',
       total: 'di',
-      item: 'articoli',
+      item: 'elementi',
     },
   },
   tableToolBar: {
