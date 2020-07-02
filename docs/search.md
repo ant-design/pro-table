@@ -107,7 +107,7 @@ renderFormItem: (_, { type, defaultRender, ...rest }, form) => {
       type: ProTableTypes;
       defaultRender: (newItem: ProColumns<any>) => JSX.Element | null;
     },
-    form: Omit<FormInstance, 'scrollToField' | '__INTERNAL__'>,
+    form: FormInstance,
   ) => JSX.Element | false | null;
 ```
 

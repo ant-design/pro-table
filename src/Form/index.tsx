@@ -138,7 +138,7 @@ export interface TableFormItem<T> extends Omit<FormItemProps, 'children'> {
 export const FormInputRender: React.FC<{
   item: ProColumns<any>;
   value?: any;
-  form?: Omit<FormInstance, 'scrollToField' | '__INTERNAL__'>;
+  form?: FormInstance;
   type: ProTableTypes;
   intl: IntlType;
   onChange?: (value: any) => void;
@@ -343,7 +343,7 @@ export const proFormItemRender: (props: {
   isForm: boolean;
   type: ProTableTypes;
   intl: IntlType;
-  formInstance?: Omit<FormInstance, 'scrollToField' | '__INTERNAL__'>;
+  formInstance?: FormInstance;
   colConfig:
     | {
         lg: number;
@@ -580,9 +580,7 @@ const FormSearch = <T, U = {}>({
   const intl = useIntl();
 
   const [form] = Form.useForm();
-  const formInstanceRef = useRef<
-    Omit<FormInstance, 'scrollToField' | '__INTERNAL__'> | undefined
-  >();
+  const formInstanceRef = useRef<FormInstance | undefined>();
   const searchConfig = getDefaultSearch(propsSearch, intl, type === 'form');
   const { span } = searchConfig;
 
@@ -757,7 +755,7 @@ const FormSearch = <T, U = {}>({
                   <Form.Item shouldUpdate noStyle>
                     {(formInstance) => {
                       setTimeout(() => {
-                        formInstanceRef.current = formInstance;
+                        formInstanceRef.current = formInstance as FormInstance;
                       }, 0);
                       return null;
                     }}
