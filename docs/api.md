@@ -63,6 +63,7 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 | hideInSearch | 在查询表单中不展示此项 | boolean | - |
 | hideInTable | 在 Table 中不展示此列 | boolean | - |
 | hideInForm | 在 Form 模式下 中不展示此列 | boolean | - |
+| showFilters | 开启该列的表头的筛选菜单项，配合 valueEnum 使用 | boolean | false |
 | order | 决定在 查询表单中的顺序，越大越在前面 | number | - |
 | renderFormItem | 渲染查询表单的输入组件 | `(item,props:{value,onChange}) => React.ReactNode` | - |
 | formItemProps | 查询表单的 props，会透传给表单项 | `{ [prop: string]: any }` | - |

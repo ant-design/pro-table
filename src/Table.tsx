@@ -52,25 +52,25 @@ export interface ColumnsState {
 
 export type ValueEnumObj = {
   [key: string]:
-    | {
-        text: ReactNode;
-        status: StatusType;
-      }
-    | ReactNode;
+  | {
+    text: ReactNode;
+    status: StatusType;
+  }
+  | ReactNode;
 };
 
 export type ValueEnumMap = Map<
   React.ReactText,
   | {
-      text: ReactNode;
-      status: StatusType;
-    }
+    text: ReactNode;
+    status: StatusType;
+  }
   | ReactNode
 >;
 
 export interface ProColumnType<T = unknown>
   extends Omit<ColumnType<T>, 'render' | 'children' | 'title'>,
-    Partial<Omit<FormItemProps, 'children'>> {
+  Partial<Omit<FormItemProps, 'children'>> {
   index?: number;
   title?: ReactNode | ((config: ProColumnType<T>, type: ProTableTypes) => ReactNode);
   /**
@@ -151,6 +151,11 @@ export interface ProColumnType<T = unknown>
    * 在新建表单中删除
    */
   hideInForm?: boolean;
+
+  /**
+   * 开启表头的筛选菜单项
+   */
+  showFilters?: boolean,
 
   /**
    * form 的排序
@@ -274,19 +279,19 @@ export interface ProTableProps<T, U extends { [key: string]: any }>
    * 设置或者返回false 即可关闭
    */
   tableAlertRender?:
-    | ((props: {
-        intl: IntlType;
-        selectedRowKeys: (string | number)[];
-        selectedRows: T[];
-      }) => React.ReactNode)
-    | false;
+  | ((props: {
+    intl: IntlType;
+    selectedRowKeys: (string | number)[];
+    selectedRows: T[];
+  }) => React.ReactNode)
+  | false;
   /**
    * 自定义 table 的 alert 的操作
    * 设置或者返回false 即可关闭
    */
   tableAlertOptionRender?:
-    | ((props: { intl: IntlType; onCleanSelected: () => void }) => React.ReactNode)
-    | false;
+  | ((props: { intl: IntlType; onCleanSelected: () => void }) => React.ReactNode)
+  | false;
 
   rowSelection?: TableProps<T>['rowSelection'] | false;
 
@@ -511,9 +516,9 @@ const genColumnList = <T, U = {}>(
           return String(itemValue) === String(value);
         },
         index: columnsIndex,
-        filters: parsingValueEnumToArray(item.valueEnum).filter(
+        filters: item.showFilters ? parsingValueEnumToArray(item.valueEnum).filter(
           (valueItem) => valueItem && valueItem.value !== 'all',
-        ),
+        ) : [],
         ...item,
         ellipsis: false,
         fixed: config.fixed,
@@ -535,9 +540,9 @@ const genColumnList = <T, U = {}>(
       return tempColumns;
     })
     .filter((item) => !item.hideInTable) as unknown) as ColumnsType<T>[number] &
-    {
-      index?: number;
-    }[];
+  {
+    index?: number;
+  }[];
 
 /**
  * 🏆 Use Ant Design Table like a Pro!
@@ -575,7 +580,7 @@ const ProTable = <T extends {}, U extends object>(
     defaultClassName,
     formRef,
     type = 'table',
-    onReset = () => {},
+    onReset = () => { },
     columnEmptyText = '-',
     ...rest
   } = props;
@@ -932,8 +937,8 @@ const ProTable = <T extends {}, U extends object>(
                     const { name = 'keyword' } =
                       options.search === true
                         ? {
-                            name: 'keyword',
-                          }
+                          name: 'keyword',
+                        }
                         : options.search;
                     setFormSearch({
                       [name]: keyword,
