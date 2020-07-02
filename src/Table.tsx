@@ -6,6 +6,7 @@ import classNames from 'classnames';
 import useMergeValue from 'use-merge-value';
 import { stringify } from 'use-json-comparison';
 import { ColumnsType, TablePaginationConfig, TableProps, ColumnType } from 'antd/es/table';
+import { ColumnFilterItem } from 'antd/es/table/interface';
 import { FormItemProps, FormProps, FormInstance } from 'antd/es/form';
 import { TableCurrentDataSource, SorterResult } from 'antd/lib/table/interface';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
@@ -69,7 +70,7 @@ export type ValueEnumMap = Map<
 >;
 
 export interface ProColumnType<T = unknown>
-  extends Omit<ColumnType<T>, 'render' | 'children' | 'title'>,
+  extends Omit<ColumnType<T>, 'render' | 'children' | 'title' | 'filters'>,
   Partial<Omit<FormItemProps, 'children'>> {
   index?: number;
   title?: ReactNode | ((config: ProColumnType<T>, type: ProTableTypes) => ReactNode);
@@ -153,13 +154,9 @@ export interface ProColumnType<T = unknown>
   hideInForm?: boolean;
 
   /**
-   * 开启表头的筛选菜单项
+   * 表头的筛选菜单项
    */
-<<<<<<< HEAD
-  showFilters?: boolean,
-=======
-  showFilters?: boolean;
->>>>>>> d4bde396089c5c56e4c0963b3897ec6f1ae44f99
+  filters?: boolean | ColumnFilterItem[];
 
   /**
    * form 的排序
@@ -507,7 +504,7 @@ const genColumnList = <T, U = {}>(
       };
     })
     .map((item, columnsIndex) => {
-      const { key, dataIndex } = item;
+      const { key, dataIndex, filters = [] } = item;
       const columnKey = genColumnKey(key, dataIndex, columnsIndex);
       const config = columnKey ? map[columnKey] || { fixed: item.fixed } : { fixed: item.fixed };
       const tempColumns = {
@@ -520,12 +517,12 @@ const genColumnList = <T, U = {}>(
           return String(itemValue) === String(value);
         },
         index: columnsIndex,
-        filters: item.showFilters
-          ? parsingValueEnumToArray(item.valueEnum).filter(
-              (valueItem) => valueItem && valueItem.value !== 'all',
-            )
-          : [],
         ...item,
+        filters: filters === true
+          ? parsingValueEnumToArray(item.valueEnum).filter(
+            (valueItem) => valueItem && valueItem.value !== 'all',
+          )
+          : filters,
         ellipsis: false,
         fixed: config.fixed,
         width: item.width || (item.fixed ? 200 : undefined),

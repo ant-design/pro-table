@@ -80,7 +80,7 @@ const columns: ProColumns<GithubIssueItem>[] = [
     title: (_, type) => (type === 'table' ? '状态' : '列表状态'),
     dataIndex: 'state',
     initialValue: 'all',
-    showFilters: true,
+    filters: true,
     valueEnum: {
       all: { text: '全部', status: 'Default' },
       open: {
@@ -98,7 +98,7 @@ const columns: ProColumns<GithubIssueItem>[] = [
     key: 'direction',
     hideInTable: true,
     dataIndex: 'direction',
-    showFilters: true,
+    filters: true,
     valueEnum: {
       asc: '正序',
       desc: '倒序',
