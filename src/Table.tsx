@@ -105,7 +105,7 @@ export interface ProColumnType<T = unknown>
       type: ProTableTypes;
       defaultRender: (newItem: ProColumns<any>) => JSX.Element | null;
     },
-    form: Omit<FormInstance, 'scrollToField' | '__INTERNAL__'>,
+    form: FormInstance,
   ) => JSX.Element | false | null;
 
   /**
@@ -151,6 +151,11 @@ export interface ProColumnType<T = unknown>
    * 在新建表单中删除
    */
   hideInForm?: boolean;
+
+  /**
+   * 开启表头的筛选菜单项
+   */
+  showFilters?: boolean;
 
   /**
    * form 的排序
@@ -511,9 +516,11 @@ const genColumnList = <T, U = {}>(
           return String(itemValue) === String(value);
         },
         index: columnsIndex,
-        filters: parsingValueEnumToArray(item.valueEnum).filter(
-          (valueItem) => valueItem && valueItem.value !== 'all',
-        ),
+        filters: item.showFilters
+          ? parsingValueEnumToArray(item.valueEnum).filter(
+              (valueItem) => valueItem && valueItem.value !== 'all',
+            )
+          : [],
         ...item,
         ellipsis: false,
         fixed: config.fixed,
