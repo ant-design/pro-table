@@ -14,7 +14,7 @@ import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
 import { noteOnce } from 'rc-util/lib/warning';
 import { IntlProvider, IntlConsumer, IntlType, useIntl } from './component/intlContext';
 import useFetchData, { UseFetchDataAction, RequestData } from './useFetchData';
-import Container from './container';
+import Container, { useCounter } from './container';
 import Toolbar, { OptionConfig, ToolBarProps } from './component/toolBar';
 import Alert from './component/alert';
 import FormSearch, { SearchConfig, TableFormItem } from './form';
@@ -377,12 +377,13 @@ const mergePagination = <T extends any[], U>(
 
 export type ColumnEmptyText = string | false;
 
-interface ColumRenderInterface<T> {
+interface ColumnRenderInterface<T> {
   item: ProColumns<T>;
   text: any;
   row: T;
   index: number;
   columnEmptyText?: ColumnEmptyText;
+  counter: ReturnType<typeof useCounter>;
 }
 
 /**
@@ -425,14 +426,14 @@ const genCopyable = (dom: React.ReactNode, item: ProColumns<any>) => {
  * 这个组件负责单元格的具体渲染
  * @param param0
  */
-const columRender = <T, U = any>({
+const columnRender = <T, U = any>({
   item,
   text,
   row,
   index,
   columnEmptyText,
-}: ColumRenderInterface<T>): any => {
-  const counter = Container.useContainer();
+  counter,
+}: ColumnRenderInterface<T>): any => {
   const { action } = counter;
   const { renderText = (val: any) => val, valueEnum = {} } = item;
   if (!action.current) {
@@ -492,6 +493,7 @@ const genColumnList = <T, U = {}>(
   map: {
     [key: string]: ColumnsState;
   },
+  counter: ReturnType<typeof useCounter>,
   columnEmptyText?: ColumnEmptyText,
 ): (ColumnsType<T>[number] & { index?: number })[] =>
   (columns
@@ -528,9 +530,11 @@ const genColumnList = <T, U = {}>(
         fixed: config.fixed,
         width: item.width || (item.fixed ? 200 : undefined),
         // @ts-ignore
-        children: item.children ? genColumnList(item.children, map, columnEmptyText) : undefined,
+        children: item.children
+          ? genColumnList(item.children, map, counter, columnEmptyText)
+          : undefined,
         render: (text: any, row: T, index: number) =>
-          columRender<T>({ item, text, row, index, columnEmptyText }),
+          columnRender<T>({ item, text, row, index, columnEmptyText, counter }),
       };
       if (!tempColumns.children || !tempColumns.children.length) {
         delete tempColumns.children;
@@ -764,7 +768,12 @@ const ProTable = <T extends {}, U extends object>(
    * Table Column 变化的时候更新一下，这个参数将会用于渲染
    */
   useDeepCompareEffect(() => {
-    const tableColumn = genColumnList<T>(propsColumns, counter.columnsMap, columnEmptyText);
+    const tableColumn = genColumnList<T>(
+      propsColumns,
+      counter.columnsMap,
+      counter,
+      columnEmptyText,
+    );
     if (tableColumn && tableColumn.length > 0) {
       counter.setColumns(tableColumn);
       // 重新生成key的字符串用于排序
@@ -783,7 +792,7 @@ const ProTable = <T extends {}, U extends object>(
    */
   useDeepCompareEffect(() => {
     const keys = counter.sortKeyColumns.join(',');
-    let tableColumn = genColumnList<T>(propsColumns, counter.columnsMap, columnEmptyText);
+    let tableColumn = genColumnList<T>(propsColumns, counter.columnsMap, counter, columnEmptyText);
     if (keys.length > 0) {
       // 用于可视化的排序
       tableColumn = tableColumn.sort((a, b) => {
