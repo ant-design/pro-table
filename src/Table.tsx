@@ -529,9 +529,8 @@ const genColumnList = <T, U = {}>(
         ellipsis: false,
         fixed: config.fixed,
         width: item.width || (item.fixed ? 200 : undefined),
-        // @ts-ignore
         children: item.children
-          ? genColumnList(item.children, map, counter, columnEmptyText)
+          ? genColumnList(item.children as ProColumns<T>[], map, counter, columnEmptyText)
           : undefined,
         render: (text: any, row: T, index: number) =>
           columnRender<T>({ item, text, row, index, columnEmptyText, counter }),
