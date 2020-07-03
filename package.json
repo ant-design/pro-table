@@ -87,8 +87,9 @@
     "umi": "^3.1.2",
     "umi-plugin-githubpages": "^2.0.1",
     "umi-request": "^1.2.15",
+    "webpack": "^4.43.0",
     "webpack-bundle-analyzer": "^3.7.0",
-    "webpack": "^4.43.0"
+    "webpack-cli": "^3.3.12"
   },
   "peerDependencies": {
     "react": "16.x"
