@@ -55,6 +55,6 @@ function useCounter(props: UseCounterProps = {}) {
 
 const Counter = createContainer<ReturnType<typeof useCounter>, UseCounterProps>(useCounter);
 
-export default Counter;
-
 export { useCounter };
+
+export default Counter;
