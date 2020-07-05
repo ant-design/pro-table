@@ -20,4 +20,5 @@ export default {
     },
   ],
   hash: true,
+  dynamicImport: {},
 };
