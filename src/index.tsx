@@ -18,7 +18,7 @@ import {
   msMYIntl,
   zhTWIntl,
 } from './component/intlContext';
-import Search from './Form';
+import Search from './form';
 import defaultRenderText, { ProColumnsValueType } from './defaultRender';
 
 export type {

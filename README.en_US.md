@@ -51,7 +51,7 @@ pro-table is encapsulated in an antd table, supports some presets, and encapsula
 | valueEnum | The enumeration of values will automatically convert the value as a key to get the content to be displayed | {[key: string]: React.ReactNode} | - |
 | valueType | Type of value | `'money' \| 'option' \| 'date' \| 'dateTime' \| 'time' \| 'text'\| 'index' \| 'indexBorder'` | 'text' |
 | hideInSearch | Do not show this in the query form | boolean | - |
-| showFilters | Open the Filter menu config of this column and use it with valueEnum | boolean | false |
+| filters | Filter menu config，when the value is true, it is generated automatically using valueEnum | `boolean \| object[]` | false |
 | hideInTable | Do not show this column in Table | boolean | - |
 | formItemProps | Props passed into query form item | `{ [prop: string]: any }` | - |
 

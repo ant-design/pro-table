@@ -101,7 +101,7 @@ const columns: ProColumns<TableListItem>[] = [
     },
     width: 100,
     ellipsis: true,
-    showFilters: true,
+    filters: true,
     valueEnum: {
       all: { text: '全部', status: 'Default' },
       close: { text: '关闭', status: 'Default' },
