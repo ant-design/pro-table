@@ -497,18 +497,11 @@ const genColumnList = <T, U = {}>(
   columnEmptyText?: ColumnEmptyText,
 ): (ColumnsType<T>[number] & { index?: number })[] =>
   (columns
-    .map((item) => {
-      const { title } = item;
-      return {
-        ...item,
-        title: title && typeof title === 'function' ? title(item, 'table') : title,
-        valueEnum: ObjToMap(item.valueEnum),
-      };
-    })
     .map((item, columnsIndex) => {
-      const { key, dataIndex, filters = [] } = item;
+      const { key, dataIndex, title, filters = [] } = item;
       const columnKey = genColumnKey(key, dataIndex, columnsIndex);
       const config = columnKey ? map[columnKey] || { fixed: item.fixed } : { fixed: item.fixed };
+      const valueEnum = ObjToMap(item.valueEnum);
       const tempColumns = {
         onFilter: (value: string, record: T) => {
           let recordElement = get(record, item.dataIndex || '');
@@ -520,9 +513,11 @@ const genColumnList = <T, U = {}>(
         },
         index: columnsIndex,
         ...item,
+        title: title && typeof title === 'function' ? title(item, 'table') : title,
+        valueEnum,
         filters:
           filters === true
-            ? parsingValueEnumToArray(item.valueEnum).filter(
+            ? parsingValueEnumToArray(valueEnum).filter(
                 (valueItem) => valueItem && valueItem.value !== 'all',
               )
             : filters,
