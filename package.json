@@ -22,6 +22,7 @@
     "prettier": "prettier -c --write \"**/*\"",
     "site": "dumi build && gh-pages -d ./dist",
     "start": "dumi dev",
+    "test:coverage": "umi-test --coverage",
     "test": "npm run lint && father test"
   },
   "husky": {
