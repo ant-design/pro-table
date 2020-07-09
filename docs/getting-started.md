@@ -196,7 +196,7 @@ ref.current.clearSelected();
 
 > value 和 onChange 有特殊的含义,用于表单绑定，所以不能覆盖。
 
-有些时候 title 的表单中和 table 中也是不不同的，我们支持配置 title 为 `function` 来支持根据情况显示不同 title。
+有些时候表单中和 table 中的 title 也是不同的，我们支持配置 title 为 `function` 来支持根据情况显示不同 title。
 
 ```tsx | pure
  title: (_, type) => (type === 'table' ? '状态' : '列表状态'),
