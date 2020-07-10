@@ -170,7 +170,7 @@ const ToolBar = <T, U = {}>({
   };
   return (
     <div className={className}>
-      <div className={`${className}-title`}>{headerTitle}</div>
+      {headerTitle && <div className={`${className}-title`}>{headerTitle}</div>}
       <div className={`${className}-option`}>
         <Space>
           {options && options.search && (

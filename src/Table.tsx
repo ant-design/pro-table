@@ -571,7 +571,7 @@ const ProTable = <T extends {}, U extends object>(
     pagination: propsPagination,
     actionRef,
     columns: propsColumns = [],
-    toolBarRender = () => [],
+    toolBarRender,
     onLoad,
     onRequestError,
     style,
