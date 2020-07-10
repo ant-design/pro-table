@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { PlusOutlined } from '@ant-design/icons';
-import { Button } from 'antd';
 import ProTable, { ProColumns } from '@ant-design/pro-table';
 
 const valueEnum = {
