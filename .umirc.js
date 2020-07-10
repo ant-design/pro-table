@@ -20,5 +20,7 @@ export default {
     },
   ],
   hash: true,
-  dynamicImport: {},
+  dynamicImport: {
+    loading: '@ant-design/pro-skeleton',
+  },
 };
