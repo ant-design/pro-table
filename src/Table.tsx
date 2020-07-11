@@ -19,6 +19,8 @@ import Toolbar, { OptionConfig, ToolBarProps } from './component/toolBar';
 import Alert from './component/alert';
 import FormSearch, { SearchConfig, TableFormItem } from './form';
 import { StatusType } from './component/status';
+import Skeleton from '@ant-design/pro-skeleton';
+
 import get, {
   parsingText,
   parsingValueEnumToArray,
@@ -891,6 +893,10 @@ const ProTable = <T extends {}, U extends object>(
   }
 
   const className = classNames(defaultClassName, propsClassName);
+
+  if (action.loading || props.loading) {
+    return <Skeleton type="list" />;
+  }
   return (
     <ConfigProvider
       getPopupContainer={() => ((rootRef.current || document.body) as any) as HTMLElement}
@@ -991,7 +997,6 @@ const ProTable = <T extends {}, U extends object>(
                 }
                 return true;
               })}
-              loading={action.loading || props.loading}
               dataSource={dataSource}
               pagination={pagination}
               onChange={(

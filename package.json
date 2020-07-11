@@ -50,10 +50,10 @@
     "unstated-next": "^1.1.0",
     "use-json-comparison": "^1.0.5",
     "use-media-antd-query": "1.0.2",
+    "@ant-design/pro-skeleton": "^1.0.0-beta.2",
     "use-merge-value": "^1.0.1"
   },
   "devDependencies": {
-    "@ant-design/pro-skeleton": "^1.0.0-beta.2",
     "@babel/core": "^7.8.3",
     "@babel/plugin-proposal-object-rest-spread": "^7.8.3",
     "@babel/preset-env": "^7.8.3",
