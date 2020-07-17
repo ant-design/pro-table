@@ -42,12 +42,8 @@ const useFetchData = <T extends RequestData<any>>(
   },
 ): UseFetchDataAction<T> => {
   let isMount = true;
-  const {
-    defaultPageSize = 20,
-    defaultCurrent = 1,
-    onLoad = () => null,
-    onRequestError = () => null,
-  } = options || {};
+  const { defaultPageSize = 20, defaultCurrent = 1, onLoad = () => null, onRequestError } =
+    options || {};
 
   const [list, setList] = useState<T['data']>(defaultData as any);
   const [loading, setLoading] = useState<boolean | undefined>(undefined);
@@ -95,7 +91,12 @@ const useFetchData = <T extends RequestData<any>>(
         onLoad(data);
       }
     } catch (e) {
-      onRequestError(e);
+      // 如果没有传递这个方法的话，需要把错误抛出去，以免吞掉错误
+      if (onRequestError === undefined) {
+        throw new Error(e);
+      } else {
+        onRequestError(e);
+      }
     } finally {
       setLoading(false);
     }
