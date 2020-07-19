@@ -190,6 +190,9 @@ export default () => {
       </Drawer>
       <ProTable<GithubIssueItem>
         columns={columns}
+        pagination={{
+          showQuickJumper: true,
+        }}
         actionRef={actionRef}
         request={async (params = {}) =>
           request<{

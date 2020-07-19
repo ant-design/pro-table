@@ -143,7 +143,7 @@ export const FormInputRender: React.FC<{
   intl: IntlType;
   onChange?: (value: any) => void;
   onSelect?: (value: any) => void;
-}> = (props) => {
+}> = React.forwardRef((props, ref: any) => {
   const { item, intl, form, type, ...rest } = props;
   const { valueType: itemValueType } = item;
   // if function， run it
@@ -185,6 +185,7 @@ export const FormInputRender: React.FC<{
     if (valueEnum) {
       return (
         <Select
+          ref={ref}
           allowClear
           placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择')}
           {...rest}
@@ -200,6 +201,7 @@ export const FormInputRender: React.FC<{
     }
     return (
       <Input
+        ref={ref}
         placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入')}
         {...rest}
         {...item.formItemProps}
@@ -209,6 +211,7 @@ export const FormInputRender: React.FC<{
   if (valueType === 'date') {
     return (
       <DatePicker
+        ref={ref}
         placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择')}
         style={{
           width: '100%',
@@ -222,6 +225,7 @@ export const FormInputRender: React.FC<{
   if (valueType === 'dateTime') {
     return (
       <DatePicker
+        ref={ref}
         showTime
         placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择')}
         style={{
@@ -236,6 +240,7 @@ export const FormInputRender: React.FC<{
   if (valueType === 'dateRange') {
     return (
       <DatePicker.RangePicker
+        ref={ref}
         placeholder={[
           intl.getMessage('tableForm.selectPlaceholder', '请选择'),
           intl.getMessage('tableForm.selectPlaceholder', '请选择'),
@@ -251,6 +256,7 @@ export const FormInputRender: React.FC<{
   if (valueType === 'dateTimeRange') {
     return (
       <DatePicker.RangePicker
+        ref={ref}
         showTime
         placeholder={[
           intl.getMessage('tableForm.selectPlaceholder', '请选择'),
@@ -268,6 +274,7 @@ export const FormInputRender: React.FC<{
   if (valueType === 'time') {
     return (
       <TimePicker
+        ref={ref}
         placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择')}
         style={{
           width: '100%',
@@ -280,6 +287,7 @@ export const FormInputRender: React.FC<{
   if (valueType === 'digit') {
     return (
       <InputNumber
+        ref={ref}
         placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入')}
         style={{
           width: '100%',
@@ -292,6 +300,7 @@ export const FormInputRender: React.FC<{
   if (valueType === 'money') {
     return (
       <InputNumber
+        ref={ref}
         min={0}
         precision={2}
         formatter={(value) => {
@@ -323,6 +332,7 @@ export const FormInputRender: React.FC<{
   if (valueType === 'textarea' && type === 'form') {
     return (
       <Input.TextArea
+        ref={ref}
         placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入')}
         {...rest}
         {...item.formItemProps}
@@ -331,12 +341,13 @@ export const FormInputRender: React.FC<{
   }
   return (
     <Input
+      ref={ref}
       placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入')}
       {...rest}
       {...item.formItemProps}
     />
   );
-};
+});
 
 export const proFormItemRender: (props: {
   item: ProColumns<any>;
