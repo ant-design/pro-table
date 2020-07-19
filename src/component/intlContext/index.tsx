@@ -8,6 +8,7 @@ import esES from '../../locale/es_ES';
 import ruRU from '../../locale/ru_RU';
 import msMY from '../../locale/ms_MY';
 import zhTW from '../../locale/zh_TW';
+import frFR from '../../locale/fr_FR';
 import { getLang } from '../util';
 
 export interface IntlType {
@@ -51,6 +52,7 @@ const esESIntl = createIntl('es_ES', esES);
 const ruRUIntl = createIntl('ru_RU', ruRU);
 const msMYIntl = createIntl('ms_MY', msMY);
 const zhTWIntl = createIntl('zh_TW', zhTW);
+const frFRIntl = createIntl('fr_FR', frFR);
 
 const intlMap = {
   'zh-CN': zhCNIntl,
@@ -62,6 +64,7 @@ const intlMap = {
   'ru-RU': ruRUIntl,
   'ms-MY': msMYIntl,
   'zh-TW': zhTWIntl,
+  'fr-FR': frFRIntl,
 };
 
 export { enUSIntl, zhCNIntl, viVNIntl, itITIntl, jaJPIntl, esESIntl, ruRUIntl, msMYIntl, zhTWIntl };
