@@ -27,7 +27,7 @@ nav:
 
 <code src="./example/dataSource.tsx" />
 
-## 受控模式
+## 受控的列显示隐藏
 
 可以默认隐藏某些栏，但是在操作栏中可以选择
 
@@ -40,3 +40,7 @@ nav:
 ## 嵌套表格
 
 <code src="./example/nested-table.tsx" />
+
+## 自定义表格的主体
+
+<code src="./example/renderTable.tsx" />

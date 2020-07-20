@@ -188,6 +188,24 @@ export interface ProTableProps<T, U extends { [key: string]: any }>
   onSizeChange?: (size: DensitySize) => void;
 
   /**
+   * 渲染 table
+   */
+  tableRender?: (
+    props: ProTableProps<T, U>,
+    defaultDom: JSX.Element,
+    /**
+     * 各个区域的 dom
+     */
+    domList: {
+      toolbar: JSX.Element | undefined;
+      alert: JSX.Element | undefined;
+      table: JSX.Element | undefined;
+    },
+  ) => React.ReactNode;
+
+  tableExtraRender?: (props: ProTableProps<T, U>, dataSource: T[]) => React.ReactNode;
+
+  /**
    * 一个获得 dataSource 的方法
    */
   request?: (
@@ -619,7 +637,6 @@ const ProTable = <T extends {}, U extends object>(
           current,
           pageSize,
           ...formSearch,
-
           ...params,
         } as U,
         proSort,
@@ -880,6 +897,122 @@ const ProTable = <T extends {}, U extends object>(
   }
 
   const className = classNames(defaultClassName, propsClassName);
+  const toolbarDom = toolBarRender !== false &&
+    (options !== false || headerTitle || toolBarRender) && (
+      // if options= false & headerTitle=== false, hide Toolbar
+      <Toolbar<T>
+        options={options}
+        headerTitle={headerTitle}
+        action={action}
+        onSearch={(keyword) => {
+          if (options && options.search) {
+            const { name = 'keyword' } =
+              options.search === true
+                ? {
+                    name: 'keyword',
+                  }
+                : options.search;
+            setFormSearch({
+              [name]: keyword,
+              ...formSearch,
+            });
+          }
+        }}
+        selectedRows={selectedRows}
+        selectedRowKeys={selectedRowKeys}
+        toolBarRender={toolBarRender}
+      />
+    );
+  const alertDom = propsRowSelection !== false && (
+    <Alert<T>
+      selectedRowKeys={selectedRowKeys}
+      selectedRows={selectedRows}
+      onCleanSelected={onCleanSelected}
+      alertOptionRender={rest.tableAlertOptionRender}
+      alertInfoRender={tableAlertRender}
+    />
+  );
+
+  const tableDom = (
+    <Table<T>
+      {...rest}
+      size={counter.tableSize}
+      rowSelection={propsRowSelection === false ? undefined : rowSelection}
+      className={tableClassName}
+      style={tableStyle}
+      columns={counter.columns.filter((item) => {
+        // 删掉不应该显示的
+        const { key, dataIndex } = item;
+        const columnKey = genColumnKey(key, dataIndex);
+        if (!columnKey) {
+          return true;
+        }
+        const config = counter.columnsMap[columnKey];
+        if (config && config.show === false) {
+          return false;
+        }
+        return true;
+      })}
+      loading={action.loading || props.loading}
+      dataSource={dataSource}
+      pagination={pagination}
+      onChange={(
+        changePagination: TablePaginationConfig,
+        filters: {
+          [string: string]: React.ReactText[] | null;
+        },
+        sorter: SorterResult<T> | SorterResult<T>[],
+        extra: TableCurrentDataSource<T>,
+      ) => {
+        if (rest.onChange) {
+          rest.onChange(changePagination, filters, sorter, extra);
+        }
+
+        // 制造筛选的数据
+        setProFilter(removeObjectNull(filters));
+
+        // 制造一个排序的数据
+        if (Array.isArray(sorter)) {
+          const data = sorter.reduce<{
+            [key: string]: any;
+          }>((pre, value) => {
+            if (!value.order) {
+              return pre;
+            }
+            return {
+              ...pre,
+              [`${value.field}`]: value.order,
+            };
+          }, {});
+          setProSort(data);
+        } else if (sorter.order) {
+          setProSort({ [`${sorter.field}`]: sorter.order });
+        }
+      }}
+    />
+  );
+  /**
+   * table 区域的 dom，为了方便 render
+   */
+  const tableAreaDom = (
+    <>
+      {toolbarDom}
+      {alertDom}
+      {tableDom}
+    </>
+  );
+
+  const renderTable = () => {
+    if (props.tableRender) {
+      return props.tableRender(props, tableAreaDom, {
+        toolbar: toolbarDom || undefined,
+        alert: alertDom || undefined,
+        table: tableDom || undefined,
+      });
+    }
+    return tableAreaDom;
+  };
+
   return (
     <ConfigProvider
       getPopupContainer={() => ((rootRef.current || document.body) as any) as HTMLElement}
@@ -916,7 +1049,10 @@ const ProTable = <T extends {}, U extends object>(
             search={search}
           />
         )}
-
+        {/* 渲染一个额外的区域，用于一些自定义 */}
+        {type !== 'form' && props.tableExtraRender && (
+          <div className={`${className}-extra`}>{props.tableExtraRender(props, dataSource)}</div>
+        )}
         {type !== 'form' && (
           <Card
             bordered={false}
@@ -927,96 +1063,7 @@ const ProTable = <T extends {}, U extends object>(
               padding: 0,
             }}
           >
-            {toolBarRender !== false && (options !== false || headerTitle || toolBarRender) && (
-              // if options= false & headerTitle=== false, hide Toolbar
-              <Toolbar<T>
-                options={options}
-                headerTitle={headerTitle}
-                action={action}
-                onSearch={(keyword) => {
-                  if (options && options.search) {
-                    const { name = 'keyword' } =
-                      options.search === true
-                        ? {
-                            name: 'keyword',
-                          }
-                        : options.search;
-                    setFormSearch({
-                      [name]: keyword,
-                      ...formSearch,
-                    });
-                  }
-                }}
-                selectedRows={selectedRows}
-                selectedRowKeys={selectedRowKeys}
-                toolBarRender={toolBarRender}
-              />
-            )}
-            {propsRowSelection !== false && (
-              <Alert<T>
-                selectedRowKeys={selectedRowKeys}
-                selectedRows={selectedRows}
-                onCleanSelected={onCleanSelected}
-                alertOptionRender={rest.tableAlertOptionRender}
-                alertInfoRender={tableAlertRender}
-              />
-            )}
-            <Table<T>
-              {...rest}
-              size={counter.tableSize}
-              rowSelection={propsRowSelection === false ? undefined : rowSelection}
-              className={tableClassName}
-              style={tableStyle}
-              columns={counter.columns.filter((item) => {
-                // 删掉不应该显示的
-                const { key, dataIndex } = item;
-                const columnKey = genColumnKey(key, dataIndex);
-                if (!columnKey) {
-                  return true;
-                }
-                const config = counter.columnsMap[columnKey];
-                if (config && config.show === false) {
-                  return false;
-                }
-                return true;
-              })}
-              loading={action.loading || props.loading}
-              dataSource={dataSource}
-              pagination={pagination}
-              onChange={(
-                changePagination: TablePaginationConfig,
-                filters: {
-                  [string: string]: React.ReactText[] | null;
-                },
-                sorter: SorterResult<T> | SorterResult<T>[],
-                extra: TableCurrentDataSource<T>,
-              ) => {
-                if (rest.onChange) {
-                  rest.onChange(changePagination, filters, sorter, extra);
-                }
-
-                // 制造筛选的数据
-                setProFilter(removeObjectNull(filters));
-
-                // 制造一个排序的数据
-                if (Array.isArray(sorter)) {
-                  const data = sorter.reduce<{
-                    [key: string]: any;
-                  }>((pre, value) => {
-                    if (!value.order) {
-                      return pre;
-                    }
-                    return {
-                      ...pre,
-                      [`${value.field}`]: value.order,
-                    };
-                  }, {});
-                  setProSort(data);
-                } else if (sorter.order) {
-                  setProSort({ [`${sorter.field}`]: sorter.order });
-                }
-              }}
-            />
+            {renderTable()}
           </Card>
         )}
       </div>
