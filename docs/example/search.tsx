@@ -87,17 +87,14 @@ export default () => {
             if (!params.keyWord) {
               return true;
             }
-            if (item.name.includes(params.keyWord) || item.status.includes(params.keyWord)) {
-              return true;
-            }
-            return false;
+            return item.name.includes(params.keyWord) || item.status.includes(params.keyWord);
           }),
           success: true,
         })
       }
       options={{
         search: {
-          name: 'qixian',
+          name: 'keyWord',
         },
       }}
       rowKey="key"
