@@ -913,8 +913,8 @@ const ProTable = <T extends {}, U extends object>(
                   }
                 : options.search;
             setFormSearch({
-              [name]: keyword,
               ...formSearch,
+              [name]: keyword,
             });
           }
         }}
