@@ -1,3 +1,8 @@
+# 此仓库已废弃
+
+**重要：** 此仓库后续不再维护，也不再接受更多的特性更新。`ant-design/pro-layout` 将会迁移至 `ant-design/pro-components` 仓库进行后续的维护，访问 https://procomponent.ant.design/layout 了解更多。此变更不影响继续使用 `@ant-design/pro-layout` 这个 npm 包名安装使用此组件。
+
+
 [English](./README.en_US.md)
 
 <h1 align="center">@ant-design/pro-table</h1>
