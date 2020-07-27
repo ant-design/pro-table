@@ -1,3 +1,7 @@
+# Depracated
+
+**important:** This repository is no longer maintained and will not receive any future updates. `ant-design/pro-table` will migrate to `ant-design/pro-components` repository，visit https://procomponent.ant.design/table to know more. This will not affect your continued use of the `@ant-design/pro-table` package.
+
 [中文](./README.md)
 
 <h1 align="center">@ant-design/pro-table</h1>
