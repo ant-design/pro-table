@@ -38,6 +38,10 @@ pro-table is encapsulated in an antd table, supports some presets, and encapsula
 | columnsStateMap | columns status | `{[key: string]: { show:boolean, fixed: "right"|"left"} }` | - |
 | onColumnsStateChange | columns status changed | `(props: {[key: string]: { show:boolean, fixed: "right"|"left"} }) => void` | - |
 | form | search From config type="form" and search form's Form config ,the config data like antd Form | `Omit<FormProps, 'form'>` | - |
+| onSubmit | search From  submit callback | `(params: U) => void` | - |
+| onReset | search From  reset callback | `() => void` | - |
+| columnEmptyText | placeholder for the empty column | `"string" \| false` | false |
+| manualRequest | trigger initial request manually, you can't set it true if you hide the search Form | `boolean` | false |
 
 ### Columns
 
