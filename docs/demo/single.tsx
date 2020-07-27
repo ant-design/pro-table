@@ -206,6 +206,7 @@ export default () => {
             新建
           </Button>,
         ]}
+        manualRequest={true}
       />
     </div>
   );
