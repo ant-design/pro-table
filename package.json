@@ -71,7 +71,7 @@
     "@umijs/fabric": "^2.0.0",
     "babel-loader": "^8.1.0",
     "babel-plugin-import": "^1.12.2",
-    "css-loader": "^3.5.3",
+    "css-loader": "^4.0.0",
     "dumi": "^1.0.20",
     "enzyme": "^3.10.0",
     "enzyme-to-json": "^3.4.3",
