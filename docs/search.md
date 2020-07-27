@@ -56,7 +56,7 @@ Form 的列是根据 `valueType` 来生成不同的类型。
 | --- | --- | --- | --- |
 | searchText | 查询按钮的文本 | string | 查询 |
 | resetText | 重置按钮的文本 | string | 重置 |
-| submitText | 查询按钮的文本 | string | 重置 |
+| submitText | 提交按钮的文本 | string | 提交 |
 | collapseRender | 收起按钮的 render | `(collapsed: boolean,showCollapseButton?: boolean,) => React.ReactNode` | - |
 | collapsed | 是否收起 | boolean | - |
 | onCollapse | 收起按钮的事件 | `(collapsed: boolean) => void;` | - |
@@ -70,6 +70,7 @@ Form 的列是根据 `valueType` 来生成不同的类型。
 | valueType | 值的类型 | `'money' \| 'option' \| 'date' \| 'dateTime' \| 'time' \| 'text'\| 'index' \| 'indexBorder'` | 'text' |
 | hideInSearch | 在查询表单中不展示此项 | boolean | - |
 | hideInTable | 在 Table 中不展示此列 | boolean | - |
+| showFilters | 开启该列的表头的筛选菜单项，配合 valueEnum 使用 | boolean | false |
 | formItemProps | 查询表单的 props，会透传给表单项 | `{ [prop: string]: any }` | - |
 | renderFormItem | 渲染查询表单的输入组件 | `(item,props:{value,onChange}) => React.ReactNode` | - |
 
@@ -106,7 +107,7 @@ renderFormItem: (_, { type, defaultRender, ...rest }, form) => {
       type: ProTableTypes;
       defaultRender: (newItem: ProColumns<any>) => JSX.Element | null;
     },
-    form: Omit<FormInstance, 'scrollToField' | '__INTERNAL__'>,
+    form: FormInstance,
   ) => JSX.Element | false | null;
 ```
 

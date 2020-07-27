@@ -1,3 +1,7 @@
+# Deperecated Repository
+
+**important:** This repository is no longer maintained and will not receive any future updates. `ant-design/pro-table` will migrate to `ant-design/pro-components` repository，visit https://procomponent.ant.design/table to know more. This will not affect your continued use of the `@ant-design/pro-table` package.
+
 [中文](./README.md)
 
 <h1 align="center">@ant-design/pro-table</h1>
@@ -55,6 +59,7 @@ pro-table is encapsulated in an antd table, supports some presets, and encapsula
 | valueEnum | The enumeration of values will automatically convert the value as a key to get the content to be displayed | {[key: string]: React.ReactNode} | - |
 | valueType | Type of value | `'money' \| 'option' \| 'date' \| 'dateTime' \| 'time' \| 'text'\| 'index' \| 'indexBorder'` | 'text' |
 | hideInSearch | Do not show this in the query form | boolean | - |
+| filters | Filter menu config，when the value is true, it is generated automatically using valueEnum | `boolean \| object[]` | false |
 | hideInTable | Do not show this column in Table | boolean | - |
 | formItemProps | Props passed into query form item | `{ [prop: string]: any }` | - |
 

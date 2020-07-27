@@ -86,6 +86,7 @@ const columns: ProColumns<GithubIssueItem>[] = [
     title: '状态',
     dataIndex: 'state',
     initialValue: 'all',
+    filters: true,
     valueEnum: {
       all: { text: '全部', status: 'Default' },
       open: {
@@ -189,6 +190,9 @@ export default () => {
       </Drawer>
       <ProTable<GithubIssueItem>
         columns={columns}
+        pagination={{
+          showQuickJumper: true,
+        }}
         actionRef={actionRef}
         request={async (params = {}) =>
           request<{

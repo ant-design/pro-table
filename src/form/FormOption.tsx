@@ -50,7 +50,7 @@ const FormOption: React.FC<FormOptionProps> = (props) => {
         }}
       >
         {resetText}
-      </Button>{' '}
+      </Button>
       <Button type="primary" htmlType="submit" onClick={() => submit()}>
         {isForm ? submitText : searchText}
       </Button>

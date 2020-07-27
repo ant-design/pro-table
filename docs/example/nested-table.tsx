@@ -1,7 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { PlusOutlined } from '@ant-design/icons';
-import { Button } from 'antd';
-import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
+import React, { useState, useEffect } from 'react';
+import ProTable, { ProColumns } from '@ant-design/pro-table';
 
 const valueEnum = {
   0: 'close',
@@ -21,7 +19,7 @@ export interface TableListItem {
 }
 const tableListDataSource: TableListItem[] = [];
 
-for (let i = 0; i < 20; i += 1) {
+for (let i = 0; i < 1; i += 1) {
   tableListDataSource.push({
     key: i,
     name: `TradeCode ${i}`,
@@ -32,13 +30,6 @@ for (let i = 0; i < 20; i += 1) {
     progress: Math.ceil(Math.random() * 100) + 1,
   });
 }
-
-const timeAwait = (waitTime: number) =>
-  new Promise((res) =>
-    window.setTimeout(() => {
-      res();
-    }, waitTime),
-  );
 
 const columns: ProColumns<TableListItem>[] = [
   {
@@ -61,7 +52,6 @@ const columns: ProColumns<TableListItem>[] = [
       error: { text: '异常', status: 'Error' },
     },
   },
-
   {
     title: '进度',
     key: 'progress',
@@ -81,25 +71,47 @@ const columns: ProColumns<TableListItem>[] = [
   },
 ];
 
-export default () => {
-  const actionRef = useRef<ActionType | undefined>(undefined);
-  useEffect(() => {
-    let id = 0;
-    const loop = () => {
-      id = window.setTimeout(() => {
-        const { current } = actionRef;
-        if (current) {
-          current.reload();
-        }
-        loop();
-      }, 1000);
-    };
-    loop();
-    return () => {
-      window.clearTimeout(id);
-    };
-  }, []);
+const expandedRowRender = () => {
+  const data = [];
+  for (let i = 0; i < 3; i += 1) {
+    data.push({
+      key: i,
+      date: '2014-12-24 23:12:00',
+      name: 'This is production name',
+      upgradeNum: 'Upgraded: 56',
+    });
+  }
+  return (
+    <ProTable
+      columns={[
+        { title: 'Date', dataIndex: 'date', key: 'date' },
+        { title: 'Name', dataIndex: 'name', key: 'name' },
+        {
+          title: 'Status',
+          key: 'state',
+        },
+        { title: 'Upgrade Status', dataIndex: 'upgradeNum', key: 'upgradeNum' },
+        {
+          title: 'Action',
+          dataIndex: 'operation',
+          key: 'operation',
+          render: () => [<a>Pause</a>, <a>Stop</a>],
+        },
+      ]}
+      headerTitle={false}
+      search={false}
+      options={false}
+      dataSource={data}
+      pagination={false}
+    />
+  );
+};
 
+export default () => {
+  const [dataSource, setDataSource] = useState<TableListItem[]>([]);
+  useEffect(() => {
+    setDataSource(tableListDataSource);
+  }, []);
   return (
     <ProTable<TableListItem>
       columns={columns}
@@ -107,23 +119,10 @@ export default () => {
       pagination={{
         showSizeChanger: true,
       }}
-      actionRef={actionRef}
-      request={async () => {
-        await timeAwait(500);
-        return {
-          data: tableListDataSource,
-          success: true,
-          total: tableListDataSource.length,
-        };
-      }}
+      dataSource={dataSource}
+      expandable={{ expandedRowRender }}
       dateFormatter="string"
-      headerTitle="轮询"
-      toolBarRender={() => [
-        <Button key="3" type="primary">
-          <PlusOutlined />
-          新建
-        </Button>,
-      ]}
+      headerTitle="嵌套表格"
     />
   );
 };

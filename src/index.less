@@ -10,6 +10,10 @@
     background: @component-background;
   }
 
+  &-extra {
+    margin-bottom: 16px;
+  }
+
   .@{ant-prefix}-pagination {
     padding: 0 24px;
   }
@@ -32,5 +36,16 @@
     > a {
       font-size: 14px;
     }
+  }
+
+  .@{ant-prefix}-table
+    .@{ant-prefix}-table-tbody
+    .@{ant-prefix}-table-wrapper:only-child
+    .@{ant-prefix}-table {
+    margin: 0;
+  }
+
+  .@{ant-prefix}-table.@{ant-prefix}-table-middle .@{pro-table-prefix-cls} {
+    margin: -12px -8px;
   }
 }

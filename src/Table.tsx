@@ -6,6 +6,7 @@ import classNames from 'classnames';
 import useMergeValue from 'use-merge-value';
 import { stringify } from 'use-json-comparison';
 import { ColumnsType, TablePaginationConfig, TableProps, ColumnType } from 'antd/es/table';
+import { ColumnFilterItem } from 'antd/es/table/interface';
 import { FormItemProps, FormProps, FormInstance } from 'antd/es/form';
 import { TableCurrentDataSource, SorterResult } from 'antd/lib/table/interface';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
@@ -13,10 +14,10 @@ import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
 import { noteOnce } from 'rc-util/lib/warning';
 import { IntlProvider, IntlConsumer, IntlType, useIntl } from './component/intlContext';
 import useFetchData, { UseFetchDataAction, RequestData } from './useFetchData';
-import Container from './container';
+import Container, { useCounter } from './container';
 import Toolbar, { OptionConfig, ToolBarProps } from './component/toolBar';
 import Alert from './component/alert';
-import FormSearch, { SearchConfig, TableFormItem } from './Form';
+import FormSearch, { SearchConfig, TableFormItem } from './form';
 import { StatusType } from './component/status';
 import get, {
   parsingText,
@@ -50,7 +51,7 @@ export interface ColumnsState {
   fixed?: 'right' | 'left' | undefined;
 }
 
-export type valueEnumObj = {
+export type ValueEnumObj = {
   [key: string]:
     | {
         text: ReactNode;
@@ -59,7 +60,7 @@ export type valueEnumObj = {
     | ReactNode;
 };
 
-export type valueEnumMap = Map<
+export type ValueEnumMap = Map<
   React.ReactText,
   | {
       text: ReactNode;
@@ -69,7 +70,7 @@ export type valueEnumMap = Map<
 >;
 
 export interface ProColumnType<T = unknown>
-  extends Omit<ColumnType<T>, 'render' | 'children' | 'title'>,
+  extends Omit<ColumnType<T>, 'render' | 'children' | 'title' | 'filters'>,
     Partial<Omit<FormItemProps, 'children'>> {
   index?: number;
   title?: ReactNode | ((config: ProColumnType<T>, type: ProTableTypes) => ReactNode);
@@ -105,7 +106,7 @@ export interface ProColumnType<T = unknown>
       type: ProTableTypes;
       defaultRender: (newItem: ProColumns<any>) => JSX.Element | null;
     },
-    form: Omit<FormInstance, 'scrollToField' | '__INTERNAL__'>,
+    form: FormInstance,
   ) => JSX.Element | false | null;
 
   /**
@@ -135,7 +136,7 @@ export interface ProColumnType<T = unknown>
   /**
    * 值的枚举，如果存在枚举，Search 中会生成 select
    */
-  valueEnum?: valueEnumMap | valueEnumObj;
+  valueEnum?: ValueEnumMap | ValueEnumObj;
 
   /**
    * 在查询表单中隐藏
@@ -151,6 +152,11 @@ export interface ProColumnType<T = unknown>
    * 在新建表单中删除
    */
   hideInForm?: boolean;
+
+  /**
+   * 表头的筛选菜单项
+   */
+  filters?: boolean | ColumnFilterItem[];
 
   /**
    * form 的排序
@@ -182,6 +188,24 @@ export interface ProTableProps<T, U extends { [key: string]: any }>
   onSizeChange?: (size: DensitySize) => void;
 
   /**
+   * 渲染 table
+   */
+  tableRender?: (
+    props: ProTableProps<T, U>,
+    defaultDom: JSX.Element,
+    /**
+     * 各个区域的 dom
+     */
+    domList: {
+      toolbar: JSX.Element | undefined;
+      alert: JSX.Element | undefined;
+      table: JSX.Element | undefined;
+    },
+  ) => React.ReactNode;
+
+  tableExtraRender?: (props: ProTableProps<T, U>, dataSource: T[]) => React.ReactNode;
+
+  /**
    * 一个获得 dataSource 的方法
    */
   request?: (
@@ -208,6 +232,10 @@ export interface ProTableProps<T, U extends { [key: string]: any }>
    * 初始化的参数，可以操作 table
    */
   actionRef?: React.MutableRefObject<ActionType | undefined> | ((actionRef: ActionType) => void);
+
+  /**
+   * 操作自带的 form
+   */
   formRef?: TableFormItem<T>['formRef'];
   /**
    * 渲染操作栏
@@ -341,10 +369,10 @@ const mergePagination = <T extends any[], U>(
     onChange: (page: number, newPageSize?: number) => {
       // pageSize 改变之后就没必要切换页码
       if (newPageSize !== pageSize && current !== page) {
-        action.setPageInfo({ pageSize, page });
+        action.setPageInfo({ pageSize: newPageSize, page });
       } else {
         if (newPageSize !== pageSize) {
-          action.setPageInfo({ pageSize });
+          action.setPageInfo({ pageSize: newPageSize });
         }
         if (current !== page) {
           action.setPageInfo({ page });
@@ -356,28 +384,18 @@ const mergePagination = <T extends any[], U>(
         onChange(page, newPageSize || 20);
       }
     },
-
-    onShowSizeChange: (page: number, showPageSize: number) => {
-      action.setPageInfo({
-        pageSize: showPageSize,
-        page,
-      });
-      const { onShowSizeChange } = pagination as TablePaginationConfig;
-      if (onShowSizeChange) {
-        onShowSizeChange(page, showPageSize || 20);
-      }
-    },
   };
 };
 
 export type ColumnEmptyText = string | false;
 
-interface ColumRenderInterface<T> {
+interface ColumnRenderInterface<T> {
   item: ProColumns<T>;
   text: any;
   row: T;
   index: number;
   columnEmptyText?: ColumnEmptyText;
+  counter: ReturnType<typeof useCounter>;
 }
 
 /**
@@ -392,7 +410,7 @@ const genEllipsis = (dom: React.ReactNode, item: ProColumns<any>, text: string) 
   }
   return (
     <Tooltip title={text}>
-      <div>{dom}</div>
+      <span>{dom}</span>
     </Tooltip>
   );
 };
@@ -420,14 +438,14 @@ const genCopyable = (dom: React.ReactNode, item: ProColumns<any>) => {
  * 这个组件负责单元格的具体渲染
  * @param param0
  */
-const columRender = <T, U = any>({
+const columnRender = <T, U = any>({
   item,
   text,
   row,
   index,
   columnEmptyText,
-}: ColumRenderInterface<T>): any => {
-  const counter = Container.useContainer();
+  counter,
+}: ColumnRenderInterface<T>): any => {
   const { action } = counter;
   const { renderText = (val: any) => val, valueEnum = {} } = item;
   if (!action.current) {
@@ -487,21 +505,15 @@ const genColumnList = <T, U = {}>(
   map: {
     [key: string]: ColumnsState;
   },
+  counter: ReturnType<typeof useCounter>,
   columnEmptyText?: ColumnEmptyText,
 ): (ColumnsType<T>[number] & { index?: number })[] =>
   (columns
-    .map((item) => {
-      const { title } = item;
-      return {
-        ...item,
-        title: title && typeof title === 'function' ? title(item, 'table') : title,
-        valueEnum: ObjToMap(item.valueEnum),
-      };
-    })
     .map((item, columnsIndex) => {
-      const { key, dataIndex } = item;
+      const { key, dataIndex, title, filters = [] } = item;
       const columnKey = genColumnKey(key, dataIndex, columnsIndex);
       const config = columnKey ? map[columnKey] || { fixed: item.fixed } : { fixed: item.fixed };
+      const valueEnum = ObjToMap(item.valueEnum);
       const tempColumns = {
         onFilter: (value: string, record: T) => {
           let recordElement = get(record, item.dataIndex || '');
@@ -512,17 +524,28 @@ const genColumnList = <T, U = {}>(
           return String(itemValue) === String(value);
         },
         index: columnsIndex,
-        filters: parsingValueEnumToArray(item.valueEnum).filter(
-          (valueItem) => valueItem && valueItem.value !== 'all',
-        ),
         ...item,
+        title: title && typeof title === 'function' ? title(item, 'table') : title,
+        valueEnum,
+        filters:
+          filters === true
+            ? parsingValueEnumToArray(valueEnum).filter(
+                (valueItem) => valueItem && valueItem.value !== 'all',
+              )
+            : filters,
         ellipsis: false,
         fixed: config.fixed,
         width: item.width || (item.fixed ? 200 : undefined),
-        // @ts-ignore
-        children: item.children ? genColumnList(item.children, map, columnEmptyText) : undefined,
+        children: (item as ProColumnGroupType<T>).children
+          ? genColumnList(
+              (item as ProColumnGroupType<T>).children as ProColumns<T>[],
+              map,
+              counter,
+              columnEmptyText,
+            )
+          : undefined,
         render: (text: any, row: T, index: number) =>
-          columRender<T>({ item, text, row, index, columnEmptyText }),
+          columnRender<T>({ item, text, row, index, columnEmptyText, counter }),
       };
       if (!tempColumns.children || !tempColumns.children.length) {
         delete tempColumns.children;
@@ -560,7 +583,7 @@ const ProTable = <T extends {}, U extends object>(
     pagination: propsPagination,
     actionRef,
     columns: propsColumns = [],
-    toolBarRender = () => [],
+    toolBarRender,
     onLoad,
     onRequestError,
     style,
@@ -624,7 +647,6 @@ const ProTable = <T extends {}, U extends object>(
           current,
           pageSize,
           ...formSearch,
-
           ...params,
         } as U,
         proSort,
@@ -761,7 +783,12 @@ const ProTable = <T extends {}, U extends object>(
    * Table Column 变化的时候更新一下，这个参数将会用于渲染
    */
   useDeepCompareEffect(() => {
-    const tableColumn = genColumnList<T>(propsColumns, counter.columnsMap, columnEmptyText);
+    const tableColumn = genColumnList<T>(
+      propsColumns,
+      counter.columnsMap,
+      counter,
+      columnEmptyText,
+    );
     if (tableColumn && tableColumn.length > 0) {
       counter.setColumns(tableColumn);
       // 重新生成key的字符串用于排序
@@ -780,7 +807,7 @@ const ProTable = <T extends {}, U extends object>(
    */
   useDeepCompareEffect(() => {
     const keys = counter.sortKeyColumns.join(',');
-    let tableColumn = genColumnList<T>(propsColumns, counter.columnsMap, columnEmptyText);
+    let tableColumn = genColumnList<T>(propsColumns, counter.columnsMap, counter, columnEmptyText);
     if (keys.length > 0) {
       // 用于可视化的排序
       tableColumn = tableColumn.sort((a, b) => {
@@ -880,6 +907,122 @@ const ProTable = <T extends {}, U extends object>(
   }
 
   const className = classNames(defaultClassName, propsClassName);
+  const toolbarDom = toolBarRender !== false &&
+    (options !== false || headerTitle || toolBarRender) && (
+      // if options= false & headerTitle=== false, hide Toolbar
+      <Toolbar<T>
+        options={options}
+        headerTitle={headerTitle}
+        action={action}
+        onSearch={(keyword) => {
+          if (options && options.search) {
+            const { name = 'keyword' } =
+              options.search === true
+                ? {
+                    name: 'keyword',
+                  }
+                : options.search;
+            setFormSearch({
+              ...formSearch,
+              [name]: keyword,
+            });
+          }
+        }}
+        selectedRows={selectedRows}
+        selectedRowKeys={selectedRowKeys}
+        toolBarRender={toolBarRender}
+      />
+    );
+  const alertDom = propsRowSelection !== false && (
+    <Alert<T>
+      selectedRowKeys={selectedRowKeys}
+      selectedRows={selectedRows}
+      onCleanSelected={onCleanSelected}
+      alertOptionRender={rest.tableAlertOptionRender}
+      alertInfoRender={tableAlertRender}
+    />
+  );
+
+  const tableDom = (
+    <Table<T>
+      {...rest}
+      size={counter.tableSize}
+      rowSelection={propsRowSelection === false ? undefined : rowSelection}
+      className={tableClassName}
+      style={tableStyle}
+      columns={counter.columns.filter((item) => {
+        // 删掉不应该显示的
+        const { key, dataIndex } = item;
+        const columnKey = genColumnKey(key, dataIndex);
+        if (!columnKey) {
+          return true;
+        }
+        const config = counter.columnsMap[columnKey];
+        if (config && config.show === false) {
+          return false;
+        }
+        return true;
+      })}
+      loading={action.loading || props.loading}
+      dataSource={dataSource}
+      pagination={pagination}
+      onChange={(
+        changePagination: TablePaginationConfig,
+        filters: {
+          [string: string]: React.ReactText[] | null;
+        },
+        sorter: SorterResult<T> | SorterResult<T>[],
+        extra: TableCurrentDataSource<T>,
+      ) => {
+        if (rest.onChange) {
+          rest.onChange(changePagination, filters, sorter, extra);
+        }
+
+        // 制造筛选的数据
+        setProFilter(removeObjectNull(filters));
+
+        // 制造一个排序的数据
+        if (Array.isArray(sorter)) {
+          const data = sorter.reduce<{
+            [key: string]: any;
+          }>((pre, value) => {
+            if (!value.order) {
+              return pre;
+            }
+            return {
+              ...pre,
+              [`${value.field}`]: value.order,
+            };
+          }, {});
+          setProSort(data);
+        } else if (sorter.order) {
+          setProSort({ [`${sorter.field}`]: sorter.order });
+        }
+      }}
+    />
+  );
+  /**
+   * table 区域的 dom，为了方便 render
+   */
+  const tableAreaDom = (
+    <>
+      {toolbarDom}
+      {alertDom}
+      {tableDom}
+    </>
+  );
+
+  const renderTable = () => {
+    if (props.tableRender) {
+      return props.tableRender(props, tableAreaDom, {
+        toolbar: toolbarDom || undefined,
+        alert: alertDom || undefined,
+        table: tableDom || undefined,
+      });
+    }
+    return tableAreaDom;
+  };
+
   return (
     <ConfigProvider
       getPopupContainer={() => ((rootRef.current || document.body) as any) as HTMLElement}
@@ -916,7 +1059,10 @@ const ProTable = <T extends {}, U extends object>(
             search={search}
           />
         )}
-
+        {/* 渲染一个额外的区域，用于一些自定义 */}
+        {type !== 'form' && props.tableExtraRender && (
+          <div className={`${className}-extra`}>{props.tableExtraRender(props, dataSource)}</div>
+        )}
         {type !== 'form' && (
           <Card
             bordered={false}
@@ -927,82 +1073,7 @@ const ProTable = <T extends {}, U extends object>(
               padding: 0,
             }}
           >
-            {toolBarRender !== false && (options !== false || headerTitle || toolBarRender) && (
-              // if options= false & headerTitle=== false, hide Toolbar
-              <Toolbar<T>
-                options={options}
-                headerTitle={headerTitle}
-                action={action}
-                selectedRows={selectedRows}
-                selectedRowKeys={selectedRowKeys}
-                toolBarRender={toolBarRender}
-              />
-            )}
-            {propsRowSelection !== false && (
-              <Alert<T>
-                selectedRowKeys={selectedRowKeys}
-                selectedRows={selectedRows}
-                onCleanSelected={onCleanSelected}
-                alertOptionRender={rest.tableAlertOptionRender}
-                alertInfoRender={tableAlertRender}
-              />
-            )}
-            <Table<T>
-              {...rest}
-              size={counter.tableSize}
-              rowSelection={propsRowSelection === false ? undefined : rowSelection}
-              className={tableClassName}
-              style={tableStyle}
-              columns={counter.columns.filter((item) => {
-                // 删掉不应该显示的
-                const { key, dataIndex } = item;
-                const columnKey = genColumnKey(key, dataIndex);
-                if (!columnKey) {
-                  return true;
-                }
-                const config = counter.columnsMap[columnKey];
-                if (config && config.show === false) {
-                  return false;
-                }
-                return true;
-              })}
-              loading={action.loading || props.loading}
-              dataSource={dataSource}
-              pagination={pagination}
-              onChange={(
-                changePagination: TablePaginationConfig,
-                filters: {
-                  [string: string]: React.ReactText[] | null;
-                },
-                sorter: SorterResult<T> | SorterResult<T>[],
-                extra: TableCurrentDataSource<T>,
-              ) => {
-                if (rest.onChange) {
-                  rest.onChange(changePagination, filters, sorter, extra);
-                }
-
-                // 制造筛选的数据
-                setProFilter(removeObjectNull(filters));
-
-                // 制造一个排序的数据
-                if (Array.isArray(sorter)) {
-                  const data = sorter.reduce<{
-                    [key: string]: any;
-                  }>((pre, value) => {
-                    if (!value.order) {
-                      return pre;
-                    }
-                    return {
-                      ...pre,
-                      [`${value.field}`]: value.order,
-                    };
-                  }, {});
-                  setProSort(data);
-                } else if (sorter.order) {
-                  setProSort({ [`${sorter.field}`]: sorter.order });
-                }
-              }}
-            />
+            {renderTable()}
           </Card>
         )}
       </div>

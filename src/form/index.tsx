@@ -138,12 +138,12 @@ export interface TableFormItem<T> extends Omit<FormItemProps, 'children'> {
 export const FormInputRender: React.FC<{
   item: ProColumns<any>;
   value?: any;
-  form?: Omit<FormInstance, 'scrollToField' | '__INTERNAL__'>;
+  form?: FormInstance;
   type: ProTableTypes;
   intl: IntlType;
   onChange?: (value: any) => void;
   onSelect?: (value: any) => void;
-}> = (props) => {
+}> = React.forwardRef((props, ref: any) => {
   const { item, intl, form, type, ...rest } = props;
   const { valueType: itemValueType } = item;
   // if function， run it
@@ -164,7 +164,20 @@ export const FormInputRender: React.FC<{
         } || null)}
       />
     );
-    return renderFormItem(restItem, { ...rest, type, defaultRender }, form as any) as any;
+
+    // 自动注入 onChange 和 value,用户自己很有肯能忘记
+    const dom = renderFormItem(
+      restItem,
+      { ...rest, type, defaultRender },
+      form as any,
+    ) as React.ReactElement;
+    // 有可能不是不是一个组件
+    if (!React.isValidElement(dom)) {
+      return dom;
+    }
+    const defaultProps = dom.props as any;
+    // 已用户的为主，不然过于 magic
+    return React.cloneElement(dom, { ...rest, ...defaultProps });
   }
 
   if (!valueType || valueType === 'text') {
@@ -172,6 +185,8 @@ export const FormInputRender: React.FC<{
     if (valueEnum) {
       return (
         <Select
+          ref={ref}
+          allowClear
           placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择')}
           {...rest}
           {...item.formItemProps}
@@ -186,6 +201,7 @@ export const FormInputRender: React.FC<{
     }
     return (
       <Input
+        ref={ref}
         placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入')}
         {...rest}
         {...item.formItemProps}
@@ -195,6 +211,7 @@ export const FormInputRender: React.FC<{
   if (valueType === 'date') {
     return (
       <DatePicker
+        ref={ref}
         placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择')}
         style={{
           width: '100%',
@@ -208,6 +225,7 @@ export const FormInputRender: React.FC<{
   if (valueType === 'dateTime') {
     return (
       <DatePicker
+        ref={ref}
         showTime
         placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择')}
         style={{
@@ -222,6 +240,7 @@ export const FormInputRender: React.FC<{
   if (valueType === 'dateRange') {
     return (
       <DatePicker.RangePicker
+        ref={ref}
         placeholder={[
           intl.getMessage('tableForm.selectPlaceholder', '请选择'),
           intl.getMessage('tableForm.selectPlaceholder', '请选择'),
@@ -237,6 +256,7 @@ export const FormInputRender: React.FC<{
   if (valueType === 'dateTimeRange') {
     return (
       <DatePicker.RangePicker
+        ref={ref}
         showTime
         placeholder={[
           intl.getMessage('tableForm.selectPlaceholder', '请选择'),
@@ -254,6 +274,7 @@ export const FormInputRender: React.FC<{
   if (valueType === 'time') {
     return (
       <TimePicker
+        ref={ref}
         placeholder={intl.getMessage('tableForm.selectPlaceholder', '请选择')}
         style={{
           width: '100%',
@@ -266,6 +287,7 @@ export const FormInputRender: React.FC<{
   if (valueType === 'digit') {
     return (
       <InputNumber
+        ref={ref}
         placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入')}
         style={{
           width: '100%',
@@ -278,6 +300,7 @@ export const FormInputRender: React.FC<{
   if (valueType === 'money') {
     return (
       <InputNumber
+        ref={ref}
         min={0}
         precision={2}
         formatter={(value) => {
@@ -309,6 +332,7 @@ export const FormInputRender: React.FC<{
   if (valueType === 'textarea' && type === 'form') {
     return (
       <Input.TextArea
+        ref={ref}
         placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入')}
         {...rest}
         {...item.formItemProps}
@@ -317,19 +341,20 @@ export const FormInputRender: React.FC<{
   }
   return (
     <Input
+      ref={ref}
       placeholder={intl.getMessage('tableForm.inputPlaceholder', '请输入')}
       {...rest}
       {...item.formItemProps}
     />
   );
-};
+});
 
 export const proFormItemRender: (props: {
   item: ProColumns<any>;
   isForm: boolean;
   type: ProTableTypes;
   intl: IntlType;
-  formInstance?: Omit<FormInstance, 'scrollToField' | '__INTERNAL__'>;
+  formInstance?: FormInstance;
   colConfig:
     | {
         lg: number;
@@ -566,9 +591,7 @@ const FormSearch = <T, U = {}>({
   const intl = useIntl();
 
   const [form] = Form.useForm();
-  const formInstanceRef = useRef<
-    Omit<FormInstance, 'scrollToField' | '__INTERNAL__'> | undefined
-  >();
+  const formInstanceRef = useRef<FormInstance | undefined>();
   const searchConfig = getDefaultSearch(propsSearch, intl, type === 'form');
   const { span } = searchConfig;
 
@@ -743,7 +766,7 @@ const FormSearch = <T, U = {}>({
                   <Form.Item shouldUpdate noStyle>
                     {(formInstance) => {
                       setTimeout(() => {
-                        formInstanceRef.current = formInstance;
+                        formInstanceRef.current = formInstance as FormInstance;
                       }, 0);
                       return null;
                     }}

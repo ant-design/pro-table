@@ -43,6 +43,7 @@ export const columns: ProColumns[] = [
     title: 'sex',
     dataIndex: 'sex',
     copyable: true,
+    filters: true,
     valueEnum: {
       man: '男',
       woman: '女',

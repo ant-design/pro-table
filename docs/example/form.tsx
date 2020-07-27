@@ -42,6 +42,7 @@ const columns: ProColumns<TableListItem>[] = [
     title: '状态',
     dataIndex: 'status',
     initialValue: 'all',
+    filters: true,
     valueEnum: {
       all: { text: '全部', status: 'Default' },
       close: { text: '关闭', status: 'Default' },
@@ -100,6 +101,7 @@ export default () => {
           赋值
         </Button>,
       ]}
+      options={false}
       dateFormatter="string"
       headerTitle="表单赋值"
     />

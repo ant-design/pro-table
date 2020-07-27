@@ -44,7 +44,7 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 | --- | --- | --- | --- |
 | searchText | 查询按钮的文本 | string | 查询 |
 | resetText | 重置按钮的文本 | string | 重置 |
-| submitText | 查询按钮的文本 | string | 重置 |
+| submitText | 提交按钮的文本 | string | 提交 |
 | collapseRender | 收起按钮的 render | `(collapsed: boolean,showCollapseButton?: boolean,) => React.ReactNode` | - |
 | collapsed | 是否收起 | boolean | - |
 | onCollapse | 收起按钮的事件 | `(collapsed: boolean) => void;` | - |
@@ -64,6 +64,7 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 | hideInSearch | 在查询表单中不展示此项 | boolean | - |
 | hideInTable | 在 Table 中不展示此列 | boolean | - |
 | hideInForm | 在 Form 模式下 中不展示此列 | boolean | - |
+| filters | 表头的筛选菜单项，当值为 true 时，自动使用 valueEnum 生成 | `boolean \| object[]` | false |
 | order | 决定在 查询表单中的顺序，越大越在前面 | number | - |
 | renderFormItem | 渲染查询表单的输入组件 | `(item,props:{value,onChange}) => React.ReactNode` | - |
 | formItemProps | 查询表单的 props，会透传给表单项 | `{ [prop: string]: any }` | - |

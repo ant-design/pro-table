@@ -10,19 +10,25 @@
     justify-content: space-between;
     height: 32px;
   }
+  &-overlay {
+    .ant-popover-inner-content {
+      padding: 12px 0;
+    }
+  }
 }
 .@{pro-column-setting-prefix-cls}-list {
   display: flex;
   flex-direction: column;
-  width: 168px;
+  width: 100%;
   &-title {
-    margin-bottom: 8px;
     color: #8c8c8c;
     font-size: 12px;
   }
   &-item {
-    display: block;
+    display: flex;
+    align-items: center;
     width: 100%;
+    padding: 4px 16px;
     &-option {
       display: none;
       float: right;
@@ -37,14 +43,15 @@
       }
     }
     &:hover {
+      background-color: @item-active-bg;
       .@{pro-column-setting-prefix-cls}-list-item-option {
         display: block;
       }
     }
   }
   .@{ant-prefix}-checkbox-wrapper {
-    margin-bottom: 8px;
-    margin-left: 0;
+    flex: 1;
+    margin: 0;
     :last-child {
       margin-bottom: 0;
     }

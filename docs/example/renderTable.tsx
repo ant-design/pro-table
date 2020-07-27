@@ -1,7 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button } from 'antd';
-import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
+import { Button, Result, Card, Descriptions } from 'antd';
+import ProTable, { ProColumns } from '@ant-design/pro-table';
 
 const valueEnum = {
   0: 'close',
@@ -33,13 +33,6 @@ for (let i = 0; i < 20; i += 1) {
   });
 }
 
-const timeAwait = (waitTime: number) =>
-  new Promise((res) =>
-    window.setTimeout(() => {
-      res();
-    }, waitTime),
-  );
-
 const columns: ProColumns<TableListItem>[] = [
   {
     title: '序号',
@@ -61,7 +54,6 @@ const columns: ProColumns<TableListItem>[] = [
       error: { text: '异常', status: 'Error' },
     },
   },
-
   {
     title: '进度',
     key: 'progress',
@@ -82,22 +74,13 @@ const columns: ProColumns<TableListItem>[] = [
 ];
 
 export default () => {
-  const actionRef = useRef<ActionType | undefined>(undefined);
+  const [loading, setLoading] = useState(true);
+  const [dataSource, setDataSource] = useState<TableListItem[]>([]);
   useEffect(() => {
-    let id = 0;
-    const loop = () => {
-      id = window.setTimeout(() => {
-        const { current } = actionRef;
-        if (current) {
-          current.reload();
-        }
-        loop();
-      }, 1000);
-    };
-    loop();
-    return () => {
-      window.clearTimeout(id);
-    };
+    setTimeout(() => {
+      setLoading(false);
+      setDataSource(tableListDataSource);
+    }, 5000);
   }, []);
 
   return (
@@ -107,17 +90,54 @@ export default () => {
       pagination={{
         showSizeChanger: true,
       }}
-      actionRef={actionRef}
-      request={async () => {
-        await timeAwait(500);
-        return {
-          data: tableListDataSource,
-          success: true,
-          total: tableListDataSource.length,
-        };
+      tableRender={(_, dom) => (
+        <div
+          style={{
+            display: 'flex',
+            width: '100%',
+          }}
+        >
+          <Result status="404" title="404" subTitle="404" />
+          <div
+            style={{
+              flex: 1,
+            }}
+          >
+            {dom}
+          </div>
+        </div>
+      )}
+      tableExtraRender={(_, data) => (
+        <Card>
+          <Descriptions size="small" column={3}>
+            <Descriptions.Item label="Row">{data.length}</Descriptions.Item>
+            <Descriptions.Item label="Created">Lili Qu</Descriptions.Item>
+            <Descriptions.Item label="Association">
+              <a>421421</a>
+            </Descriptions.Item>
+            <Descriptions.Item label="Creation Time">2017-01-10</Descriptions.Item>
+            <Descriptions.Item label="Effective Time">2017-10-10</Descriptions.Item>
+            <Descriptions.Item label="Remarks">
+              Gonghu Road, Xihu District, Hangzhou, Zhejiang, China
+            </Descriptions.Item>
+          </Descriptions>
+        </Card>
+      )}
+      loading={loading}
+      dataSource={dataSource}
+      options={{
+        density: true,
+        reload: () => {
+          setLoading(true);
+          setTimeout(() => {
+            setLoading(false);
+          }, 1000);
+        },
+        fullScreen: true,
+        setting: true,
       }}
       dateFormatter="string"
-      headerTitle="轮询"
+      headerTitle="dataSource 和 loading"
       toolBarRender={() => [
         <Button key="3" type="primary">
           <PlusOutlined />

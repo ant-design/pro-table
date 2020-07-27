@@ -74,6 +74,7 @@ const columns: ProColumns<GithubIssueItem>[] = [
     title: '状态',
     dataIndex: 'state',
     initialValue: 'all',
+    filters: true,
     valueEnum: {
       all: { text: '全部', status: 'Default' },
       open: {
@@ -140,7 +141,7 @@ export default () => (
     rowKey="id"
     rowSelection={{}}
     tableAlertRender={({ selectedRowKeys, selectedRows }) =>
-      `当前共选中${selectedRowKeys.length} 项，共有 ${selectedRows.reduce((pre, item) => {
+      `当前共选中 ${selectedRowKeys.length} 项，共有 ${selectedRows.reduce((pre, item) => {
         if (item.state === 'open') {
           return pre + 1;
         }

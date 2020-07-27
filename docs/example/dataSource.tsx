@@ -45,6 +45,7 @@ const columns: ProColumns<TableListItem>[] = [
     dataIndex: 'status',
     initialValue: 'all',
     width: 100,
+    filters: true,
     valueEnum: {
       all: { text: '全部', status: 'Default' },
       close: { text: '关闭', status: 'Default' },
@@ -53,7 +54,6 @@ const columns: ProColumns<TableListItem>[] = [
       error: { text: '异常', status: 'Error' },
     },
   },
-
   {
     title: '进度',
     key: 'progress',
