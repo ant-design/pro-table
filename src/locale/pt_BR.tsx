@@ -2,17 +2,17 @@ export default {
   moneySymbol: 'R$',
   tableForm: {
     search: 'Buscar',
-    reset: 'Resetar',
+    reset: 'Limpar',
     submit: 'Confirmar',
     collapsed: 'Expandir',
     expand: 'Colapsar',
-    inputPlaceholder: 'Por favor inisira',
+    inputPlaceholder: 'Por favor insira',
     selectPlaceholder: 'Por favor selecione',
   },
   alert: {
     clear: 'Limpar',
-    selected: 'Selecionado',
-    item: 'Item',
+    selected: 'Selecionado(s)',
+    item: 'Item(s)',
   },
   pagination: {
     total: {
