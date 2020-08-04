@@ -21,14 +21,15 @@
 
   .@{ant-prefix}-form-item-label,
   .@{ant-prefix}-legacy-form-item-label {
-    min-width: 40px;
+    min-width: 80px;
     text-align: right;
   }
-  .@{ant-prefix}-row:not(.ant-form-item) {
+  .@{ant-prefix}-row:not(.ant-form-item, .ant-legacy-form-item) {
     > .ant-col {
       padding: 4px 0;
     }
   }
+
   .@{ant-prefix}-form-item,
   .@{ant-prefix}-legacy-form-item {
     display: flex;

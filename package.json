@@ -18,7 +18,7 @@
     "lint-eslint": "eslint --cache --ext .js,.jsx,.ts,.tsx --format=pretty ./src",
     "lint:fix": "eslint --fix --cache --ext .js,.jsx,.ts,.tsx --format=pretty ./**/src ./tests && npm run lint:style",
     "lint:style": "stylelint --fix  \"src/**/*.less\"  --syntax less",
-    "prepublishOnly": "npm run test && npm run build && np --no-cleanup --yolo --no-publish --any-branch",
+    "prepublishOnly": "npm run build && np --no-cleanup --yolo --no-publish --any-branch",
     "prettier": "prettier -c --write \"**/*\"",
     "site": "dumi build && gh-pages -d ./dist",
     "start": "dumi dev",
@@ -86,8 +86,9 @@
     "umi": "^3.1.2",
     "umi-plugin-githubpages": "^2.0.1",
     "umi-request": "^1.2.15",
+    "webpack": "^4.43.0",
     "webpack-bundle-analyzer": "^3.7.0",
-    "webpack": "^4.43.0"
+    "webpack-cli": "^3.3.12"
   },
   "peerDependencies": {
     "antd": "3.x",
