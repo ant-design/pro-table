@@ -740,7 +740,12 @@ const FormSearch = <T, U = {}>({
                         [`${className}-form-option`]: isForm,
                       })}
                     >
-                      <Form.Item label={isForm && ' '}>
+                      <Form.Item
+                        label={isForm && ' '}
+                        style={{
+                          padding: '4px 0',
+                        }}
+                      >
                         <FormOption
                           showCollapseButton={columnsList.length > rowNumber - 1 && !isForm}
                           searchConfig={searchConfig}
