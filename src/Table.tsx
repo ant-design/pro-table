@@ -214,7 +214,7 @@ export interface ProTableProps<T, U extends { [key: string]: any }>
       current?: number;
     },
     sort: {
-      [key: string]: 'ascend' | 'descend';
+      [key: string]: 'ascend' | 'descend' | undefined;
     },
     filter: { [key: string]: React.ReactText[] },
   ) => Promise<RequestData<T>>;
@@ -985,7 +985,7 @@ const ProTable = <T extends {}, U extends object>(
             };
           }, {});
           setProSort(data);
-        } else if (sorter.order) {
+        } else (sorter.order) {
           setProSort({ [`${sorter.field}`]: sorter.order });
         }
       }}
