@@ -8,7 +8,7 @@ import { stringify } from 'use-json-comparison';
 import { ColumnsType, TablePaginationConfig, TableProps, ColumnType } from 'antd/es/table';
 import { ColumnFilterItem } from 'antd/es/table/interface';
 import { FormItemProps, FormProps, FormInstance } from 'antd/es/form';
-import { TableCurrentDataSource, SorterResult } from 'antd/lib/table/interface';
+import { TableCurrentDataSource, SorterResult, SortOrder } from 'antd/lib/table/interface';
 import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider';
 
 import { noteOnce } from 'rc-util/lib/warning';
@@ -214,7 +214,7 @@ export interface ProTableProps<T, U extends { [key: string]: any }>
       current?: number;
     },
     sort: {
-      [key: string]: 'ascend' | 'descend';
+      [key: string]: SortOrder;
     },
     filter: { [key: string]: React.ReactText[] },
   ) => Promise<RequestData<T>>;
@@ -609,7 +609,7 @@ const ProTable = <T extends {}, U extends object>(
     [key: string]: React.ReactText[];
   }>({});
   const [proSort, setProSort] = useState<{
-    [key: string]: 'ascend' | 'descend';
+    [key: string]: SortOrder;
   }>({});
   const rootRef = useRef<HTMLDivElement>(null);
   const fullScreen = useRef<() => void>();
@@ -976,17 +976,14 @@ const ProTable = <T extends {}, U extends object>(
           const data = sorter.reduce<{
             [key: string]: any;
           }>((pre, value) => {
-            if (!value.order) {
-              return pre;
-            }
             return {
               ...pre,
               [`${value.field}`]: value.order,
             };
           }, {});
           setProSort(data);
-        } else if (sorter.order) {
-          setProSort({ [`${sorter.field}`]: sorter.order });
+        } else {
+          setProSort({ [`${sorter.field}`]: sorter.order as SortOrder });
         }
       }}
     />
