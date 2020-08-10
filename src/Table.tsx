@@ -345,10 +345,10 @@ const mergePagination = <T extends any[], U>(
     onChange: (page: number, newPageSize?: number) => {
       // pageSize 改变之后就没必要切换页码
       if (newPageSize !== pageSize && current !== page) {
-        action.setPageInfo({ pageSize, page });
+        action.setPageInfo({ pageSize: newPageSize, page });
       } else {
         if (newPageSize !== pageSize) {
-          action.setPageInfo({ pageSize });
+          action.setPageInfo({ pageSize: newPageSize });
         }
         if (current !== page) {
           action.setPageInfo({ page });
