@@ -33,8 +33,14 @@
 
   .@{ant-prefix}-form-item,
   .@{ant-prefix}-legacy-form-item {
-    display: flex;
-    align-items: center;
+    &:not(.ant-form-item-hidden) {
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  .@{ant-prefix}-form-item-hidden {
+    display: none;
   }
 
   .@{ant-prefix}-form-item-control,
