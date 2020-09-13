@@ -1076,7 +1076,7 @@ const ProTable = <T extends {}, U extends object>(
  * 更快 更好 更方便
  * @param props
  */
-const ProviderWarp = <T, U extends { [key: string]: any } = {}>(props: ProTableProps<T, U>) => (
+const ProviderWrap = <T, U extends { [key: string]: any } = {}>(props: ProTableProps<T, U>) => (
   <Container.Provider initialState={props}>
     <ConfigConsumer>
       {({ getPrefixCls }: ConfigConsumerProps) => (
@@ -1094,4 +1094,4 @@ const ProviderWarp = <T, U extends { [key: string]: any } = {}>(props: ProTableP
   </Container.Provider>
 );
 
-export default ProviderWarp;
+export default ProviderWrap;
