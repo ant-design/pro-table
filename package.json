@@ -35,7 +35,7 @@
     "not ie <= 10"
   ],
   "dependencies": {
-    "@ant-design/compatible": "1.0.7",
+    "@ant-design/compatible": "^1.0.8",
     "@ant-design/icons": "^4.0.0",
     "classnames": "^2.2.6",
     "dnd-core": "^10.0.2",
