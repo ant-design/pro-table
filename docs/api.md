@@ -28,9 +28,9 @@ pro-table 在 antd 的 table 上进行了一层封装，支持了一些预设，
 | search | 是否显示搜索表单，传入对象时为搜索表单的配置 | [search config](#search) | true |
 | dateFormatter | moment 的格式化方式 | `"string" \| "number" \| false` | string |
 | beforeSearchSubmit | 搜索之前进行一些修改 | `(params:T)=>T` | - |
-| onSizeChange | table 尺寸发生改变 | `(size: 'default' | 'middle' | 'small' | undefined) => void` | - |
-| columnsStateMap | columns 的状态枚举 | `{[key: string]: { show:boolean, fixed: "right"|"left"} }` | - |
-| onColumnsStateChange | columns 状态发生改变 | `(props: {[key: string]: { show:boolean, fixed: "right"|"left"} }) => void` | - |
+| onSizeChange | table 尺寸发生改变 | `(size: 'default' \| 'middle' \| 'small' \| undefined) => void` | - |
+| columnsStateMap | columns 的状态枚举 | `{[key: string]: { show:boolean, fixed: "right"\|"left"} }` | - |
+| onColumnsStateChange | columns 状态发生改变 | `(props: {[key: string]: { show:boolean, fixed: "right"\|"left"} }) => void` | - |
 | type | pro-table 类型 | `"form"` | - |
 | form | antd form 的配置 | `FormProps` | - |
 | onSubmit | 提交表单时触发 | `(params: U) => void` | - |
