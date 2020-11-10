@@ -1,7 +1,7 @@
 import './index.less';
 
 import React, { useEffect, CSSProperties, useRef, useState, ReactNode } from 'react';
-import { Table, ConfigProvider, Card, Typography, Empty, Tooltip } from 'antd';
+import { Table, Card, Typography, Empty, Tooltip } from 'antd';
 import classNames from 'classnames';
 import useMergeValue from 'use-merge-value';
 import { stringify } from 'use-json-comparison';
@@ -904,146 +904,142 @@ const ProTable = <T extends {}, U extends object>(
   }
   const className = classNames(defaultClassName, propsClassName);
   return (
-    <ConfigProvider
-      getPopupContainer={() => ((rootRef.current || document.body) as any) as HTMLElement}
-    >
-      <div className={className} id="ant-design-pro-table" style={style} ref={rootRef}>
-        {(search || type === 'form') && (
-          <FormSearch
-            {...rest}
-            type={props.type}
-            formRef={formRef}
-            onSubmit={(value) => {
-              if (type !== 'form') {
-                setFormSearch(
-                  beforeSearchSubmit({
-                    ...value,
-                    _timestamp: Date.now(),
-                  }),
-                );
-                // back first page
-                action.resetPageIndex();
-              }
-
-              if (props.onSubmit) {
-                props.onSubmit(value);
-              }
-            }}
-            onReset={() => {
-              setFormSearch(beforeSearchSubmit({}));
+    <div className={className} id="ant-design-pro-table" style={style} ref={rootRef}>
+      {(search || type === 'form') && (
+        <FormSearch
+          {...rest}
+          type={props.type}
+          formRef={formRef}
+          onSubmit={(value) => {
+            if (type !== 'form') {
+              setFormSearch(
+                beforeSearchSubmit({
+                  ...value,
+                  _timestamp: Date.now(),
+                }),
+              );
               // back first page
               action.resetPageIndex();
-              onReset();
-            }}
-            dateFormatter={rest.dateFormatter}
-            search={search}
-          />
-        )}
+            }
 
-        {type !== 'form' && (
-          <Card
-            bordered={false}
-            style={{
-              height: '100%',
-            }}
-            bodyStyle={{
-              padding: 0,
-            }}
-          >
-            {toolBarRender !== false && (options !== false || headerTitle || toolBarRender) && (
-              // if options= false & headerTitle=== false, hide Toolbar
-              <Toolbar<T>
-                options={options}
-                headerTitle={headerTitle}
-                action={action}
-                onSearch={(keyword) => {
-                  if (options && options.search) {
-                    const { name = 'keyword' } =
-                      options.search === true
-                        ? {
-                            name: 'keyword',
-                          }
-                        : options.search;
-                    setFormSearch({
-                      [name]: keyword,
-                      ...formSearch,
-                    });
-                  }
-                }}
-                selectedRows={selectedRows}
-                selectedRowKeys={selectedRowKeys}
-                toolBarRender={toolBarRender}
-              />
-            )}
-            {propsRowSelection !== false && (
-              <Alert<T>
-                selectedRowKeys={selectedRowKeys}
-                selectedRows={selectedRows}
-                onCleanSelected={onCleanSelected}
-                alertOptionRender={rest.tableAlertOptionRender}
-                alertInfoRender={tableAlertRender}
-              />
-            )}
-            <Table<T>
-              {...rest}
-              size={counter.tableSize}
-              rowSelection={propsRowSelection === false ? undefined : rowSelection}
-              className={tableClassName}
-              style={tableStyle}
-              columns={counter.columns.filter((item) => {
-                // 删掉不应该显示的
-                const { key, dataIndex } = item;
-                const columnKey = genColumnKey(key, dataIndex);
-                if (!columnKey) {
-                  return true;
-                }
-                const config = counter.columnsMap[columnKey];
-                if (config && config.show === false) {
-                  return false;
-                }
-                return true;
-              })}
-              loading={action.loading || props.loading}
-              dataSource={dataSource}
-              pagination={pagination}
-              onChange={(
-                changePagination: PaginationConfig,
-                filters: {
-                  [string: string]: React.ReactText[] | null | undefined;
-                },
-                sorter: SorterResult<T> | SorterResult<T>[],
-                extra: TableCurrentDataSource<T>,
-              ) => {
-                if (rest.onChange) {
-                  rest.onChange(changePagination, filters as any, sorter as any, extra);
-                }
+            if (props.onSubmit) {
+              props.onSubmit(value);
+            }
+          }}
+          onReset={() => {
+            setFormSearch(beforeSearchSubmit({}));
+            // back first page
+            action.resetPageIndex();
+            onReset();
+          }}
+          dateFormatter={rest.dateFormatter}
+          search={search}
+        />
+      )}
 
-                // 制造筛选的数据
-                setProFilter(removeObjectNull(filters));
-
-                // 制造一个排序的数据
-                if (Array.isArray(sorter)) {
-                  const data = sorter.reduce<{
-                    [key: string]: any;
-                  }>((pre, value) => {
-                    if (!value.order) {
-                      return pre;
-                    }
-                    return {
-                      ...pre,
-                      [`${value.field}`]: value.order,
-                    };
-                  }, {});
-                  setProSort(data);
-                } else if (sorter.order) {
-                  setProSort({ [`${sorter.field}`]: sorter.order });
+      {type !== 'form' && (
+        <Card
+          bordered={false}
+          style={{
+            height: '100%',
+          }}
+          bodyStyle={{
+            padding: 0,
+          }}
+        >
+          {toolBarRender !== false && (options !== false || headerTitle || toolBarRender) && (
+            // if options= false & headerTitle=== false, hide Toolbar
+            <Toolbar<T>
+              options={options}
+              headerTitle={headerTitle}
+              action={action}
+              onSearch={(keyword) => {
+                if (options && options.search) {
+                  const { name = 'keyword' } =
+                    options.search === true
+                      ? {
+                          name: 'keyword',
+                        }
+                      : options.search;
+                  setFormSearch({
+                    [name]: keyword,
+                    ...formSearch,
+                  });
                 }
               }}
+              selectedRows={selectedRows}
+              selectedRowKeys={selectedRowKeys}
+              toolBarRender={toolBarRender}
             />
-          </Card>
-        )}
-      </div>
-    </ConfigProvider>
+          )}
+          {propsRowSelection !== false && (
+            <Alert<T>
+              selectedRowKeys={selectedRowKeys}
+              selectedRows={selectedRows}
+              onCleanSelected={onCleanSelected}
+              alertOptionRender={rest.tableAlertOptionRender}
+              alertInfoRender={tableAlertRender}
+            />
+          )}
+          <Table<T>
+            {...rest}
+            size={counter.tableSize}
+            rowSelection={propsRowSelection === false ? undefined : rowSelection}
+            className={tableClassName}
+            style={tableStyle}
+            columns={counter.columns.filter((item) => {
+              // 删掉不应该显示的
+              const { key, dataIndex } = item;
+              const columnKey = genColumnKey(key, dataIndex);
+              if (!columnKey) {
+                return true;
+              }
+              const config = counter.columnsMap[columnKey];
+              if (config && config.show === false) {
+                return false;
+              }
+              return true;
+            })}
+            loading={action.loading || props.loading}
+            dataSource={dataSource}
+            pagination={pagination}
+            onChange={(
+              changePagination: PaginationConfig,
+              filters: {
+                [string: string]: React.ReactText[] | null | undefined;
+              },
+              sorter: SorterResult<T> | SorterResult<T>[],
+              extra: TableCurrentDataSource<T>,
+            ) => {
+              if (rest.onChange) {
+                rest.onChange(changePagination, filters as any, sorter as any, extra);
+              }
+
+              // 制造筛选的数据
+              setProFilter(removeObjectNull(filters));
+
+              // 制造一个排序的数据
+              if (Array.isArray(sorter)) {
+                const data = sorter.reduce<{
+                  [key: string]: any;
+                }>((pre, value) => {
+                  if (!value.order) {
+                    return pre;
+                  }
+                  return {
+                    ...pre,
+                    [`${value.field}`]: value.order,
+                  };
+                }, {});
+                setProSort(data);
+              } else if (sorter.order) {
+                setProSort({ [`${sorter.field}`]: sorter.order });
+              }
+            }}
+          />
+        </Card>
+      )}
+    </div>
   );
 };
 
