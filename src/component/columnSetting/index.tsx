@@ -3,7 +3,7 @@ import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider/co
 import { PushpinOutlined, SettingOutlined, VerticalAlignMiddleOutlined } from '@ant-design/icons';
 import { Checkbox, Popover, Tooltip } from 'antd';
 import { DndProvider } from 'react-dnd';
-import Backend from 'react-dnd-html5-backend';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import Container from '../../container';
 import { ProColumns, ColumnsState } from '../../Table';
 import DnDItem from './DndItem';
@@ -161,7 +161,7 @@ const CheckboxList: React.FC<{
     );
   });
   return (
-    <DndProvider backend={Backend}>
+    <DndProvider backend={HTML5Backend}>
       {showTitle && <span className={`${className}-list-title`}>{listTitle}</span>}
       {listDom}
     </DndProvider>
