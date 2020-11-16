@@ -216,6 +216,7 @@ const GroupCheckboxList: React.FC<{
   );
 };
 
+// eslint-disable-next-line
 const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
   const counter = Container.useContainer();
   const localColumns: Omit<ProColumns<any> & { index?: number }, 'ellipsis'>[] =

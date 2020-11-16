@@ -566,6 +566,7 @@ const getSpanConfig = (
   return config[size];
 };
 
+// eslint-disable-next-line
 const FormSearch = <T, U = {}>({
   onSubmit,
   formRef,

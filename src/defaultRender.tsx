@@ -104,6 +104,7 @@ const defaultRenderTextByObject = (text: string | number, value: ProColumnsValue
  * @param text
  * @param valueType
  */
+// eslint-disable-next-line
 const defaultRenderText = <T, U>(
   text: string | number | React.ReactText[],
   valueType: ProColumnsValueType | ProColumnsValueTypeFunction<T>,

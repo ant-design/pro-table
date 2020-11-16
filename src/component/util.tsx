@@ -169,6 +169,7 @@ export default function get(entity: any, path: ReactText | ReactText[]) {
   return current;
 }
 
+// eslint-disable-next-line
 export const usePrevious = <T, U = T>(state: T): T | undefined => {
   const ref = useRef<T>();
 
