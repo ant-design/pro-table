@@ -318,6 +318,7 @@ export interface ProTableProps<T, U extends { [key: string]: any }>
   columnEmptyText?: ColumnEmptyText;
 }
 
+// eslint-disable-next-line
 const mergePagination = <T extends any[], U>(
   pagination: PaginationConfig | boolean | undefined = {},
   action: UseFetchDataAction<RequestData<T>>,
@@ -425,6 +426,7 @@ const genCopyable = (dom: React.ReactNode, item: ProColumns<any>) => {
  * 这个组件负责单元格的具体渲染
  * @param param0
  */
+// eslint-disable-next-line
 const columRender = <T, U = any>({
   item,
   text,
@@ -503,6 +505,7 @@ const columRender = <T, U = any>({
  * @param map
  * @param columnEmptyText
  */
+// eslint-disable-next-line
 const genColumnList = <T, U = {}>(
   columns: ProColumns<T>[],
   map: {

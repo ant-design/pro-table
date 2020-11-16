@@ -40,6 +40,7 @@ export interface ToolBarProps<T = unknown> {
   onSearch?: (keyWords: string) => void;
 }
 
+// eslint-disable-next-line
 const getButtonText = <T, U = {}>({
   intl,
 }: OptionConfig<T> & {
@@ -68,6 +69,7 @@ const getButtonText = <T, U = {}>({
  * @param options
  * @param className
  */
+// eslint-disable-next-line
 const renderDefaultOption = <T, U = {}>(
   options: ToolBarProps<T>['options'],
   className: string,
@@ -121,6 +123,7 @@ const renderDefaultOption = <T, U = {}>(
     })
     .filter((item) => item);
 
+// eslint-disable-next-line
 const ToolBar = <T, U = {}>({
   headerTitle,
   toolBarRender,
@@ -211,6 +214,7 @@ const ToolBar = <T, U = {}>({
   );
 };
 
+// eslint-disable-next-line
 const WarpToolBar = <T, U = {}>(props: ToolBarProps<T>) => (
   <ConfigConsumer>
     {({ getPrefixCls }: ConfigConsumerProps) => {

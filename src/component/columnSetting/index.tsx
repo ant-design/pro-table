@@ -3,7 +3,7 @@ import { ConfigConsumer, ConfigConsumerProps } from 'antd/lib/config-provider/co
 import { PushpinOutlined, SettingOutlined, VerticalAlignMiddleOutlined } from '@ant-design/icons';
 import { Checkbox, Popover, Tooltip } from 'antd';
 import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
+import Backend from 'react-dnd-html5-backend';
 import Container from '../../container';
 import { ProColumns, ColumnsState } from '../../Table';
 import DnDItem from './DndItem';
@@ -161,7 +161,7 @@ const CheckboxList: React.FC<{
     );
   });
   return (
-    <DndProvider backend={HTML5Backend}>
+    <DndProvider backend={Backend}>
       {showTitle && <span className={`${className}-list-title`}>{listTitle}</span>}
       {listDom}
     </DndProvider>
@@ -216,6 +216,7 @@ const GroupCheckboxList: React.FC<{
   );
 };
 
+// eslint-disable-next-line
 const ColumnSetting = <T, U = {}>(props: ColumnSettingProps<T>) => {
   const counter = Container.useContainer();
   const localColumns: Omit<ProColumns<any> & { index?: number }, 'ellipsis'>[] =

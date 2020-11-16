@@ -29,6 +29,7 @@ const defaultAlertOptionRender = (props: { intl: IntlType; onCleanSelected: () =
   ];
 };
 
+// eslint-disable-next-line
 const TableAlert = <T, U = {}>({
   selectedRowKeys = [],
   onCleanSelected,
