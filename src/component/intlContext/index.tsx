@@ -9,6 +9,7 @@ import ruRU from '../../locale/ru_RU';
 import msMY from '../../locale/ms_MY';
 import zhTW from '../../locale/zh_TW';
 import frFR from '../../locale/fr_FR';
+import deDE from '../../locale/de_DE';
 import { getLang } from '../util';
 
 export interface IntlType {
@@ -53,6 +54,7 @@ const ruRUIntl = createIntl('ru_RU', ruRU);
 const msMYIntl = createIntl('ms_MY', msMY);
 const zhTWIntl = createIntl('zh_TW', zhTW);
 const frFRIntl = createIntl('fr_FR', frFR);
+const deDEIntl = createIntl('de_DE', deDE);
 
 const intlMap = {
   'zh-CN': zhCNIntl,
@@ -65,6 +67,7 @@ const intlMap = {
   'ms-MY': msMYIntl,
   'zh-TW': zhTWIntl,
   'fr-FR': frFRIntl,
+  'de-DE': deDEIntl,
 };
 
 export { enUSIntl, zhCNIntl, viVNIntl, itITIntl, jaJPIntl, esESIntl, ruRUIntl, msMYIntl, zhTWIntl };
