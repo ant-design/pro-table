@@ -70,7 +70,7 @@ const intlMap = {
   'de-DE': deDEIntl,
 };
 
-export { enUSIntl, zhCNIntl, viVNIntl, itITIntl, jaJPIntl, esESIntl, ruRUIntl, msMYIntl, zhTWIntl };
+export { enUSIntl, zhCNIntl, viVNIntl, itITIntl, jaJPIntl, esESIntl, ruRUIntl, msMYIntl, zhTWIntl, deDEIntl };
 
 const IntlContext = React.createContext<IntlType>(intlMap[getLang() || ''] || zhCNIntl);
 
