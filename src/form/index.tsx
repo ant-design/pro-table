@@ -576,6 +576,19 @@ const getSpanConfig = (
   return config[size];
 };
 
+/**
+ * 分组表头需要展开
+ */
+const expandProColumns = (proColumns: any, defaultColumns: any[] = []): ProColumns<any>[] => {
+  const columns = defaultColumns;
+  proColumns.map((i) => {
+    if (Array.isArray(i.children)) expandProColumns(i.children, columns);
+    else columns.push(i);
+    return null;
+  });
+  return columns;
+};
+
 const FormSearch = <T, U = {}>({
   onSubmit,
   formRef,
@@ -658,13 +671,13 @@ const FormSearch = <T, U = {}>({
 
   useDeepCompareEffect(() => {
     const tempMap = {};
-    counter.proColumns.forEach((item) => {
+    expandProColumns(counter.proColumns).forEach((item) => {
       tempMap[genColumnKey(item.key, item.dataIndex, item.index) || 'null'] = item;
     });
     setProColumnsMap(tempMap);
   }, [counter.proColumns]);
 
-  const columnsList = counter.proColumns
+  const columnsList = expandProColumns(counter.proColumns)
     .filter((item) => {
       const { valueType } = item;
       if (item.hideInSearch && type !== 'form') {
