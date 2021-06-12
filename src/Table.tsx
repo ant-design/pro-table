@@ -598,6 +598,35 @@ const ProTable = <T extends {}, U extends object>(
     columnEmptyText = '-',
     ...rest
   } = props;
+            
+  /**
+   * 获得默认排序的字段;
+   * 为了解决[字段同时为'默认不展示'与'默认排序'时, 导致排序失效]的问题;
+   * 只需要渲染一次即可;
+   */
+  useEffect(() => {
+    // 取出默认排序的字段
+    const items: ProColumns<T>[] =
+      propsColumns.filter((item) => item.defaultSortOrder !== undefined && item.defaultSortOrder != null)
+
+    if (items.length > 0) {
+      const convertOrder = {
+        "ascend": 'ascend',
+        "descend": 'descend',
+      }
+      const data =
+        items.reduce<{ [key: string]: any; }>((pre, value) => {
+          if (!value.defaultSortOrder) {
+            return pre;
+          }
+          return {
+            ...pre,
+            [`${value.dataIndex}`]: convertOrder[value.defaultSortOrder],
+          };
+        }, {});
+      setProSort(data);
+    }
+  }, []);
 
   const [selectedRowKeys, setSelectedRowKeys] = useMergeValue<React.ReactText[]>([], {
     value: propsRowSelection ? propsRowSelection.selectedRowKeys : undefined,
