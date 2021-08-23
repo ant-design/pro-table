@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import zhCN from '../../locale/zh_CN';
 import enUS from '../../locale/en_US';
+import enGB from '../../locale/en_GB';
 import viVN from '../../locale/vi_VN';
 import itIT from '../../locale/it_IT';
 import jaJP from '../../locale/ja_JP';
@@ -45,6 +46,7 @@ const createIntl = (locale: string, localeMap: { [key: string]: any }): IntlType
 
 const zhCNIntl = createIntl('zh_CN', zhCN);
 const enUSIntl = createIntl('en_US', enUS);
+const enGBIntl = createIntl('en_GB', enGB);
 const viVNIntl = createIntl('vi_VN', viVN);
 const itITIntl = createIntl('it_IT', itIT);
 const jaJPIntl = createIntl('ja_JP', jaJP);
@@ -57,6 +59,7 @@ const frFRIntl = createIntl('fr_FR', frFR);
 const intlMap = {
   'zh-CN': zhCNIntl,
   'en-US': enUSIntl,
+  'en-GB': enGBIntl,
   'vi-VN': viVNIntl,
   'it-IT': itITIntl,
   'js-JP': jaJPIntl,
@@ -67,7 +70,7 @@ const intlMap = {
   'fr-FR': frFRIntl,
 };
 
-export { enUSIntl, zhCNIntl, viVNIntl, itITIntl, jaJPIntl, esESIntl, ruRUIntl, msMYIntl, zhTWIntl };
+export { enUSIntl, enGBIntl, zhCNIntl, viVNIntl, itITIntl, jaJPIntl, esESIntl, ruRUIntl, msMYIntl, zhTWIntl };
 
 const IntlContext = React.createContext<IntlType>(intlMap[getLang() || ''] || zhCNIntl);
 

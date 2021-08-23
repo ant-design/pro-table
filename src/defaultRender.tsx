@@ -60,6 +60,7 @@ const moneyIntl = new Intl.NumberFormat('zh-Hans-CN', {
 });
 
 const enMoneyIntl = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+const enGBMoneyIntl = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' });
 const ruMoneyIntl = new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB' });
 const msMoneyIntl = new Intl.NumberFormat('ms-MY', { style: 'currency', currency: 'MYR' });
 
@@ -82,6 +83,10 @@ const defaultRenderTextByObject = (text: string | number, value: ProColumnsValue
     // english
     if (value.locale === 'en_US') {
       return enMoneyIntl.format(text as number);
+    }
+    // english gb
+    if (value.locale === 'en_GB') {
+      return enGBMoneyIntl.format(text as number);
     }
     // russian
     if (value.locale === 'ru_RU') {
